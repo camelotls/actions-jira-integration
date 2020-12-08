@@ -1,0 +1,24 @@
+{
+    "name": "jira-integration",
+    "version": "1.0.0",
+    "description": "Integrate Github and Jira in order to create issues in case of a vulnerability found",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "test": "mocha"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@actions/core": "^1.2.6",
+        "assert": "^2.0.0",
+        "chai": "^4.2.0",
+        "chai-files": "^1.4.0",
+        "fs": "0.0.1-security",
+        "handlebars": "^4.7.6",
+        "https": "^1.0.0",
+        "mocha": "^8.2.1",
+        "nock": "^13.0.5",
+        "rimraf": "^3.0.2"
+    }
+}

@@ -1,0 +1,12 @@
+name: "Jira ticket creation"
+description: "Creates a Jira ticket base on the input of a previous action"
+inputs:
+    JIRA_USER:
+        description: "Github secret for the JIRA user email for external access"
+    JIRA_PASSWORD:
+        description: "Github secret for the JIRA API token for external access"
+    NPM_AUDIT_JSON:
+        description: "npm audit report for uk-mobile repo in a json format"
+runs:
+    using: "docker"
+    image: "Dockerfile"
