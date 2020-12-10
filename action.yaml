@@ -3,10 +3,19 @@ description: "Creates a Jira ticket base on the input of a previous action"
 inputs:
     JIRA_USER:
         description: "Github secret for the JIRA user email for external access"
+        required: true
     JIRA_PASSWORD:
         description: "Github secret for the JIRA API token for external access"
-    NPM_AUDIT_JSON:
-        description: "npm audit report for uk-mobile repo in a json format"
+        required: true
+    JIRA_PROJECT:
+        description: "The project key for Jira"
+        required: true
+    INPUT_JSON:
+        description: "The JSON input to be parsed"
+        required: true
+    TOOL_NAME:
+        description: "The tool generated the JSON to be parsed"
+        required: true
 runs:
     using: "docker"
     image: "Dockerfile"
