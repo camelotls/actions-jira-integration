@@ -19,6 +19,7 @@ COPY config/ ./config
 COPY helpers/ ./helpers
 COPY templates/ ./templates
 COPY utils/ ./utils
+COPY jsonParsers/ ./jsonParsers
 
 RUN npm install
 
