@@ -1,25 +1,27 @@
-# jira integration action
+# Jira Server Integration Action
 
-GitHub Action to integrate multiple tools with Jira and raise relevant issues.
+GitHub Action to integrate multiple tools with Jira Server and raise relevant issues. The action utilises [Jira's REST API version 8.4.3](https://docs.atlassian.com/software/jira/docs/api/REST/8.4.3/).
 
 ## Usage
 
 ### Inputs
 
-|Parameter|Required|Description|
-|:--:|:--:|:--:|
-|JIRA_USER|true|Github secret for the JIRA user email for external access|
-|JIRA_PASSWORD|true|Github secret for the JIRA API token for external access|
-|JIRA_PROJECT|true|The project key for Jira|
-|INPUT_JSON|true|The JSON input to be parsed|
-|TOOL_NAME|true|The tool generated the JSON to be parsed|
+|Parameter|Required|Default value|Description|
+|:--:|:--:|:--:|:--:|
+|JIRA_USER|true|N/A|Github secret for the JIRA user email for external access|
+|JIRA_PASSWORD|true|N/A|Github secret for the JIRA API token for external access|
+|JIRA_PROJECT|true|N/A|The project key for Jira|
+|JIRA_URI|true|N/A|The JIRA URI for your organisation|
+|INPUT_JSON|true|N/A|The JSON input to be parsed|
+|REPORT_INPUT_KEYS|true|N/A|A list of keys of the input JSON you provide that will be parsed and included in the report|
+|IS_NPM_AUDIT|false|N/A|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
+|JIRA_ISSUE_TYPE|false|Security Vulnerability|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
 
 ### Outputs
 
 N/A
 
 ## Example Workflow
-
 ```yaml
 name: Your workflow
 
@@ -49,12 +51,30 @@ jobs:
                id: jira_integration
                uses: camelotls/actions-jira-integration@latest
                env:
-                JIRA_PROJECT: Project
-                TOOL_NAME: ToolName
+                   JIRA_PROJECT: MBIL
+                   JIRA_URI: 'jira.camelot.global'
+                   JIRA_ISSUE_TYPE: 'Security Vulnerability'
+                   IS_NPM_AUDIT: true
+                   REPORT_INPUT_KEYS: "
+                       vulnerabilityName: {{module_name}}
+                       issueSummary: \`npm-audit: {{module_name}} module vulnerability\`
+                       issueDescription: \`*Recommendation*:\\n\\n{{recommendation}}\\n\\n*Details for {{cwe}}*\\n\\n_Vulnerable versions_:\\n\\n{{vulnerable_versions}}\\n\\n_Patched versions_:\\n\\n{{patched_versions}}\\n\\n*Overview*\\n\\n{{overview}}\\n\\n*References*\\n\\n{{url}}\\n\`
+                       issueSeverity: {{severity}}"
                with:
                   JIRA_USER: ${{ secrets.JIRA_USER }}
                   JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
-                  JIRA_PROJECT: $JIRA_PROJECT
+                  # the job with id npm_audit outputs a variable called npm_audit_json
                   INPUT_JSON: ${{ steps.npm_audit.outputs.npm_audit_json }}
-                  TOOL_NAME: $TOOL_NAME
+                  JIRA_PROJECT: $JIRA_PROJECT
+                  JIRA_URI: $JIRA_URI
+                  REPORT_INPUT_KEYS: $REPORT_INPUT_KEYS
+                  IS_NPM_AUDIT: $IS_NPM_AUDIT
+                  JIRA_ISSUE_TYPE: $JIRA_ISSUE_TYPE
 ```
+
+**NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important in order for parsing of the action to work correctly. Also, the submitted JSON **must** be in its final form that you want it to be parsed, not only the raw output of your report. An example of that is the `npm audit --json --production` output that has to be preparsed based on the given advisories (e.g. `JSON.parse(yourInput).advisories`).
+
+## Run the Unit Tests locally
+The Unit Tests have been implemented using `Mocha` and `Chai`. For the test coverage, `nyc` is being used.
+
+To run the locally, simply run `npm run test`.

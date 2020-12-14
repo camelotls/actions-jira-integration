@@ -4,19 +4,6 @@ const rimraf = require('rimraf');
 const handlebars = require('handlebars');
 const config = require('../config/config');
 
-const jiraPriorityMapper = (severity) => {
-  switch (severity) {
-    case 'low':
-      return 'P3';
-    case 'moderate':
-      return 'P2';
-    case 'high':
-      return 'P1';
-    default:
-      return 'Undefined';
-  }
-};
-
 const amendHandleBarTemplate = (
   template,
   issueModule,
@@ -27,7 +14,7 @@ const amendHandleBarTemplate = (
   const templateStored = fs.readFileSync(`${config.UTILS.TEMPLATES_DIR}/${template}`, 'utf8').toString();
   const templateReader = handlebars.compile(templateStored, { noEscape: true });
   const templateModifier = templateReader({
-    PROJECT_ID: config.JIRA_CONFIG.JIRA_PROJECT_ID,
+    PROJECT_ID: config.JIRA_CONFIG.JIRA_PROJECT,
     ISSUE_SUMMARY: `${issueSummary}`,
     ISSUE_DESCRIPTION: `${issueDescription}`,
     ISSUE_SEVERITY: `${issueSeverity}`
@@ -48,8 +35,37 @@ const folderCleanup = (folder) => {
   }
 };
 
+const reportMapper = (inputElement, parsedInput, reportPairsMapper, isNpmAudit) => {
+  const mapper = {};
+  // eslint-disable-next-line no-unused-vars
+  for (const [reportKey, reportValue] of Object.entries(reportPairsMapper)) {
+    let firstPass = false;
+    const reportInputVariablesFetcher = [...reportPairsMapper[reportKey].matchAll(/\{{(.*?)\}}/g)];
+    if (reportInputVariablesFetcher.length === 0) {
+      continue;
+    }
+
+    for (let keyPosition = 0; keyPosition < reportInputVariablesFetcher.length; keyPosition++) {
+      const keyName = reportInputVariablesFetcher[keyPosition][1];
+      if (reportInputVariablesFetcher.length === 1 || firstPass === false) {
+        mapper[reportKey] = reportPairsMapper[reportKey].replace(`{{${keyName}}}`, `${parsedInput[inputElement][keyName]}`);
+      } else {
+        if (isNpmAudit && keyName === 'overview') {
+          const overview = parsedInput[inputElement][keyName];
+          mapper[reportKey] = mapper[reportKey].replace(`{{${keyName}}}`, `${overview.slice(0, overview.lastIndexOf('.')).replace(/\n/g, '').replace(/"/g, '')}`);
+        } else {
+          mapper[reportKey] = mapper[reportKey].replace(`{{${keyName}}}`, `${parsedInput[inputElement][keyName]}`);
+        }
+      }
+      firstPass = true;
+    }
+  }
+
+  return mapper;
+};
+
 module.exports = {
-  jiraPriorityMapper: jiraPriorityMapper,
   amendHandleBarTemplate: amendHandleBarTemplate,
-  folderCleanup: folderCleanup
+  folderCleanup: folderCleanup,
+  reportMapper: reportMapper
 };

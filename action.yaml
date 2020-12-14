@@ -10,12 +10,22 @@ inputs:
     JIRA_PROJECT:
         description: "The project key for Jira"
         required: true
+    JIRA_URI:
+        description: "The Jira URI used for the REST API to make the requests to"
+        required: true
     INPUT_JSON:
         description: "The JSON input to be parsed"
         required: true
-    TOOL_NAME:
-        description: "The tool generated the JSON to be parsed"
+    REPORT_INPUT_KEYS:
+        description: "A list of keys of the input JSON you provide that will be parsed and included in the report"
         required: true
+    IS_NPM_AUDIT:
+        description: "Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field"
+        required: false
+    JIRA_ISSUE_TYPE:
+        description: "The type of the issue to be used whuile searching for existing issues. This is needed in order to avoid duplicating already raised issues"
+        required: false
+        default: "Security Vulnerability"
 runs:
     using: "docker"
     image: "Dockerfile"
