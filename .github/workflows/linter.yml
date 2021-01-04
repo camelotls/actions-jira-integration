@@ -21,6 +21,5 @@ jobs:
           npm run lint index.js
           npm run lint config/**
           npm run lint helpers/**
-          npm run lint jsonParsers/**
           npm run lint test/**
           npm run lint utils/**

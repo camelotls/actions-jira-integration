@@ -36,7 +36,6 @@ const POSTRequestWrapper = async (requestName, hostName, apiPath, acceptHeaderVa
           resolve(obj);
         })
         .on('error', (err) => {
-          console.log(err);
           obj.body = err;
           obj.statusCode = response.statusCode;
           reject(obj);
@@ -89,7 +88,6 @@ const DELETERequestWrapper = async (requestName, hostName, apiPath, acceptHeader
           resolve(obj);
         })
         .on('error', err => {
-          console.log(err);
           obj.body = err;
           obj.statusCode = response.statusCode;
           reject(obj);

@@ -5,9 +5,6 @@
         "issuetype": {
             "name": "Security Vulnerability"
         },
-        "priority": {
-            "name": "{{ISSUE_SEVERITY}}"
-        },
         "labels": [
             "npm_audit_check",
             "Security"
