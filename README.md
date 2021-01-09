@@ -1,6 +1,6 @@
 # Jira Server Integration Action
 
-GitHub Action to integrate multiple tools with Jira Server and raise relevant issues. The action utilises [Jira's REST API version 8.4.3](https://docs.atlassian.com/software/jira/docs/api/REST/8.4.3/).
+A GitHub Action to integrate multiple tools with Jira Server and raise relevant issues. The action utilises [Jira's REST API version 8.4.3](https://docs.atlassian.com/software/jira/docs/api/REST/8.4.3/).
 
 ## Usage
 
@@ -14,7 +14,7 @@ GitHub Action to integrate multiple tools with Jira Server and raise relevant is
 |JIRA_URI|true|N/A|The JIRA URI for your organisation|
 |INPUT_JSON|true|N/A|The JSON input to be parsed|
 |REPORT_INPUT_KEYS|true|N/A|A list of keys of the input JSON you provide that will be parsed and included in the report|
-|IS_NPM_AUDIT|false|N/A|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
+|IS_NPM_AUDIT|false|false|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
 |JIRA_ISSUE_TYPE|false|Security Vulnerability|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
 
 ### Outputs
@@ -72,9 +72,9 @@ jobs:
                   JIRA_ISSUE_TYPE: $JIRA_ISSUE_TYPE
 ```
 
-**NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important in order for parsing of the action to work correctly. Also, the submitted JSON **must** be in its final form that you want it to be parsed, not only the raw output of your report. An example of that is the `npm audit --json --production` output that has to be preparsed based on the given advisories (e.g. `JSON.parse(yourInput).advisories`).
+**NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important in order for the parsing of the action to work properly. Also, the submitted JSON **must** be in its final form that you want it to be processed (not purely the raw output of your report). An example of that is the `npm audit --json --production` output that has to be preparsed based on the given advisories (e.g. `JSON.parse(<your-input>).advisories`).
 
 ## Run the Unit Tests locally
 The Unit Tests have been implemented using `Mocha` and `Chai`. For the test coverage, `nyc` is being used.
 
-To run the locally, simply run `npm run test`.
+To run them locally, simply run `npm run test`.

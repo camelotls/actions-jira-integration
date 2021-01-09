@@ -22,8 +22,6 @@ const amendHandleBarTemplate = (
   const payload = `${issueModule}_payload.json`;
 
   fs.writeFileSync(`${config.UTILS.PAYLOADS_DIR}/${payload}`, templateModifier, 'utf8');
-
-  console.log(`File ${payload} created successfully!`);
 };
 
 const folderCleanup = (folder) => {
@@ -40,13 +38,13 @@ const reportMapper = (inputElement, parsedInput, reportPairsMapper, isNpmAudit) 
   // eslint-disable-next-line no-unused-vars
   for (const [reportKey, reportValue] of Object.entries(reportPairsMapper)) {
     let firstPass = false;
-    const reportInputVariablesFetcher = [...reportPairsMapper[reportKey].matchAll(/\{{(.*?)\}}/g)];
+    const reportInputVariablesFetcher = [...reportValue.match(/\{{(.*?)\}}/g)];
     if (reportInputVariablesFetcher.length === 0) {
       continue;
     }
 
     for (let keyPosition = 0; keyPosition < reportInputVariablesFetcher.length; keyPosition++) {
-      const keyName = reportInputVariablesFetcher[keyPosition][1];
+      const keyName = reportInputVariablesFetcher[keyPosition].replace('{{', '').replace('}}', '');
       if (reportInputVariablesFetcher.length === 1 || firstPass === false) {
         mapper[reportKey] = reportPairsMapper[reportKey].replace(`{{${keyName}}}`, `${parsedInput[inputElement][keyName]}`);
       } else {
