@@ -18,6 +18,7 @@
         "fs": "0.0.1-security",
         "handlebars": "^4.7.6",
         "https": "^1.0.0",
+        "lodash": "^4.17.20",
         "mocha": "^8.2.1",
         "nock": "^13.0.5",
         "rimraf": "^3.0.2"

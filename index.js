@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const fs = require('fs');
+const _ = require('lodash');
 
 const utils = require('./utils/helper');
 const config = require('./config/config');
@@ -34,18 +35,17 @@ const startAction = async (inputJson) => {
   const reportPairsMapper = {};
   reportKeyValyePairs.forEach(pair => {
     const key = pair.substr(0, pair.indexOf(':'));
-    const value = pair.substr(pair.indexOf(': ') + 1, pair.length - 1);
+    const value = pair.substr(pair.indexOf(': ') + 1, pair.length - 1).trimStart();
 
     reportPairsMapper[key] = value.trim();
   });
 
-  const parsedInput = JSON.parse(inputJson).advisories;
+  const parsedInput = JSON.parse(inputJson);
 
   for (const inputElement in parsedInput) {
     const reportMapperInstance = utils.reportMapper(inputElement, parsedInput, reportPairsMapper, IS_NPM_AUDIT);
-
-    if (!retrievedIssuesSummaries.includes(reportPairsMapper.issueSummary)) {
-      console.log(`Attempting to create json payload for module ${reportPairsMapper.vulnerabilityName}...`);
+    if (!retrievedIssuesSummaries.includes(reportMapperInstance.issueSummary) && !_.isEmpty(retrievedIssuesSummaries)) {
+      console.log(`Attempting to create json payload for module ${reportMapperInstance.vulnerabilityName}...`);
       utils.amendHandleBarTemplate(
         config.UTILS.CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE,
         reportMapperInstance.vulnerabilityName,
