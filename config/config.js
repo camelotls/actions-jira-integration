@@ -11,7 +11,7 @@ const JIRA_CONFIG = {
     startAt: 0,
     maxResults: 100,
     fields: [
-      'summary'
+      'summaries'
     ]
   }
 };
