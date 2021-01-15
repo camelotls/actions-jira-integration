@@ -36,6 +36,7 @@ const folderCleanup = (folder) => {
 const reportMapper = (inputElement, parsedInput, reportPairsMapper, isNpmAudit) => {
   const mapper = {};
   // eslint-disable-next-line no-unused-vars
+  console.log(`reportPairsMappertKey: ${Object.keys(reportPairsMapper)}`);
   for (const [reportKey, reportValue] of Object.entries(reportPairsMapper)) {
     let firstPass = false;
     const reportInputVariablesFetcher = [...reportValue.match(/\{{(.*?)\}}/g)];
