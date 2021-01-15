@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 const rest = require('./rest-helper');
 const config = require('../config/config');
 
@@ -15,6 +17,8 @@ const createJiraSession = async function createJiraSession (jiraUser, jiraPasswo
     '',
     sessionPayload
   );
+
+  assert(response.statusCode === 200, `Jira session cannot be created: ${response.body}`);
 
   return JSON.parse(response.body).session;
 };
