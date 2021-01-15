@@ -47,29 +47,23 @@ jobs:
             - name: Execute npm audit
               id: npm_audit
               uses: ./.github/actions/npm-audit
-            -  name: Jira ticket creation
-               id: jira_integration
-               uses: camelotls/actions-jira-integration@latest
-               env:
-                   JIRA_PROJECT: MBIL
-                   JIRA_URI: 'jira.camelot.global'
-                   JIRA_ISSUE_TYPE: 'Security Vulnerability'
-                   IS_NPM_AUDIT: true
-                   REPORT_INPUT_KEYS: "
-                       vulnerabilityName: {{module_name}}
-                       issueSummary: npm-audit: {{module_name}} module vulnerability
-                       issueDescription: \`*Recommendation*:\\n\\n{{recommendation}}\\n\\n*Details for {{cwe}}*\\n\\n_Vulnerable versions_:\\n\\n{{vulnerable_versions}}\\n\\n_Patched versions_:\\n\\n{{patched_versions}}\\n\\n*Overview*\\n\\n{{overview}}\\n\\n*References*\\n\\n{{url}}\\n\`
-                       issueSeverity: {{severity}}"
-               with:
-                  JIRA_USER: ${{ secrets.JIRA_USER }}
-                  JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
-                  # the job with id npm_audit outputs a variable called npm_audit_json
-                  INPUT_JSON: ${{ steps.npm_audit.outputs.npm_audit_json }}
-                  JIRA_PROJECT: $JIRA_PROJECT
-                  JIRA_URI: $JIRA_URI
-                  REPORT_INPUT_KEYS: $REPORT_INPUT_KEYS
-                  IS_NPM_AUDIT: $IS_NPM_AUDIT
-                  JIRA_ISSUE_TYPE: $JIRA_ISSUE_TYPE
+            - name: Jira ticket creation
+              id: jira_integration
+              uses: camelotls/actions-jira-integration@latest
+              with:
+                JIRA_USER: ${{ secrets.JIRA_USER }}
+                JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
+                # the job with id npm_audit outputs a variable called npm_audit_json
+                INPUT_JSON: ${{ steps.npm_audit.outputs.npm_audit_json }}
+                JIRA_PROJECT: MBIL
+                JIRA_URI: 'jira.camelot.global'
+                REPORT_INPUT_KEYS: |
+                                    vulnerabilityName: {{module_name}}
+                                    issueSummary: npm-audit: {{module_name}} module vulnerability\n
+                                    issueDescription: \`*Recommendation*:\\n\\n{{recommendation}}\\n\\n*Details for {{cwe}}*\\n\\n_Vulnerable versions_:\\n\\n{{vulnerable_versions}}\\n\\n_Patched versions_:\\n\\n{{patched_versions}}\\n\\n*Overview*\\n\\n{{overview}}\\n\\n*References*\\n\\n{{url}}\\n\\n`
+                                    issueSeverity: {{severity}}
+                IS_NPM_AUDIT: true
+                JIRA_ISSUE_TYPE: 'Security Vulnerability'
 ```
 
 **NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important in order for the parsing of the action to work properly. Also, the submitted JSON **must** be in its final form that you want it to be processed (not purely the raw output of your report). An example of that is the `npm audit --json --production` output that has to be preparsed based on the given advisories (e.g. `JSON.parse(<your-input>).advisories`).
