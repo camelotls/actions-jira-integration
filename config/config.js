@@ -21,8 +21,8 @@ const REST_CONFIG = {
 };
 
 const UTILS = {
-  TEMPLATES_DIR: '../templates',
-  PAYLOADS_DIR: '../payloads',
+  TEMPLATES_DIR: './templates',
+  PAYLOADS_DIR: './payloads',
   CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE: 'issueCreation.template'
 };
 
