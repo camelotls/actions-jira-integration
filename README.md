@@ -57,7 +57,7 @@ jobs:
                    IS_NPM_AUDIT: true
                    REPORT_INPUT_KEYS: "
                        vulnerabilityName: {{module_name}}
-                       issueSummary: \`npm-audit: {{module_name}} module vulnerability\`
+                       issueSummary: npm-audit: {{module_name}} module vulnerability
                        issueDescription: \`*Recommendation*:\\n\\n{{recommendation}}\\n\\n*Details for {{cwe}}*\\n\\n_Vulnerable versions_:\\n\\n{{vulnerable_versions}}\\n\\n_Patched versions_:\\n\\n{{patched_versions}}\\n\\n*Overview*\\n\\n{{overview}}\\n\\n*References*\\n\\n{{url}}\\n\`
                        issueSeverity: {{severity}}"
                with:
