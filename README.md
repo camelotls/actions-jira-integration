@@ -8,14 +8,15 @@ A GitHub Action to integrate multiple tools with Jira Server and raise relevant 
 
 |Parameter|Required|Default value|Description|
 |:--:|:--:|:--:|:--:|
-|JIRA_USER|true|N/A|Github secret for the JIRA user email for external access|
-|JIRA_PASSWORD|true|N/A|Github secret for the JIRA API token for external access|
+|JIRA_USER|true|N/A|GitHub secret for the JIRA user email for external access|
+|JIRA_PASSWORD|true|N/A|GitHub secret for the JIRA API token for external access|
 |JIRA_PROJECT|true|N/A|The project key for Jira|
 |JIRA_URI|true|N/A|The JIRA URI for your organisation|
 |INPUT_JSON|true|N/A|The JSON input to be parsed|
 |REPORT_INPUT_KEYS|true|N/A|A list of keys of the input JSON you provide that will be parsed and included in the report|
 |IS_NPM_AUDIT|false|false|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
 |JIRA_ISSUE_TYPE|false|Security Vulnerability|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
+|RUNS_ON_GITHUB|true|true|Indicates if the action runs on GitHub or locally, on a Docker container, for testing purporses|
 
 ### Outputs
 
@@ -64,6 +65,7 @@ jobs:
                                     issueSeverity: {{severity}}
                 IS_NPM_AUDIT: true
                 JIRA_ISSUE_TYPE: 'Security Vulnerability'
+                RUNS_ON_GITHUB: true
 ```
 
 **NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important in order for the parsing of the action to work properly. Also, the submitted JSON **must** be in its final form that you want it to be processed (not purely the raw output of your report). An example of that is the `npm audit --json --production` output that has to be preparsed based on the given advisories (e.g. `JSON.parse(<your-input>).advisories`).
@@ -72,3 +74,47 @@ jobs:
 The Unit Tests have been implemented using `Mocha` and `Chai`. For the test coverage, `nyc` is being used.
 
 To run them locally, simply run `npm run test`.
+
+
+## Run the GitHub Action locally
+To run this action locally, you can simply build a Docker image and then run it to see that you get the desired result. To do so, follow the instructions below:
+
+- Build and run your Docker image with specific arguments:
+
+```
+docker build --build-arg JIRA_USER=$JIRA_USER \
+            --build-arg JIRA_PASSWORD=$JIRA_PASSWORD \
+            --build-arg JIRA_PROJECT=$JIRA_PROJECT \
+            --build-arg JIRA_URI=$JIRA_URI \
+            --build-arg INPUT_JSON=$INPUT_JSON \
+            --build-arg REPORT_INPUT_KEYS=$REPORT_INPUT_KEYS \
+            --build-arg IS_NPM_AUDIT=$IS_NPM_AUDIT \
+            --build-arg RUNS_ON_GITHUB=$RUNS_ON_GITHUB \
+            -t <image_name>:<image_version> .
+```
+
+and
+
+```
+docker run <image_name>:<image_version>
+```
+
+- Build and run your Docker image based on env vars specific arguments:
+
+```
+docker build -t <image_name>:<image_version> .
+```
+
+and
+
+```
+docker run -e JIRA_USER=$JIRA_USER \
+            -e JIRA_PASSWORD=$JIRA_PASSWORD \
+            -e JIRA_PROJECT=$JIRA_PROJECT \
+            -e JIRA_URI=$JIRA_URI \
+            -e INPUT_JSON=$INPUT_JSON \
+            -e REPORT_INPUT_KEYS=$REPORT_INPUT_KEYS \
+            -e IS_NPM_AUDIT=$IS_NPM_AUDIT \
+            -e RUNS_ON_GITHUB=$RUNS_ON_GITHUB \
+            <image_name>:<image_version>
+```
