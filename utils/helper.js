@@ -1,7 +1,8 @@
 const fs = require('fs');
 const rimraf = require('rimraf');
-
 const handlebars = require('handlebars');
+const { v4 } = require('uuid');
+
 const config = require('../config/config');
 
 const amendHandleBarTemplate = (
@@ -19,7 +20,7 @@ const amendHandleBarTemplate = (
     ISSUE_DESCRIPTION: `${issueDescription}`,
     ISSUE_SEVERITY: `${issueSeverity}`
   });
-  const payload = `${issueModule}_payload.json`;
+  const payload = `${issueModule}_${v4()}_payload.json`;
 
   fs.writeFileSync(`${config.UTILS.PAYLOADS_DIR}/${payload}`, templateModifier, 'utf8');
 };

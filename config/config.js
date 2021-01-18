@@ -21,8 +21,8 @@ const REST_CONFIG = {
 };
 
 const UTILS = {
-  TEMPLATES_DIR: './templates',
-  PAYLOADS_DIR: './payloads',
+  TEMPLATES_DIR: (process.env.RUNS_ON_GITHUB || core.getInput('RUNS_ON_GITHUB')) === 'true' ? './actions-jira-integration/templates' : './templates',
+  PAYLOADS_DIR: (process.env.RUNS_ON_GITHUB || core.getInput('RUNS_ON_GITHUB')) === 'true' ? './actions-jira-integration/payloads' : './payloads',
   CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE: 'issueCreation.template'
 };
 

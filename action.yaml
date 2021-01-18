@@ -26,6 +26,10 @@ inputs:
         description: "The type of the issue to be used whuile searching for existing issues. This is needed in order to avoid duplicating already raised issues"
         required: false
         default: "Security Vulnerability"
+    RUNS_ON_GITHUB:
+        description: "Indicates if the action runs on GitHub or locally, on a Docker container, for testing purporses"
+        required: true
+        default: true
 runs:
     using: "docker"
     image: "Dockerfile"

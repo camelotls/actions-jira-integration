@@ -31,9 +31,14 @@ const startAction = async (inputJson) => {
     console.log('Existing JIRA issues retrieved successfully!');
   }
 
-  const reportKeyValyePairs = REPORT_INPUT_KEYS.split('\n').map(pair => pair.trim());
+  const reportKeyValuePairs = REPORT_INPUT_KEYS.split('\n')
+    .map(pair => pair.trim())
+    .filter(pair => {
+      return pair !== '';
+    });
   const reportPairsMapper = {};
-  reportKeyValyePairs.forEach(pair => {
+
+  reportKeyValuePairs.forEach(pair => {
     const key = pair.substr(0, pair.indexOf(':'));
     const value = pair.substr(pair.indexOf(': ') + 1, pair.length - 1).trimStart();
 
