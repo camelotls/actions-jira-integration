@@ -48,9 +48,16 @@ jobs:
             - name: Execute npm audit
               id: npm_audit
               uses: ./.github/actions/npm-audit
+            -  name: Checkout Jira integration GitHub Action Repo
+               uses: actions/checkout@v2
+               with:
+                repository: camelotls/actions-jira-integration
+                ref: <version-to-be-pulled>
+                token: ${{ secrets.MACHINEUSER_GITHUB_TOKEN }}
+                path: actions-jira-integration
             - name: Jira ticket creation
               id: jira_integration
-              uses: camelotls/actions-jira-integration@latest
+              uses: ./actions-jira-integration/
               with:
                 JIRA_USER: ${{ secrets.JIRA_USER }}
                 JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
