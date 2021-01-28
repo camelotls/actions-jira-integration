@@ -1,0 +1,20 @@
+name: Gitlint
+
+on: 
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Gitlint
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python V2
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install git lint
+        run: pip install gitlint
+      - name: Execute git lint
+        run: gitlint --config=.github/config/gitlint/gitlint.cfg --debug
