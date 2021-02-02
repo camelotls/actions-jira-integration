@@ -6,7 +6,6 @@
             "name": "Security Vulnerability"
         },
         "labels": [
-            "npm_audit_check",
             "Security"
         ],
         "description": "{{ISSUE_DESCRIPTION}}"
