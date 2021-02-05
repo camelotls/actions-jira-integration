@@ -9,7 +9,6 @@ const jira = require('./helpers/jira-helpers');
 const INPUT_JSON = core.getInput('INPUT_JSON');
 const JIRA_USER = core.getInput('JIRA_USER');
 const JIRA_PASSWORD = core.getInput('JIRA_PASSWORD');
-const IS_NPM_AUDIT = core.getInput('IS_NPM_AUDIT');
 const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS');
 
 const startAction = async (inputJson) => {
@@ -46,9 +45,8 @@ const startAction = async (inputJson) => {
   });
 
   const parsedInput = JSON.parse(inputJson);
-
   for (const inputElement in parsedInput) {
-    const reportMapperInstance = utils.reportMapper(inputElement, parsedInput, reportPairsMapper, IS_NPM_AUDIT);
+    const reportMapperInstance = utils.reportMapper(inputElement, parsedInput, reportPairsMapper);
     if (!retrievedIssuesSummaries.includes(reportMapperInstance.issueSummary) && !_.isEmpty(retrievedIssuesSummaries)) {
       console.log(`Attempting to create json payload for module ${reportMapperInstance.vulnerabilityName}...`);
       utils.amendHandleBarTemplate(
