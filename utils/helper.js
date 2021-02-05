@@ -2,8 +2,35 @@ const fs = require('fs');
 const rimraf = require('rimraf');
 const handlebars = require('handlebars');
 const { v4 } = require('uuid');
-
+const dirtyJSON = require('dirty-json');
+const Validator = require('jsonschema').Validator;
 const config = require('../config/config');
+
+const jiraIssueSchema = {
+  type: 'object',
+  fields: {
+    project: {
+      key: {
+        type: 'string'
+      }
+    },
+    summary: {
+      type: 'string'
+    },
+    issuetype: {
+      name: {
+        type: 'string'
+      }
+    },
+    labels: {
+      type: 'array'
+    },
+    description: {
+      type: 'string'
+    }
+  }
+};
+const jsonValidator = new Validator();
 
 const amendHandleBarTemplate = (
   template,
@@ -22,7 +49,22 @@ const amendHandleBarTemplate = (
   });
   const payload = `${issueModule}_${v4()}_payload.json`;
 
-  fs.writeFileSync(`${config.UTILS.PAYLOADS_DIR}/${payload}`, templateModifier, 'utf8');
+  let beautifiedTemplate;
+  try {
+    beautifiedTemplate = JSON.stringify(dirtyJSON.parse(templateModifier));
+    const isValidSchema = (jsonValidator.validate(JSON.parse(beautifiedTemplate), jiraIssueSchema).errors.length === 0);
+    try {
+      if (isValidSchema) {
+        fs.writeFileSync(`${config.UTILS.PAYLOADS_DIR}/${payload}`, beautifiedTemplate, 'utf8');
+      } else {
+        throw new Error(`The beautification of ${issueModule} was not possible!`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  } catch (e) {
+    console.log(`Vulnerability "${issueModule}" cannot be turned into a Jira issue since the data provided in the given JSON are malformed and cannot be beautified!`);
+  }
 };
 
 const folderCleanup = (folder) => {
@@ -34,7 +76,7 @@ const folderCleanup = (folder) => {
   }
 };
 
-const reportMapper = (inputElement, parsedInput, reportPairsMapper, isNpmAudit) => {
+const reportMapper = (inputElement, parsedInput, reportPairsMapper) => {
   const mapper = {};
   // eslint-disable-next-line no-unused-vars
   for (const [reportKey, reportValue] of Object.entries(reportPairsMapper)) {
@@ -49,12 +91,7 @@ const reportMapper = (inputElement, parsedInput, reportPairsMapper, isNpmAudit) 
       if (reportInputVariablesFetcher.length === 1 || firstPass === false) {
         mapper[reportKey] = reportPairsMapper[reportKey].replace(`{{${keyName}}}`, `${parsedInput[inputElement][keyName]}`);
       } else {
-        if (isNpmAudit && keyName === 'overview') {
-          const overview = parsedInput[inputElement][keyName];
-          mapper[reportKey] = mapper[reportKey].replace(`{{${keyName}}}`, `${overview.slice(0, overview.lastIndexOf('.')).replace(/\n/g, '').replace(/"/g, '')}`);
-        } else {
-          mapper[reportKey] = mapper[reportKey].replace(`{{${keyName}}}`, `${parsedInput[inputElement][keyName]}`);
-        }
+        mapper[reportKey] = mapper[reportKey].replace(`{{${keyName}}}`, `${parsedInput[inputElement][keyName]}`);
       }
       firstPass = true;
     }

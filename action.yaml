@@ -19,9 +19,6 @@ inputs:
     REPORT_INPUT_KEYS:
         description: "A list of keys of the input JSON you provide that will be parsed and included in the report"
         required: true
-    IS_NPM_AUDIT:
-        description: "Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field"
-        required: false
     JIRA_ISSUE_TYPE:
         description: "The type of the issue to be used whuile searching for existing issues. This is needed in order to avoid duplicating already raised issues"
         required: false

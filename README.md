@@ -14,7 +14,6 @@ A GitHub Action to integrate multiple tools with Jira Server and raise relevant 
 |JIRA_URI|true|N/A|The JIRA URI for your organisation|
 |INPUT_JSON|true|N/A|The JSON input to be parsed|
 |REPORT_INPUT_KEYS|true|N/A|A list of keys of the input JSON you provide that will be parsed and included in the report|
-|IS_NPM_AUDIT|false|false|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
 |JIRA_ISSUE_TYPE|false|Security Vulnerability|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
 |RUNS_ON_GITHUB|true|true|Indicates if the action runs on GitHub or locally, on a Docker container, for testing purporses|
 
@@ -70,7 +69,6 @@ jobs:
                                     issueSummary: npm-audit: {{module_name}} module vulnerability\n
                                     issueDescription: \`*Recommendation*:\\n\\n{{recommendation}}\\n\\n*Details for {{cwe}}*\\n\\n_Vulnerable versions_:\\n\\n{{vulnerable_versions}}\\n\\n_Patched versions_:\\n\\n{{patched_versions}}\\n\\n*Overview*\\n\\n{{overview}}\\n\\n*References*\\n\\n{{url}}\\n\\n`
                                     issueSeverity: {{severity}}
-                IS_NPM_AUDIT: true
                 JIRA_ISSUE_TYPE: 'Security Vulnerability'
                 RUNS_ON_GITHUB: true
 ```
@@ -95,7 +93,6 @@ docker build --build-arg JIRA_USER=$JIRA_USER \
             --build-arg JIRA_URI=$JIRA_URI \
             --build-arg INPUT_JSON=$INPUT_JSON \
             --build-arg REPORT_INPUT_KEYS=$REPORT_INPUT_KEYS \
-            --build-arg IS_NPM_AUDIT=$IS_NPM_AUDIT \
             --build-arg RUNS_ON_GITHUB=$RUNS_ON_GITHUB \
             -t <image_name>:<image_version> .
 ```
@@ -106,7 +103,7 @@ and
 docker run <image_name>:<image_version>
 ```
 
-- Build and run your Docker image based on env vars specific arguments:
+- Build and run your Docker image based on env vars:
 
 ```
 docker build -t <image_name>:<image_version> .
@@ -121,7 +118,6 @@ docker run -e JIRA_USER=$JIRA_USER \
             -e JIRA_URI=$JIRA_URI \
             -e INPUT_JSON=$INPUT_JSON \
             -e REPORT_INPUT_KEYS=$REPORT_INPUT_KEYS \
-            -e IS_NPM_AUDIT=$IS_NPM_AUDIT \
             -e RUNS_ON_GITHUB=$RUNS_ON_GITHUB \
             <image_name>:<image_version>
 ```
