@@ -27,6 +27,10 @@ inputs:
         description: "Indicates if the action runs on GitHub or locally, on a Docker container, for testing purporses"
         required: true
         default: true
+    PRIORITY_MAPPER:
+        decription: "Maps the severity level of the reporting issue to the relevant Jira priority score"
+        required: false
+        default: ""
 runs:
     using: "docker"
     image: "Dockerfile"
