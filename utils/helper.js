@@ -37,7 +37,8 @@ const amendHandleBarTemplate = (
   issueModule,
   issueSummary,
   issueDescription,
-  issueSeverity
+  issueSeverity,
+  severityMap
 ) => {
   const templateStored = fs.readFileSync(`${config.UTILS.TEMPLATES_DIR}/${template}`, 'utf8').toString();
   const templateReader = handlebars.compile(templateStored, { noEscape: true });
@@ -45,7 +46,8 @@ const amendHandleBarTemplate = (
     PROJECT_ID: config.JIRA_CONFIG.JIRA_PROJECT,
     ISSUE_SUMMARY: `${issueSummary}`,
     ISSUE_DESCRIPTION: `${issueDescription}`,
-    ISSUE_SEVERITY: `${issueSeverity}`
+    ISSUE_SEVERITY: `${issueSeverity}`,
+    ISSUE_SEVERITY_MAP: `${severityMap}`
   });
   const payload = `${issueModule}_${v4()}_payload.json`;
 
@@ -100,8 +102,28 @@ const reportMapper = (inputElement, parsedInput, reportPairsMapper) => {
   return mapper;
 };
 
+const populateMap = (yamlKey) => {
+  const yamlPairs = yamlKey.split('\n')
+    .map(pair => pair.trim())
+    .filter(pair => {
+      return pair !== '';
+    });
+
+  const map = {};
+
+  yamlPairs.forEach(pair => {
+    const key = pair.substr(0, pair.indexOf(':'));
+    const value = pair.substr(pair.indexOf(': ') + 1, pair.length - 1).trimStart();
+
+    map[key] = value.trim();
+  });
+
+  return map;
+};
+
 module.exports = {
   amendHandleBarTemplate: amendHandleBarTemplate,
   folderCleanup: folderCleanup,
-  reportMapper: reportMapper
+  reportMapper: reportMapper,
+  populateMap: populateMap
 };

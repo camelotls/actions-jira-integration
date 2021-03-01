@@ -10,6 +10,7 @@ const INPUT_JSON = core.getInput('INPUT_JSON');
 const JIRA_USER = core.getInput('JIRA_USER');
 const JIRA_PASSWORD = core.getInput('JIRA_PASSWORD');
 const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS');
+const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER');
 
 const startAction = async (inputJson) => {
   const jiraSession = await jira.createJiraSession(JIRA_USER, JIRA_PASSWORD);
@@ -30,23 +31,13 @@ const startAction = async (inputJson) => {
     console.log('Existing JIRA issues retrieved successfully!');
   }
 
-  const reportKeyValuePairs = REPORT_INPUT_KEYS.split('\n')
-    .map(pair => pair.trim())
-    .filter(pair => {
-      return pair !== '';
-    });
-  const reportPairsMapper = {};
-
-  reportKeyValuePairs.forEach(pair => {
-    const key = pair.substr(0, pair.indexOf(':'));
-    const value = pair.substr(pair.indexOf(': ') + 1, pair.length - 1).trimStart();
-
-    reportPairsMapper[key] = value.trim();
-  });
+  const priorityMapper = new Map(Object.entries(utils.populateMap(PRIORITY_MAPPER)));
+  const reportPairsMapper = utils.populateMap(REPORT_INPUT_KEYS);
 
   const parsedInput = JSON.parse(inputJson);
   for (const inputElement in parsedInput) {
     const reportMapperInstance = utils.reportMapper(inputElement, parsedInput, reportPairsMapper);
+    const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
     if (!retrievedIssuesSummaries.includes(reportMapperInstance.issueSummary) && !_.isEmpty(retrievedIssuesSummaries)) {
       console.log(`Attempting to create json payload for module ${reportMapperInstance.vulnerabilityName}...`);
       utils.amendHandleBarTemplate(
@@ -54,7 +45,8 @@ const startAction = async (inputJson) => {
         reportMapperInstance.vulnerabilityName,
         reportMapperInstance.issueSummary,
         reportMapperInstance.issueDescription,
-        reportMapperInstance.issueSeverity
+        reportMapperInstance.issueSeverity,
+        severityMap
       );
     } else {
       const existingIssueKey = issues[retrievedIssuesSummaries.indexOf(reportMapperInstance.issueSummary)].key;

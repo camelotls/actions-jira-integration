@@ -16,6 +16,7 @@ A GitHub Action to integrate multiple tools with Jira Server and raise relevant 
 |REPORT_INPUT_KEYS|true|N/A|A list of keys of the input JSON you provide that will be parsed and included in the report|
 |JIRA_ISSUE_TYPE|false|Security Vulnerability|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
 |RUNS_ON_GITHUB|true|true|Indicates if the action runs on GitHub or locally, on a Docker container, for testing purporses|
+|PRIORITY_MAPPER|false|""|Maps the severity level of the reporting issue to the relevant Jira priority score|
 
 ### Outputs
 
@@ -71,6 +72,10 @@ jobs:
                                     issueSeverity: {{severity}}
                 JIRA_ISSUE_TYPE: 'Security Vulnerability'
                 RUNS_ON_GITHUB: true
+                PRIORITY_MAPPER: |
+                                     low: P3
+                                     moderate: P2
+                                     high: P1
 ```
 
 **NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important in order for the parsing of the action to work properly. Also, the submitted JSON **must** be in its final form that you want it to be processed (not purely the raw output of your report). An example of that is the `npm audit --json --production` output that has to be preparsed based on the given advisories (e.g. `JSON.parse(<your-input>).advisories`).
