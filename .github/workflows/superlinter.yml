@@ -1,0 +1,37 @@
+name: Super-Linter
+
+
+on: 
+  pull-request:
+
+jobs:
+  super-lint:
+    
+    runs-on: ubuntu-latest
+    name: super-lint
+
+    steps:
+      uses: actions/checkout@v2
+      with:
+        # Full git history is needed to get a proper list of changed files within `super-linter`
+        fetch-depth: 0
+      name: Use Node.js 12.x
+      uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      name: Install Dependencies
+      run: npm install
+        
+      # Runs the Super-Linter action
+      name: Run Super-Linter
+      uses: github/super-linter@v3
+      env:
+        DEFAULT_BRANCH: main
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+        
+          
+          
+          
+   
+        
