@@ -24,7 +24,7 @@ jobs:
       uses: github/super-linter@v3
       env:
         DEFAULT_BRANCH: main
-	VALIDATE_DOCKERFILE: true
-	VALIDATE_JAVASCRIPT_ES: true
-	VALIDATE_YAML: true
-	VALIDATE_ALL_CODEBASE: false
+        VALIDATE_DOCKERFILE: true
+        VALIDATE_JAVASCRIPT_ES: true
+        VALIDATE_YAML: true
+        VALIDATE_ALL_CODEBASE: false
