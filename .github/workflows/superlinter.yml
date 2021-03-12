@@ -1,30 +1,23 @@
-name: Super-Linter
+name: Lint Code Base
 
-on: 
-  pull-request:
+on:
+  pull_request
 
 jobs:
   super-lint:
-
     runs-on: ubuntu-latest
-    name: super-lint
 
     steps:
-      uses: actions/checkout@v2
-      with:
-        # Full git history is needed to get a proper list of changed files within `super-linter`
-        fetch-depth: 0
-      name: Use Node.js 12.x
-      uses: actions/setup-node@v1
+      - name: Checkout Code
+        uses: actions/checkout@v2
         with:
-          node-version: 12.x
-      
-      # Runs the Super-Linter action
-      name: Run Super-Linter
-      uses: github/super-linter@v3
-      env:
-        DEFAULT_BRANCH: main
-        VALIDATE_DOCKERFILE: true
-        VALIDATE_JAVASCRIPT_ES: true
-        VALIDATE_YAML: true
-        VALIDATE_ALL_CODEBASE: false
+          fetch-depth: 0
+
+      - name: Lint Code Base
+        uses: github/super-linter@v3
+        env:
+          DEFAULT_BRANCH: main
+          VALIDATE_DOCKERFILE: true 
+          VALIDATE_JAVASCRIPT_ES: true
+          VALIDATE_YAML: true
+          VALIDATE_ALL_CODEBASE: false
