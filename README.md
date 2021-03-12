@@ -1,5 +1,10 @@
 # Jira Server Integration Action
 
+# Workflow Status
+![Build Status](https://github.com/camelotls/actions-nowsecure/workflows/Unit%20Tests/badge.svg)
+![Build Status](https://github.com/camelotls/actions-nowsecure/workflows/Linter/badge.svg)
+![Build Status](https://github.com/camelotls/actions-nowsecure/workflows/CodeQL/badge.svg)
+
 A GitHub Action to integrate multiple tools with Jira Server and raise relevant issues. The action utilises [Jira's REST API version 8.4.3](https://docs.atlassian.com/software/jira/docs/api/REST/8.4.3/).
 
 ## Usage

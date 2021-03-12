@@ -1,1 +1,5 @@
-node_modules
+# IntelliJ
+.idea/
+
+# node.js
+node_modules/
