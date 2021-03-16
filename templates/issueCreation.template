@@ -8,7 +8,6 @@
         "priority": {
             "name": "{{ISSUE_SEVERITY_MAP}}"
         },
-        "{{ISSUE_LABELS_MAPPER}}",
         "description": "{{ISSUE_DESCRIPTION}}"
     }
 }

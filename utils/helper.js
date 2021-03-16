@@ -43,19 +43,30 @@ const amendHandleBarTemplate = (
 ) => {
   const templateStored = fs.readFileSync(`${config.UTILS.TEMPLATES_DIR}/${template}`, 'utf8').toString();
   const templateReader = handlebars.compile(templateStored, { noEscape: true });
+
   const templateModifier = templateReader({
     PROJECT_ID: config.JIRA_CONFIG.JIRA_PROJECT,
     ISSUE_SUMMARY: `${issueSummary}`,
     ISSUE_DESCRIPTION: `${issueDescription}`,
     ISSUE_SEVERITY: `${issueSeverity}`,
     ISSUE_SEVERITY_MAP: `${severityMap}`,
-    ISSUE_LABELS_MAPPER: `${issueLabelMapper}`
   });
+
   const payload = `${issueModule}_${v4()}_payload.json`;
 
   let beautifiedTemplate;
+  let myString = JSON.stringify(dirtyJSON.parse(templateModifier).fields);
+  console.log(myString);
   try {
-    beautifiedTemplate = JSON.stringify(dirtyJSON.parse(templateModifier));
+    const test = Object.assign(dirtyJSON.parse(templateModifier.fields), issueLabelMapper);
+
+    const final = {
+      fields: {}
+    }
+    final.fields = test;
+    Object.assign(templateModifier, issueLabelMapper);
+
+    beautifiedTemplate = JSON.stringify(dirtyJSON.parse(final));
     const isValidSchema = (jsonValidator.validate(JSON.parse(beautifiedTemplate), jiraIssueSchema).errors.length === 0);
     try {
       if (isValidSchema) {
