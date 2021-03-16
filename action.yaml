@@ -31,9 +31,10 @@ inputs:
         decription: "Maps the severity level of the reporting issue to the relevant Jira priority score"
         required: false
         default: ""
-    ISSUE_LABEL_MAPPER:
+    ISSUE_LABELS_MAPPER:
         decription: "Maps the labels of the reporting issue to the relevant Jira labels field"
         required: false
+        default: "security"
 runs:
     using: "docker"
     image: "Dockerfile"

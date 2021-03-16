@@ -39,7 +39,7 @@ const amendHandleBarTemplate = (
   issueDescription,
   issueSeverity,
   severityMap,
-  issueLabelMap
+  issueLabelMapper
 ) => {
   const templateStored = fs.readFileSync(`${config.UTILS.TEMPLATES_DIR}/${template}`, 'utf8').toString();
   const templateReader = handlebars.compile(templateStored, { noEscape: true });
@@ -49,7 +49,7 @@ const amendHandleBarTemplate = (
     ISSUE_DESCRIPTION: `${issueDescription}`,
     ISSUE_SEVERITY: `${issueSeverity}`,
     ISSUE_SEVERITY_MAP: `${severityMap}`,
-    ISSUE_LABEL_MAP: `${issueLabelMap}`
+    ISSUE_LABELS_MAPPER: `${issueLabelMapper}`
   });
   const payload = `${issueModule}_${v4()}_payload.json`;
 
