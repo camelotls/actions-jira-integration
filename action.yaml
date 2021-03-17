@@ -33,8 +33,7 @@ inputs:
         default: ""
     ISSUE_LABELS_MAPPER:
         decription: "Maps the labels of the reporting issue to the relevant Jira labels field"
-        required: false
-        default: "security"
+        required: true
 runs:
     using: "docker"
     image: "Dockerfile"

@@ -34,7 +34,7 @@ const startAction = async (inputJson) => {
 
   const priorityMapper = new Map(Object.entries(utils.populateMap(PRIORITY_MAPPER)));
   const reportPairsMapper = utils.populateMap(REPORT_INPUT_KEYS);
-  const labels = { labels: ISSUE_LABELS_MAPPER.split(',') };
+  const labels = ISSUE_LABELS_MAPPER.length !== 0 ? { labels: ISSUE_LABELS_MAPPER.split(',') } : { labels: '' };
 
   const parsedInput = JSON.parse(inputJson);
   for (const inputElement in parsedInput) {
