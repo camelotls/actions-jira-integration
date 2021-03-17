@@ -4,6 +4,7 @@
 ![Build Status](https://github.com/camelotls/actions-jira-integration/workflows/Unit%20Tests/badge.svg)
 ![Build Status](https://github.com/camelotls/actions-jira-integration/workflows/Linter/badge.svg)
 ![Build Status](https://github.com/camelotls/actions-jira-integration/workflows/CodeQL/badge.svg)
+![Build Status](https://github.com/camelotls/actions-jira-integration/workflows/Lint%20Code%20Base/badge.svg)
 
 ## Action description
 A GitHub Action to integrate multiple tools with Jira Server and raise relevant issues. The action utilises [Jira's REST API version 8.4.3](https://docs.atlassian.com/software/jira/docs/api/REST/8.4.3/).
