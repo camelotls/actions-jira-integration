@@ -9,8 +9,8 @@ const jira = require('./helpers/jira-helpers');
 const INPUT_JSON = core.getInput('INPUT_JSON') || process.env.INPUT_JSON;
 const JIRA_USER = core.getInput('JIRA_USER') || process.env.JIRA_USER;
 const JIRA_PASSWORD = core.getInput('JIRA_PASSWORD') || process.env.JIRA_PASSWORD;
-const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS') || process.env.REPORT_INPUT_KEYS ;
-const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY_MAPPER ;
+const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS') || process.env.REPORT_INPUT_KEYS;
+const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY_MAPPER;
 const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.ISSUE_LABELS_MAPPER;
 
 const startAction = async (inputJson) => {
@@ -34,15 +34,13 @@ const startAction = async (inputJson) => {
 
   const priorityMapper = new Map(Object.entries(utils.populateMap(PRIORITY_MAPPER)));
   const reportPairsMapper = utils.populateMap(REPORT_INPUT_KEYS);
-  const labels = {
-     labels: ISSUE_LABELS_MAPPER.split(',')
- };
+  const labels = { labels: ISSUE_LABELS_MAPPER.split(',') };
 
   const parsedInput = JSON.parse(inputJson);
   for (const inputElement in parsedInput) {
     const reportMapperInstance = utils.reportMapper(inputElement, parsedInput, reportPairsMapper);
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
-     if (!retrievedIssuesSummaries.includes(reportMapperInstance.issueSummary) && !_.isEmpty(retrievedIssuesSummaries)) {
+    if (!retrievedIssuesSummaries.includes(reportMapperInstance.issueSummary) && !_.isEmpty(retrievedIssuesSummaries)) {
       console.log(`Attempting to create json payload for module ${reportMapperInstance.vulnerabilityName}...`);
       utils.amendHandleBarTemplate(
         config.UTILS.CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE,
