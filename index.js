@@ -13,7 +13,6 @@ const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS') || process.env.REPO
 const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY_MAPPER ;
 const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.ISSUE_LABELS_MAPPER;
 
-console.log(">>>>>>>>>>>>>>>>ISSUE_LABELS_MAPPER: " + ISSUE_LABELS_MAPPER)
 const startAction = async (inputJson) => {
   const jiraSession = await jira.createJiraSession(JIRA_USER, JIRA_PASSWORD);
   console.log('JIRA session created successfully!');
@@ -35,11 +34,9 @@ const startAction = async (inputJson) => {
 
   const priorityMapper = new Map(Object.entries(utils.populateMap(PRIORITY_MAPPER)));
   const reportPairsMapper = utils.populateMap(REPORT_INPUT_KEYS);
-  // const labels = `labels: [${ISSUE_LABELS_MAPPER.split(',')}]`;
   const labels = {
-     labels: process.env.ISSUE_LABELS_MAPPERS.split(',')
+     labels: ISSUE_LABELS_MAPPER.split(',')
  };
-
 
   const parsedInput = JSON.parse(inputJson);
   for (const inputElement in parsedInput) {

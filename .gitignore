@@ -10,5 +10,5 @@ node_modules/
 #Report Output
 payloads
 
-#Output
-out.json
+#DS_Store
+.DS_Store

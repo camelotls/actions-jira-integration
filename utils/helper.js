@@ -55,22 +55,14 @@ const amendHandleBarTemplate = (
   const payload = `${issueModule}_${v4()}_payload.json`;
 
   let beautifiedTemplate;
-  let myString = JSON.stringify(dirtyJSON.parse(templateModifier).fields);
-  console.log(myString);
   try {
-    const test = Object.assign(dirtyJSON.parse(templateModifier.fields), issueLabelMapper);
-
-    const final = {
-      fields: {}
-    }
-    final.fields = test;
-    Object.assign(templateModifier, issueLabelMapper);
-
-    beautifiedTemplate = JSON.stringify(dirtyJSON.parse(final));
-    const isValidSchema = (jsonValidator.validate(JSON.parse(beautifiedTemplate), jiraIssueSchema).errors.length === 0);
+    beautifiedTemplate = dirtyJSON.parse(templateModifier);
+    Object.assign(beautifiedTemplate.fields, issueLabelMapper);
+    const beautifiedTemplateStringified = JSON.stringify(beautifiedTemplate);
+    const isValidSchema = (jsonValidator.validate(JSON.parse(beautifiedTemplateStringified), jiraIssueSchema).errors.length === 0);
     try {
       if (isValidSchema) {
-        fs.writeFileSync(`${config.UTILS.PAYLOADS_DIR}/${payload}`, beautifiedTemplate, 'utf8');
+        fs.writeFileSync(`${config.UTILS.PAYLOADS_DIR}/${payload}`, beautifiedTemplateStringified, 'utf8');
       } else {
         throw new Error(`The beautification of ${issueModule} was not possible!`);
       }
