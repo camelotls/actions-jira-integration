@@ -49,7 +49,7 @@ const amendHandleBarTemplate = (
     ISSUE_SUMMARY: `${issueSummary}`,
     ISSUE_DESCRIPTION: `${issueDescription}`,
     ISSUE_SEVERITY: `${issueSeverity}`,
-    ISSUE_SEVERITY_MAP: `${severityMap}`,
+    ISSUE_SEVERITY_MAP: `${severityMap}`
   });
 
   const payload = `${issueModule}_${v4()}_payload.json`;
