@@ -6,11 +6,12 @@ const utils = require('./utils/helper');
 const config = require('./config/config');
 const jira = require('./helpers/jira-helpers');
 
-const INPUT_JSON = core.getInput('INPUT_JSON');
-const JIRA_USER = core.getInput('JIRA_USER');
-const JIRA_PASSWORD = core.getInput('JIRA_PASSWORD');
-const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS');
-const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER');
+const INPUT_JSON = core.getInput('INPUT_JSON') || process.env.INPUT_JSON;
+const JIRA_USER = core.getInput('JIRA_USER') || process.env.JIRA_USER;
+const JIRA_PASSWORD = core.getInput('JIRA_PASSWORD') || process.env.JIRA_PASSWORD;
+const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS') || process.env.REPORT_INPUT_KEYS;
+const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY_MAPPER;
+const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.ISSUE_LABELS_MAPPER;
 
 const startAction = async (inputJson) => {
   const jiraSession = await jira.createJiraSession(JIRA_USER, JIRA_PASSWORD);
@@ -33,6 +34,7 @@ const startAction = async (inputJson) => {
 
   const priorityMapper = new Map(Object.entries(utils.populateMap(PRIORITY_MAPPER)));
   const reportPairsMapper = utils.populateMap(REPORT_INPUT_KEYS);
+  const labels = ISSUE_LABELS_MAPPER.length !== 0 ? { labels: ISSUE_LABELS_MAPPER.split(',') } : { labels: [] };
 
   const parsedInput = JSON.parse(inputJson);
   for (const inputElement in parsedInput) {
@@ -46,7 +48,8 @@ const startAction = async (inputJson) => {
         reportMapperInstance.issueSummary,
         reportMapperInstance.issueDescription,
         reportMapperInstance.issueSeverity,
-        severityMap
+        severityMap,
+        labels
       );
     } else {
       const existingIssueKey = issues[retrievedIssuesSummaries.indexOf(reportMapperInstance.issueSummary)].key;

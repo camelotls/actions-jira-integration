@@ -38,10 +38,12 @@ const amendHandleBarTemplate = (
   issueSummary,
   issueDescription,
   issueSeverity,
-  severityMap
+  severityMap,
+  issueLabelMapper
 ) => {
   const templateStored = fs.readFileSync(`${config.UTILS.TEMPLATES_DIR}/${template}`, 'utf8').toString();
   const templateReader = handlebars.compile(templateStored, { noEscape: true });
+
   const templateModifier = templateReader({
     PROJECT_ID: config.JIRA_CONFIG.JIRA_PROJECT,
     ISSUE_SUMMARY: `${issueSummary}`,
@@ -49,15 +51,18 @@ const amendHandleBarTemplate = (
     ISSUE_SEVERITY: `${issueSeverity}`,
     ISSUE_SEVERITY_MAP: `${severityMap}`
   });
+
   const payload = `${issueModule}_${v4()}_payload.json`;
 
   let beautifiedTemplate;
   try {
-    beautifiedTemplate = JSON.stringify(dirtyJSON.parse(templateModifier));
-    const isValidSchema = (jsonValidator.validate(JSON.parse(beautifiedTemplate), jiraIssueSchema).errors.length === 0);
+    beautifiedTemplate = dirtyJSON.parse(templateModifier);
+    Object.assign(beautifiedTemplate.fields, issueLabelMapper);
+    const beautifiedTemplateStringified = JSON.stringify(beautifiedTemplate);
+    const isValidSchema = (jsonValidator.validate(JSON.parse(beautifiedTemplateStringified), jiraIssueSchema).errors.length === 0);
     try {
       if (isValidSchema) {
-        fs.writeFileSync(`${config.UTILS.PAYLOADS_DIR}/${payload}`, beautifiedTemplate, 'utf8');
+        fs.writeFileSync(`${config.UTILS.PAYLOADS_DIR}/${payload}`, beautifiedTemplateStringified, 'utf8');
       } else {
         throw new Error(`The beautification of ${issueModule} was not possible!`);
       }
