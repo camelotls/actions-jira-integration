@@ -22,7 +22,7 @@ A GitHub Action to integrate multiple tools with Jira Server and raise relevant 
 |REPORT_INPUT_KEYS|true|N/A|A list of keys of the input JSON you provide that will be parsed and included in the report|
 |JIRA_ISSUE_TYPE|false|Security Vulnerability|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
 |RUNS_ON_GITHUB|true|true|Indicates if the action runs on GitHub or locally, on a Docker container, for testing purporses|
-|PRIORITY_MAPPER|false|""|Maps the severity level of the reporting issue to the relevant Jira priority score|
+|PRIORITY_MAPPER|false|""|Maps the severity level of the reporting issue to the relevant Jira priority score (A severity level can be skipped if not needed)|
 |ISSUE_LABELS_MAPPER|true|N/A|Maps the labels of the reporting issue to the relevant Jira labels field|
 
 ### Outputs
