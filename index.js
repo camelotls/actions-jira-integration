@@ -40,20 +40,24 @@ const startAction = async (inputJson) => {
   for (const inputElement in parsedInput) {
     const reportMapperInstance = utils.reportMapper(inputElement, parsedInput, reportPairsMapper);
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
-    if (!retrievedIssuesSummaries.includes(reportMapperInstance.issueSummary) && !_.isEmpty(retrievedIssuesSummaries)) {
-      console.log(`Attempting to create json payload for module ${reportMapperInstance.vulnerabilityName}...`);
-      utils.amendHandleBarTemplate(
-        config.UTILS.CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE,
-        reportMapperInstance.vulnerabilityName,
-        reportMapperInstance.issueSummary,
-        reportMapperInstance.issueDescription,
-        reportMapperInstance.issueSeverity,
-        severityMap,
-        labels
-      );
+    if (severityMap !== undefined) {
+      if (!retrievedIssuesSummaries.includes(reportMapperInstance.issueSummary) && !_.isEmpty(retrievedIssuesSummaries)) {
+        console.log(`Attempting to create json payload for module ${reportMapperInstance.vulnerabilityName}...`);
+        utils.amendHandleBarTemplate(
+          config.UTILS.CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE,
+          reportMapperInstance.vulnerabilityName,
+          reportMapperInstance.issueSummary,
+          reportMapperInstance.issueDescription,
+          reportMapperInstance.issueSeverity,
+          severityMap,
+          labels
+        );
+      } else {
+        const existingIssueKey = issues[retrievedIssuesSummaries.indexOf(reportMapperInstance.issueSummary)].key;
+        console.log(`Issue for ${reportMapperInstance.issueSummary} has already been raised - More details on https://${config.JIRA_CONFIG.JIRA_URI}/browse/${existingIssueKey}`);
+      }
     } else {
-      const existingIssueKey = issues[retrievedIssuesSummaries.indexOf(reportMapperInstance.issueSummary)].key;
-      console.log(`Issue for ${reportMapperInstance.issueSummary} has already been raised - More details on https://${config.JIRA_CONFIG.JIRA_URI}/browse/${existingIssueKey}`);
+      console.log(`Skipping creation of module ${reportMapperInstance.vulnerabilityName}`);
     }
   }
 
@@ -65,19 +69,19 @@ const startAction = async (inputJson) => {
     process.exit(1);
   }
 
-  if (files.length !== 0) {
-    await files.forEach(async (file) => {
-      console.log(`Attempting to create JIRA issue based on payload ${file}...`);
-      const jiraIssue = await jira.createJiraIssue(jiraAuthHeaderValue, fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8'));
-      console.log(`Jira issue created: ${jiraIssue.body}`);
-    });
-  } else {
-    console.log('All the vulnerabilities have already been captured as issues on Jira.');
-  }
-
-  console.log('Attempting to logout from the existing JIRA session...');
-  await jira.invalidateJiraSession(jiraAuthHeaderValue);
-  console.log('JIRA session invalidated successfully!');
+//   if (files.length !== 0) {
+//     await files.forEach(async (file) => {
+//       console.log(`Attempting to create JIRA issue based on payload ${file}...`);
+//       const jiraIssue = await jira.createJiraIssue(jiraAuthHeaderValue, fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8'));
+//       console.log(`Jira issue created: ${jiraIssue.body}`);
+//     });
+//   } else {
+//     console.log('All the vulnerabilities have already been captured as issues on Jira.');
+//   }
+//
+//   console.log('Attempting to logout from the existing JIRA session...');
+//   await jira.invalidateJiraSession(jiraAuthHeaderValue);
+//   console.log('JIRA session invalidated successfully!');
 };
 
 (async () => {
