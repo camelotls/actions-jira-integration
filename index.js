@@ -69,19 +69,19 @@ const startAction = async (inputJson) => {
     process.exit(1);
   }
 
-//   if (files.length !== 0) {
-//     await files.forEach(async (file) => {
-//       console.log(`Attempting to create JIRA issue based on payload ${file}...`);
-//       const jiraIssue = await jira.createJiraIssue(jiraAuthHeaderValue, fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8'));
-//       console.log(`Jira issue created: ${jiraIssue.body}`);
-//     });
-//   } else {
-//     console.log('All the vulnerabilities have already been captured as issues on Jira.');
-//   }
-//
-//   console.log('Attempting to logout from the existing JIRA session...');
-//   await jira.invalidateJiraSession(jiraAuthHeaderValue);
-//   console.log('JIRA session invalidated successfully!');
+  if (files.length !== 0) {
+    await files.forEach(async (file) => {
+      console.log(`Attempting to create JIRA issue based on payload ${file}...`);
+      const jiraIssue = await jira.createJiraIssue(jiraAuthHeaderValue, fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8'));
+      console.log(`Jira issue created: ${jiraIssue.body}`);
+    });
+  } else {
+    console.log('All the vulnerabilities have already been captured as issues on Jira.');
+  }
+
+  console.log('Attempting to logout from the existing JIRA session...');
+  await jira.invalidateJiraSession(jiraAuthHeaderValue);
+  console.log('JIRA session invalidated successfully!');
 };
 
 (async () => {
