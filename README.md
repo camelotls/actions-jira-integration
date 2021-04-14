@@ -86,7 +86,45 @@ jobs:
                 ISSUE_LABELS_MAPPER: 'security,performance' 
 ```
 
-**NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important in order for the parsing of the action to work properly. Also, the submitted JSON **must** be in its final form that you want it to be processed (not purely the raw output of your report). An example of that is the `npm audit --json --production` output that has to be preparsed based on the given advisories (e.g. `JSON.parse(<your-input>).advisories`).
+**NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important for the parsing of the action to work properly. Also, the submitted JSON **must** be in its final form that you want it to be processed (not purely the raw output of your report).
+
+**Example**:
+Let's say you use this action to connect it with Nowsecure. The output of Nowsecure should be formatted in the following way:
+
+```
+{
+    "6b2a7a6d-a7e5-48a0-b8c9-ddbbf9b2038d": {
+        "key": "local_auth_check",
+        "title": "Application Includes Insecure Library for Processing Biometric Authentication",
+        "description": "The Local Authentication library was found included in your application binary. At worst, it is being used for biometric authentication that is easily bypassed by someone with access to the device. At best, it is extraneous functionality that should not be included in the app as a best practice.",
+        "recommendation": "Consider using Keychain ACLs (Access Control Lists) to achieve similar\nfunctionality.\n\nAn example implementation would store the application's\nsecret in a Keychain and assign an ACL to this Keychain item that would\ninstruct iOS to perform a user presence check before reading and returning\nthe Keychain item to the application. Sample code can be found\non [Apple's website](https://developer.apple.com/documentation/localauthentication/accessing_keychain_items_with_face_id_or_touch_id).",
+        "severity": "low"
+    },
+    "6e53cd8c-e317-4af0-8b38-d81728301a4d": {
+        "key": "local_auth_check",
+        "title": "Application Includes Insecure Library for Processing Biometric Authentication",
+        "description": "The Local Authentication library was found included in your application binary. At worst, it is being used for biometric authentication that is easily bypassed by someone with access to the device. At best, it is extraneous functionality that should not be included in the app as a best practice.",
+        "recommendation": "Consider using Keychain ACLs (Access Control Lists) to achieve similar\nfunctionality.\n\nAn example implementation would store the application's\nsecret in a Keychain and assign an ACL to this Keychain item that would\ninstruct iOS to perform a user presence check before reading and returning\nthe Keychain item to the application. Sample code can be found\non [Apple's website](https://developer.apple.com/documentation/localauthentication/accessing_keychain_items_with_face_id_or_touch_id).",
+        "severity": "low"
+    },
+    {...}
+}
+```
+
+So, you'll have as a basis:
+
+```
+{
+    "<uid>": {
+        "<key-1>": "<key-1> fed via REPORT_INPUT_KEYS",
+        "<key-2>": "<key-2> fed via REPORT_INPUT_KEYS",
+        "<key-3>": "<key-3> fed via REPORT_INPUT_KEYS",
+        "<key-4>": "<key-4> fed via REPORT_INPUT_KEYS"
+        "<key-5>": "<key-5> fed via REPORT_INPUT_KEYS"
+    },
+    {...}
+}
+```
 
 ## Run the Unit Tests locally
 The Unit Tests have been implemented using `Mocha` and `Chai`. For the test coverage, `nyc` is being used.
