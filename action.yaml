@@ -34,6 +34,14 @@ inputs:
     ISSUE_LABELS_MAPPER:
         decription: "Maps the labels of the reporting issue to the relevant Jira labels field"
         required: true
+    LOAD_BALANCER_COOKIE_ENABLED:
+        description: "Extra cookie needed for clustered Jira server to accommodate different Load Balancers such as F5, httpd etc."
+        required: false
+        default: ""
+    LOAD_BALANCER_COOKIE_NAME:
+        description: "The name of the cookie for the Load Balancer (if any used)"
+        required: false
+        default: ""
 runs:
     using: "docker"
     image: "Dockerfile"
