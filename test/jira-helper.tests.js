@@ -16,7 +16,7 @@ describe('Jira REST are functioning properly', () => {
   let sessionPayload = '';
   let authHeaders = '';
 
-  describe('Jira REST calls successful cases', () => {
+  describe('Jira REST calls successful cases without a Load Balancer', () => {
     // eslint-disable-next-line no-undef
     before('a JIRA session can be created', async () => {
       nock(`https://${mocks.MOCK_JIRA_URI}`)
@@ -26,8 +26,9 @@ describe('Jira REST are functioning properly', () => {
       sessionPayload = await jira.createJiraSession(mocks.MOCK_JIRA_USER, mocks.MOCK_JIRA_PASSWORD);
       authHeaders = await jira.createJiraSessionHeaders(sessionPayload);
 
-      expect(sessionPayload).to.be.instanceOf(Object).to.have.all.keys('name', 'value');
-      expect(Object.values(sessionPayload)).to.deep.equal([mocks.MOCK_JIRA_SESSION_NAME, mocks.MOCK_JIRA_SESSION_VALUE]);
+      expect(sessionPayload).to.be.instanceOf(Object).to.have.all.keys('sessionID', 'loadBalancerCookie');
+      expect(Object.values(sessionPayload.sessionID)).to.deep.equal([mocks.MOCK_JIRA_SESSION_NAME, mocks.MOCK_JIRA_SESSION_VALUE]);
+      expect(Object.values(sessionPayload.loadBalancerCookie)).to.deep.equal(['', '']);
     });
 
     it('a JIRA session header can be constructed', async () => {
@@ -83,6 +84,8 @@ describe('Jira REST are functioning properly', () => {
       nock.cleanAll();
     });
   });
+
+  // Jira REST calls successful cases with a Load Balancer is out of scope of the unit tests, since we need to mock the LB behaviour
 
   describe('Jira REST calls unsuccessful cases', () => {
     const authHeaders = '';

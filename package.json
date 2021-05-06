@@ -9,7 +9,7 @@
         "lint": "./node_modules/.bin/eslint"
     },
     "author": "",
-    "license": "ISC",
+    "license": "MIT",
     "dependencies": {
         "@actions/core": "1.2.6",
         "assert": "2.0.0",

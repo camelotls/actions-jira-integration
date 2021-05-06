@@ -24,7 +24,8 @@ const POSTRequestWrapper = async (requestName, hostName, apiPath, acceptHeaderVa
       let str = '';
       const obj = {
         body: str,
-        statusCode: 0
+        statusCode: 0,
+        headers: []
       };
       response
         .on('data', (data) => {
@@ -33,6 +34,7 @@ const POSTRequestWrapper = async (requestName, hostName, apiPath, acceptHeaderVa
         .on('end', () => {
           obj.body = str;
           obj.statusCode = response.statusCode;
+          obj.headers.push(response.headers);
           resolve(obj);
         })
         .on('error', (err) => {
