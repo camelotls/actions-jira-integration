@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const fs = require('fs');
 const _ = require('lodash');
+const util = require('util');
 
 const utils = require('./utils/helper');
 const config = require('./config/config');
@@ -12,6 +13,12 @@ const JIRA_PASSWORD = core.getInput('JIRA_PASSWORD') || process.env.JIRA_PASSWOR
 const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS') || process.env.REPORT_INPUT_KEYS;
 const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY_MAPPER;
 const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.ISSUE_LABELS_MAPPER;
+
+const logout = async (jiraAuthHeaderValue) => {
+  console.log('Attempting to logout from the existing JIRA session...');
+  await jira.invalidateJiraSession(jiraAuthHeaderValue);
+  console.log('JIRA session invalidated successfully!');
+}
 
 const startAction = async (inputJson) => {
   const jiraSession = await jira.createJiraSession(JIRA_USER, JIRA_PASSWORD);
@@ -69,19 +76,28 @@ const startAction = async (inputJson) => {
     process.exit(1);
   }
 
+  const readFileContent = util.promisify(fs.readFile);
+
   if (files.length !== 0) {
-    await files.forEach(async (file) => {
+    files.forEach((file) => {
       console.log(`Attempting to create JIRA issue based on payload ${file}...`);
-      const jiraIssue = await jira.createJiraIssue(jiraAuthHeaderValue, fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8'));
-      console.log(`Jira issue created: ${jiraIssue.body}`);
+
+      readFileContent(`${config.UTILS.PAYLOADS_DIR}/${file}`).then(buffer => {
+        const fileContent = buffer.toString();
+        jira.createJiraIssue(jiraAuthHeaderValue, fileContent).then(jiraIssue => {
+          console.log(`Jira issue created: ${jiraIssue.body}`);
+        }).catch(e => {
+          console.log(`An error occurred when creating the Jira issue: ${e}`);
+        });
+      }).catch(e => {
+        console.log(`An error occurred while reading the file payload: ${e}`);
+      });
     });
   } else {
     console.log('All the vulnerabilities have already been captured as issues on Jira.');
   }
 
-  console.log('Attempting to logout from the existing JIRA session...');
-  await jira.invalidateJiraSession(jiraAuthHeaderValue);
-  console.log('JIRA session invalidated successfully!');
+  await logout(jiraAuthHeaderValue);
 };
 
 (async () => {
