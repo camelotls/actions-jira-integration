@@ -4,9 +4,17 @@ const core = require('@actions/core');
 const rest = require('./rest-helper');
 const config = require('../config/config');
 
-const createJiraSession = async function createJiraSession (jiraUser, jiraPassword) {
-  const LOAD_BALANCER_COOKIE_ENABLED = (core.getInput('LOAD_BALANCER_COOKIE_ENABLED') === 'true') || (process.env.LOAD_BALANCER_COOKIE_ENABLED === 'true');
-  const LOAD_BALANCER_COOKIE_NAME = (core.getInput('LOAD_BALANCER_COOKIE_NAME') || process.env.LOAD_BALANCER_COOKIE_NAME) || '';
+const createJiraSession = async function createJiraSession(
+  jiraUser,
+  jiraPassword
+) {
+  const LOAD_BALANCER_COOKIE_ENABLED =
+    core.getInput('LOAD_BALANCER_COOKIE_ENABLED') === 'true' ||
+    process.env.LOAD_BALANCER_COOKIE_ENABLED === 'true';
+  const LOAD_BALANCER_COOKIE_NAME =
+    core.getInput('LOAD_BALANCER_COOKIE_NAME') ||
+    process.env.LOAD_BALANCER_COOKIE_NAME ||
+    '';
 
   const sessionPayload = {
     username: jiraUser,
@@ -22,12 +30,15 @@ const createJiraSession = async function createJiraSession (jiraUser, jiraPasswo
     sessionPayload
   );
 
-  assert(response.statusCode === 200, `Jira session cannot be created: ${response.body}`);
+  assert(
+    response.statusCode === 200,
+    `Jira session cannot be created: ${response.message}`
+  );
 
   const SESSION_PAYLOAD = {
     sessionID: {
-      name: JSON.parse(response.body).session.name,
-      value: JSON.parse(response.body).session.value
+      name: response.body.session.name,
+      value: response.body.session.value
     },
     loadBalancerCookie: {
       name: '',
@@ -38,8 +49,15 @@ const createJiraSession = async function createJiraSession (jiraUser, jiraPasswo
   if (LOAD_BALANCER_COOKIE_ENABLED) {
     const LOAD_BALANCER = response.headers[0]['set-cookie'][0];
     const LOAD_BALANCER_HEADER = `${LOAD_BALANCER_COOKIE_NAME}=`;
-    const LOAD_BALANCER_HEADER_LENGTH = LOAD_BALANCER.indexOf(LOAD_BALANCER_HEADER) + LOAD_BALANCER_HEADER.length;
-    Object.assign(SESSION_PAYLOAD.loadBalancerCookie, { name: LOAD_BALANCER_HEADER, value: LOAD_BALANCER.substring(LOAD_BALANCER_HEADER_LENGTH, LOAD_BALANCER_HEADER_LENGTH + LOAD_BALANCER.indexOf(';') - 7) });
+    const LOAD_BALANCER_HEADER_LENGTH =
+      LOAD_BALANCER.indexOf(LOAD_BALANCER_HEADER) + LOAD_BALANCER_HEADER.length;
+    Object.assign(SESSION_PAYLOAD.loadBalancerCookie, {
+      name: LOAD_BALANCER_HEADER,
+      value: LOAD_BALANCER.substring(
+        LOAD_BALANCER_HEADER_LENGTH,
+        LOAD_BALANCER_HEADER_LENGTH + LOAD_BALANCER.indexOf(';') - 7
+      )
+    });
   }
 
   return SESSION_PAYLOAD;
@@ -47,7 +65,10 @@ const createJiraSession = async function createJiraSession (jiraUser, jiraPasswo
 
 const createJiraSessionHeaders = (sessionPayload) => {
   const authHeaderJiraCookieValue = `${sessionPayload.sessionID.name}=${sessionPayload.sessionID.value}`;
-  const authHeaderCookieValues = sessionPayload.loadBalancerCookie.name === '' ? authHeaderJiraCookieValue : `${authHeaderJiraCookieValue};${sessionPayload.loadBalancerCookie.name}${sessionPayload.loadBalancerCookie.value}`;
+  const authHeaderCookieValues =
+    sessionPayload.loadBalancerCookie.name === ''
+      ? authHeaderJiraCookieValue
+      : `${authHeaderJiraCookieValue};${sessionPayload.loadBalancerCookie.name}${sessionPayload.loadBalancerCookie.value}`;
 
   return authHeaderCookieValues;
 };
@@ -76,7 +97,7 @@ const searchExistingJiraIssues = async function (authHeaders) {
     config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD
   );
 
-  return response.body;
+  return response;
 };
 
 const invalidateJiraSession = async function (authHeaders) {
