@@ -1,82 +1,78 @@
 const MOCK_LOGIN_SESSION = {
   session: {
-    name: 'JSESSIONID',
-    value: '12345678901234567890'
+    name: "JSESSIONID",
+    value: "12345678901234567890",
   },
   loginInfo: {
     failedLoginCount: 10,
     loginCount: 127,
-    lastFailedLoginTime: '2019-11-08T11:54:09.993+0000',
-    previousLoginTime: '2019-11-08T11:54:09.993+0000'
-  }
+    lastFailedLoginTime: "2019-11-08T11:54:09.993+0000",
+    previousLoginTime: "2019-11-08T11:54:09.993+0000",
+  },
 };
-const MOCK_JIRA_URI = 'jira.organisation.global';
-const MOCK_JIRA_PROJECT = 'project';
-const MOCK_JIRA_USER = 'user';
-const MOCK_JIRA_PASSWORD = '1234567';
-const MOCK_JIRA_SESSION_NAME = 'JSESSIONID';
-const MOCK_JIRA_SESSION_VALUE = '12345678901234567890';
+const MOCK_JIRA_URI = "https://jira.organisation.global";
+const MOCK_JIRA_PROJECT = "project";
+const MOCK_JIRA_USER = "user";
+const MOCK_JIRA_PASSWORD = "1234567";
+const MOCK_JIRA_SESSION_NAME = "JSESSIONID";
+const MOCK_JIRA_SESSION_VALUE = "12345678901234567890";
 const MOCK_JIRA_ISSUE_PROJECT_KEY = {
-  key: 'project'
+  key: "project",
 };
-const MOCK_JIRA_ISSUE_SUMMARY = 'This is a mock';
+const MOCK_JIRA_ISSUE_SUMMARY = "This is a mock";
 const MOCK_JIRA_ISSUE_TYPE = {
-  name: 'This is a mock security vulnerability'
+  name: "This is a mock security vulnerability",
 };
-const MOCK_JIRA_ISSUE_LABELS = ['mock1', 'mock2'];
-const MOCK_JIRA_ISSUE_DESCRIPTION = 'This is a mock description';
+const MOCK_JIRA_ISSUE_LABELS = ["mock1", "mock2"];
+const MOCK_JIRA_ISSUE_DESCRIPTION = "This is a mock description";
 const MOCK_JIRA_ISSUE_CREATION_PAYLOAD = {
   fields: {
     project: {
-      key: 'project'
+      key: "project",
     },
-    summary: 'This is a mock',
+    summary: "This is a mock",
     issuetype: {
-      name: 'This is a mock security vulnerability'
+      name: "This is a mock security vulnerability",
     },
-    labels: [
-      'mock1',
-      'mock2'
-    ],
-    description: 'This is a mock description'
-  }
+    labels: ["mock1", "mock2"],
+    description: "This is a mock description",
+  },
 };
 const MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD = {
   fields: {
     project: {
-      key: 'nonExistentProject'
+      key: "nonExistentProject",
     },
-    summaries: 'This is a wrong key',
+    summaries: "This is a wrong key",
     issuetype: {
-      name: 'This is a mock security vulnerability'
+      name: "This is a mock security vulnerability",
     },
-    labels: [
-      'mock1',
-      'mock2'
-    ],
-    description: 'This is a mock description'
-  }
+    labels: ["mock1", "mock2"],
+    description: "This is a mock description",
+  },
 };
 const MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE = {
   errorMessages: ["Field 'priority' is required"],
-  errors: {}
+  errors: {},
 };
 const MOCK_JIRA_ISSUE_SEARCH_RESPONSE = {
-  expand: 'names,schema',
+  expand: "names,schema",
   startAt: 0,
   maxResults: 50,
   total: 1,
-  issues: [{
-    expand: '',
-    id: '10001',
-    self: 'http://www.example.com/jira/rest/api/2/issue/10001',
-    key: 'project'
-  }]
+  issues: [
+    {
+      expand: "",
+      id: "10001",
+      self: "http://www.example.com/jira/rest/api/2/issue/10001",
+      key: "project",
+    },
+  ],
 };
-const MOCK_JIRA_ISSUE_TYPE_FILTER = 'Security Vulnerability';
+const MOCK_JIRA_ISSUE_TYPE_FILTER = "Security Vulnerability";
 const MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE = {
   errorMessages: ["Field 'priority' is required"],
-  errors: {}
+  errors: {},
 };
 
 module.exports = {
@@ -94,8 +90,10 @@ module.exports = {
   MOCK_JIRA_ISSUE_DESCRIPTION: MOCK_JIRA_ISSUE_DESCRIPTION,
   MOCK_JIRA_URI: MOCK_JIRA_URI,
   MOCK_JIRA_PROJECT: MOCK_JIRA_PROJECT,
-  MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD: MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD,
-  MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE: MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE,
+  MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD:
+    MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD,
+  MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE:
+    MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE,
   MOCK_JIRA_ISSUE_TYPE_FILTER: MOCK_JIRA_ISSUE_TYPE_FILTER,
-  MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE: MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE
+  MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE: MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE,
 };
