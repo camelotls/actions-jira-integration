@@ -10,7 +10,7 @@ describe('Jira REST are functioning properly', () => {
   process.env = {
     JIRA_PROJECT: mocks.MOCK_JIRA_PROJECT,
     JIRA_URI: mocks.MOCK_JIRA_URI,
-    JIRA_ISSUE_TYPE: mocks.MOCK_JIRA_ISSUE_TYPE_FILTER,
+    JIRA_ISSUE_TYPE: mocks.MOCK_JIRA_ISSUE_TYPE_FILTER
   };
 
   let sessionPayload = '';
@@ -34,11 +34,11 @@ describe('Jira REST are functioning properly', () => {
         .to.have.all.keys('sessionID', 'loadBalancerCookie');
       expect(Object.values(sessionPayload.sessionID)).to.deep.equal([
         mocks.MOCK_JIRA_SESSION_NAME,
-        mocks.MOCK_JIRA_SESSION_VALUE,
+        mocks.MOCK_JIRA_SESSION_VALUE
       ]);
       expect(Object.values(sessionPayload.loadBalancerCookie)).to.deep.equal([
         '',
-        '',
+        ''
       ]);
     });
 
@@ -76,7 +76,7 @@ describe('Jira REST are functioning properly', () => {
         mocks.MOCK_JIRA_ISSUE_SUMMARY,
         mocks.MOCK_JIRA_ISSUE_TYPE,
         mocks.MOCK_JIRA_ISSUE_LABELS,
-        mocks.MOCK_JIRA_ISSUE_DESCRIPTION,
+        mocks.MOCK_JIRA_ISSUE_DESCRIPTION
       ]);
     });
 
@@ -113,7 +113,7 @@ describe('Jira REST are functioning properly', () => {
     process.env = {
       JIRA_PROJECT: mocks.MOCK_JIRA_PROJECT,
       JIRA_URI: mocks.MOCK_JIRA_URI,
-      JIRA_ISSUE_TYPE: mocks.MOCK_JIRA_ISSUE_TYPE_FILTER,
+      JIRA_ISSUE_TYPE: mocks.MOCK_JIRA_ISSUE_TYPE_FILTER
     };
 
     it('a JIRA session fails to be created when the Jira URI is invalid', async () => {
