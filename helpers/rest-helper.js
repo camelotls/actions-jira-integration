@@ -1,4 +1,4 @@
-const got = require("got");
+const got = require('got');
 
 const POSTRequestWrapper = async (
   requestName,
@@ -12,11 +12,11 @@ const POSTRequestWrapper = async (
     const response = await got.post(`${hostName}${apiPath}`, {
       json: postData,
       retry: 0,
-      responseType: "json",
+      responseType: 'json',
       headers: {
-        "Content-Type": acceptHeaderValue,
-        Cookie: authToken,
-      },
+        'Content-Type': acceptHeaderValue,
+        Cookie: authToken
+      }
     });
     return response;
   } catch (error) {
@@ -38,9 +38,9 @@ const DELETERequestWrapper = async (
     const response = await got.delete(`${hostName}${apiPath}`, {
       retry: 0,
       headers: {
-        "Content-Type": acceptHeaderValue,
-        Cookie: authToken,
-      },
+        'Content-Type': acceptHeaderValue,
+        Cookie: authToken
+      }
     });
     return response;
   } catch (error) {
@@ -53,5 +53,5 @@ const DELETERequestWrapper = async (
 
 module.exports = {
   POSTRequestWrapper: POSTRequestWrapper,
-  DELETERequestWrapper: DELETERequestWrapper,
+  DELETERequestWrapper: DELETERequestWrapper
 };
