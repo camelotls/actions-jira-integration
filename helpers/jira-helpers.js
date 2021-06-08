@@ -4,7 +4,7 @@ const core = require('@actions/core');
 const rest = require('./rest-helper');
 const config = require('../config/config');
 
-const createJiraSession = async function createJiraSession(
+const createJiraSession = async function createJiraSession (
   jiraUser,
   jiraPassword
 ) {
