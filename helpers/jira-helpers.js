@@ -8,13 +8,8 @@ const createJiraSession = async function createJiraSession (
   jiraUser,
   jiraPassword
 ) {
-  const LOAD_BALANCER_COOKIE_ENABLED =
-    core.getInput('LOAD_BALANCER_COOKIE_ENABLED') === 'true' ||
-    process.env.LOAD_BALANCER_COOKIE_ENABLED === 'true';
-  const LOAD_BALANCER_COOKIE_NAME =
-    core.getInput('LOAD_BALANCER_COOKIE_NAME') ||
-    process.env.LOAD_BALANCER_COOKIE_NAME ||
-    '';
+  const LOAD_BALANCER_COOKIE_ENABLED = core.getInput('LOAD_BALANCER_COOKIE_ENABLED') === 'true' || process.env.LOAD_BALANCER_COOKIE_ENABLED === 'true';
+  const LOAD_BALANCER_COOKIE_NAME = core.getInput('LOAD_BALANCER_COOKIE_NAME') || process.env.LOAD_BALANCER_COOKIE_NAME || '';
 
   const sessionPayload = {
     username: jiraUser,
@@ -47,13 +42,13 @@ const createJiraSession = async function createJiraSession (
   };
 
   if (LOAD_BALANCER_COOKIE_ENABLED) {
-    const LOAD_BALANCER = response.headers[0]['set-cookie'][0];
+    const LOAD_BALANCER = response.headers['set-cookie'][0];
     const LOAD_BALANCER_HEADER = `${LOAD_BALANCER_COOKIE_NAME}=`;
-    const LOAD_BALANCER_HEADER_LENGTH =
-      LOAD_BALANCER.indexOf(LOAD_BALANCER_HEADER) + LOAD_BALANCER_HEADER.length;
+    const LOAD_BALANCER_HEADER_LENGTH = LOAD_BALANCER.indexOf(LOAD_BALANCER_HEADER) + LOAD_BALANCER_HEADER.length;
+
     Object.assign(SESSION_PAYLOAD.loadBalancerCookie, {
       name: LOAD_BALANCER_HEADER,
-      value: LOAD_BALANCER.substring(
+      value: LOAD_BALANCER.toString().substring(
         LOAD_BALANCER_HEADER_LENGTH,
         LOAD_BALANCER_HEADER_LENGTH + LOAD_BALANCER.indexOf(';') - 7
       )
