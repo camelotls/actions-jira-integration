@@ -9,15 +9,21 @@ const POSTRequestWrapper = async (
   postData
 ) => {
   try {
-    const response = await got.post(`${hostName}${apiPath}`, {
+    const options = {
       json: postData,
       retry: 0,
       responseType: 'json',
       headers: {
-        'Content-Type': acceptHeaderValue,
-        Cookie: authToken
+        'Content-Type': acceptHeaderValue
       }
-    });
+    };
+
+    if (authToken !== '') {
+      options.headers.Cookie = authToken;
+    }
+
+    const response = await got.post(`${hostName}${apiPath}`, options);
+
     return response;
   } catch (error) {
     console.log(
