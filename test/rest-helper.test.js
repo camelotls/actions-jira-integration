@@ -18,7 +18,7 @@ describe('REST helper functions are working as expected', () => {
     expect(notFixedURI).to.equal(jiraURIWithHttps);
   });
 
-  it ('should not prepend anything if the protocol is already set to http', () => {
+  it('should not prepend anything if the protocol is already set to http', () => {
     const jiraURIWithHttp = 'http://jira.host.com';
     const notFixedURI = fixJiraURI(jiraURIWithHttp);
     expect(notFixedURI).to.equal(jiraURIWithHttp);
