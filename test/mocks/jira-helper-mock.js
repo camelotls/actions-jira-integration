@@ -10,7 +10,7 @@ const MOCK_LOGIN_SESSION = {
     previousLoginTime: '2019-11-08T11:54:09.993+0000'
   }
 };
-const MOCK_JIRA_URI = 'jira.organisation.global';
+const MOCK_JIRA_URI = 'https://jira.organisation.global';
 const MOCK_JIRA_PROJECT = 'project';
 const MOCK_JIRA_USER = 'user';
 const MOCK_JIRA_PASSWORD = '1234567';
@@ -34,10 +34,7 @@ const MOCK_JIRA_ISSUE_CREATION_PAYLOAD = {
     issuetype: {
       name: 'This is a mock security vulnerability'
     },
-    labels: [
-      'mock1',
-      'mock2'
-    ],
+    labels: ['mock1', 'mock2'],
     description: 'This is a mock description'
   }
 };
@@ -50,10 +47,7 @@ const MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD = {
     issuetype: {
       name: 'This is a mock security vulnerability'
     },
-    labels: [
-      'mock1',
-      'mock2'
-    ],
+    labels: ['mock1', 'mock2'],
     description: 'This is a mock description'
   }
 };
@@ -66,12 +60,14 @@ const MOCK_JIRA_ISSUE_SEARCH_RESPONSE = {
   startAt: 0,
   maxResults: 50,
   total: 1,
-  issues: [{
-    expand: '',
-    id: '10001',
-    self: 'http://www.example.com/jira/rest/api/2/issue/10001',
-    key: 'project'
-  }]
+  issues: [
+    {
+      expand: '',
+      id: '10001',
+      self: 'http://www.example.com/jira/rest/api/2/issue/10001',
+      key: 'project'
+    }
+  ]
 };
 const MOCK_JIRA_ISSUE_TYPE_FILTER = 'Security Vulnerability';
 const MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE = {
@@ -94,8 +90,10 @@ module.exports = {
   MOCK_JIRA_ISSUE_DESCRIPTION: MOCK_JIRA_ISSUE_DESCRIPTION,
   MOCK_JIRA_URI: MOCK_JIRA_URI,
   MOCK_JIRA_PROJECT: MOCK_JIRA_PROJECT,
-  MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD: MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD,
-  MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE: MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE,
+  MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD:
+    MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD,
+  MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE:
+    MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE,
   MOCK_JIRA_ISSUE_TYPE_FILTER: MOCK_JIRA_ISSUE_TYPE_FILTER,
   MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE: MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE
 };
