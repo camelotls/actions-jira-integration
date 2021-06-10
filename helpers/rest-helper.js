@@ -1,5 +1,12 @@
 const got = require('got');
 
+const fixJiraURI = (jiraURI) => {
+  if (!jiraURI.match(/^https:\/\/|^http:\/\//)) {
+    return `https://${jiraURI}`;
+  }
+  return jiraURI;
+};
+
 const POSTRequestWrapper = async (
   requestName,
   hostName,
@@ -22,7 +29,7 @@ const POSTRequestWrapper = async (
       options.headers.Cookie = authToken;
     }
 
-    const response = await got.post(`${hostName}${apiPath}`, options);
+    const response = await got.post(`${fixJiraURI(hostName)}${apiPath}`, options);
 
     return response;
   } catch (error) {
@@ -41,7 +48,7 @@ const DELETERequestWrapper = async (
   authToken
 ) => {
   try {
-    const response = await got.delete(`${hostName}${apiPath}`, {
+    const response = await got.delete(`${fixJiraURI(hostName)}${apiPath}`, {
       retry: 0,
       headers: {
         'Content-Type': acceptHeaderValue,
