@@ -5,6 +5,8 @@ const { v4 } = require('uuid');
 const dirtyJSON = require('dirty-json');
 const Validator = require('jsonschema').Validator;
 const config = require('../config/config');
+const bunyan = require('bunyan');
+const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 
 const jiraIssueSchema = {
   type: 'object',
@@ -67,10 +69,10 @@ const amendHandleBarTemplate = (
         throw new Error(`The beautification of ${issueModule} was not possible!`);
       }
     } catch (e) {
-      console.log(e);
+      log.warn(e);
     }
   } catch (e) {
-    console.log(`Vulnerability "${issueModule}" cannot be turned into a Jira issue since the data provided in the given JSON are malformed and cannot be beautified!`);
+    log.warn(`Vulnerability "${issueModule}" cannot be turned into a Jira issue since the data provided in the given JSON are malformed and cannot be beautified!`);
   }
 };
 

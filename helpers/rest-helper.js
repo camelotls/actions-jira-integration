@@ -1,4 +1,6 @@
 const got = require('got');
+const bunyan = require('bunyan');
+const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 
 const fixJiraURI = (jiraURI) => {
   if (!jiraURI.match(/^https:\/\/|^http:\/\//)) {
@@ -33,9 +35,7 @@ const POSTRequestWrapper = async (
 
     return response;
   } catch (error) {
-    console.log(
-      `POST request ${requestName} encountered the following error: ${error.message}`
-    );
+    log.warn(`POST request ${requestName} encountered the following error: ${error.message}`);
     return error;
   }
 };
@@ -57,9 +57,7 @@ const DELETERequestWrapper = async (
     });
     return response;
   } catch (error) {
-    console.log(
-      `DELETE request ${requestName} encountered the following error: ${error.message}`
-    );
+    log.warn(`DELETE request ${requestName} encountered the following error: ${error.message}`);
     return error;
   }
 };

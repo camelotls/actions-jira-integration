@@ -1,6 +1,8 @@
 const core = require('@actions/core');
 const fs = require('fs');
 const _ = require('lodash');
+const bunyan = require('bunyan');
+const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 
 const utils = require('./utils/helper');
 const config = require('./config/config');
@@ -15,11 +17,11 @@ const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.
 
 const startAction = async (inputJson) => {
   const jiraSession = await jira.createJiraSession(JIRA_USER, JIRA_PASSWORD);
-  console.log('JIRA session created successfully!');
+  log.info('JIRA session created successfully!');
 
   const jiraAuthHeaderValue = await jira.createJiraSessionHeaders(jiraSession);
 
-  console.log('Attempting to search for existing JIRA issues...');
+  log.info('Attempting to search for existing JIRA issues...');
   const { body: retrievedIssues } = await jira.searchExistingJiraIssues(
     jiraAuthHeaderValue
   );
@@ -31,7 +33,7 @@ const startAction = async (inputJson) => {
   });
 
   if (issues.length !== 0) {
-    console.log('Existing JIRA issues retrieved successfully!');
+    log.info('Existing JIRA issues retrieved successfully!');
   }
 
   const priorityMapper = new Map(
@@ -56,7 +58,7 @@ const startAction = async (inputJson) => {
         !retrievedIssuesSummaries.includes(reportMapperInstance.issueSummary) &&
         !_.isEmpty(retrievedIssuesSummaries)
       ) {
-        console.log(
+        log.info(
           `Attempting to create json payload for module ${reportMapperInstance.vulnerabilityName}...`
         );
         utils.amendHandleBarTemplate(
@@ -73,12 +75,12 @@ const startAction = async (inputJson) => {
           issues[
             retrievedIssuesSummaries.indexOf(reportMapperInstance.issueSummary)
           ].key;
-        console.log(
+        log.info(
           `Issue for ${reportMapperInstance.issueSummary} has already been raised - More details on https://${config.JIRA_CONFIG.JIRA_URI}/browse/${existingIssueKey}`
         );
       }
     } else {
-      console.log(
+      log.info(
         `Skipping creation of module ${reportMapperInstance.vulnerabilityName}`
       );
     }
@@ -94,24 +96,24 @@ const startAction = async (inputJson) => {
 
   if (files.length !== 0) {
     await files.forEach(async (file) => {
-      console.log(
+      log.info(
         `Attempting to create JIRA issue based on payload ${file}...`
       );
       const jiraIssue = await jira.createJiraIssue(
         jiraAuthHeaderValue,
         fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8')
       );
-      console.log(`Jira issue created: ${jiraIssue.body}`);
+      log.info(`Jira issue created: ${jiraIssue.body}`);
     });
   } else {
-    console.log(
+    log.info(
       'All the vulnerabilities have already been captured as issues on Jira.'
     );
   }
 
-  console.log('Attempting to logout from the existing JIRA session...');
+  log.info('Attempting to logout from the existing JIRA session...');
   await jira.invalidateJiraSession(jiraAuthHeaderValue);
-  console.log('JIRA session invalidated successfully!');
+  log.info('JIRA session invalidated successfully!');
 };
 
 (async () => {
