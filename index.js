@@ -15,16 +15,34 @@ const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS') || process.env.REPO
 const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY_MAPPER;
 const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.ISSUE_LABELS_MAPPER;
 
-const startAction = async (inputJson) => {
+let jiraAuthHeaderValue;
+
+const createIssue = (file) => {
+  return jira.createJiraIssue(jiraAuthHeaderValue, fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8')).then((jiraIssue) => {
+    log.info(`A jira issue with the following details has been raised: ${jiraIssue.body}`);
+  });
+};
+
+const parallelIssueCreation = (files) => {
+  return Promise.all(files.map(file => createIssue(file))).catch((e) => {
+    log.error(`The Jira issue creation encountered the following error: ${e}`);
+  });
+};
+
+const logout = async (jiraAuthHeaderValue) => {
+  log.info('Attempting to logout from the existing JIRA session...');
+  await jira.invalidateJiraSession(jiraAuthHeaderValue);
+  log.info('JIRA session invalidated successfully!');
+};
+
+const kickOffAction = async (inputJson) => {
   const jiraSession = await jira.createJiraSession(JIRA_USER, JIRA_PASSWORD);
   log.info('JIRA session created successfully!');
 
-  const jiraAuthHeaderValue = await jira.createJiraSessionHeaders(jiraSession);
+  jiraAuthHeaderValue = await jira.createJiraSessionHeaders(jiraSession);
 
   log.info('Attempting to search for existing JIRA issues...');
-  const { body: retrievedIssues } = await jira.searchExistingJiraIssues(
-    jiraAuthHeaderValue
-  );
+  const { body: retrievedIssues } = await jira.searchExistingJiraIssues(jiraAuthHeaderValue);
   const { issues } = retrievedIssues;
   const retrievedIssuesSummaries = [];
 
@@ -58,9 +76,7 @@ const startAction = async (inputJson) => {
         !retrievedIssuesSummaries.includes(reportMapperInstance.issueSummary) &&
         !_.isEmpty(retrievedIssuesSummaries)
       ) {
-        log.info(
-          `Attempting to create json payload for module ${reportMapperInstance.vulnerabilityName}...`
-        );
+        log.info(`Attempting to create json payload for module ${reportMapperInstance.vulnerabilityName}...`);
         utils.amendHandleBarTemplate(
           config.UTILS.CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE,
           reportMapperInstance.vulnerabilityName,
@@ -75,14 +91,10 @@ const startAction = async (inputJson) => {
           issues[
             retrievedIssuesSummaries.indexOf(reportMapperInstance.issueSummary)
           ].key;
-        log.info(
-          `Issue for ${reportMapperInstance.issueSummary} has already been raised - More details on https://${config.JIRA_CONFIG.JIRA_URI}/browse/${existingIssueKey}`
-        );
+        log.info(`Issue for ${reportMapperInstance.issueSummary} has already been raised - More details on https://${config.JIRA_CONFIG.JIRA_URI}/browse/${existingIssueKey}`);
       }
     } else {
-      log.info(
-        `Skipping creation of module ${reportMapperInstance.vulnerabilityName}`
-      );
+      log.info(`Skipping creation of module ${reportMapperInstance.vulnerabilityName}`);
     }
   }
 
@@ -90,33 +102,20 @@ const startAction = async (inputJson) => {
   try {
     files = await fs.promises.readdir(config.UTILS.PAYLOADS_DIR);
   } catch (e) {
-    console.error(e);
+    log.error(e);
     process.exit(1);
   }
 
   if (files.length !== 0) {
-    await files.forEach(async (file) => {
-      log.info(
-        `Attempting to create JIRA issue based on payload ${file}...`
-      );
-      const jiraIssue = await jira.createJiraIssue(
-        jiraAuthHeaderValue,
-        fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8')
-      );
-      log.info(`Jira issue created: ${jiraIssue.body}`);
-    });
+    await parallelIssueCreation(files);
   } else {
-    log.info(
-      'All the vulnerabilities have already been captured as issues on Jira.'
-    );
+    log.info('All the vulnerabilities have already been captured as issues on Jira.');
   }
 
-  log.info('Attempting to logout from the existing JIRA session...');
-  await jira.invalidateJiraSession(jiraAuthHeaderValue);
-  log.info('JIRA session invalidated successfully!');
+  await logout(jiraAuthHeaderValue);
 };
 
 (async () => {
   utils.folderCleanup(config.UTILS.PAYLOADS_DIR);
-  await startAction(INPUT_JSON);
+  await kickOffAction(INPUT_JSON);
 })();
