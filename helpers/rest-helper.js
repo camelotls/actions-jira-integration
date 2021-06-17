@@ -55,6 +55,7 @@ const DELETERequestWrapper = async (
         Cookie: authToken
       }
     });
+
     return response;
   } catch (error) {
     log.warn(`DELETE request ${requestName} encountered the following error: ${error.message}`);
