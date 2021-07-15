@@ -1,0 +1,3 @@
+vulnerabilityName: {{module_name}}
+issueSummary: npm-audit: {{module_name}} module vulnerability
+issueDescription: *Recommendation*:\r\n{{recommendation}} \r\n \r\n *Details for {{cwe}}*\r\n _Vulnerable versions_: \r\n {{vulnerable_versions}} \r\n \r\n _Patched versions_:\r\n{{patched_versions}} \r\n \r\n *Overview*\r\n{{overview}} \r\n \r\n *References*\r\n{{url}}issueSeverity: {{severity}}

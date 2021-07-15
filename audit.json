@@ -1,0 +1,79 @@
+{
+  "actions": [
+    {
+      "action": "update",
+      "resolves": [
+        {
+          "id": 1677,
+          "path": "eslint-plugin-import>read-pkg-up>read-pkg>normalize-package-data>hosted-git-info",
+          "dev": true,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "module": "hosted-git-info",
+      "target": "2.8.9",
+      "depth": 5
+    }
+  ],
+  "advisories": {
+    "1677": {
+      "findings": [
+        {
+          "version": "2.8.8",
+          "paths": [
+            "eslint-plugin-import>read-pkg-up>read-pkg>normalize-package-data>hosted-git-info"
+          ]
+        }
+      ],
+      "id": 1677,
+      "created": "2021-05-06T16:15:08.412Z",
+      "updated": "2021-05-07T17:41:14.327Z",
+      "deleted": null,
+      "title": "Regular Expression Denial of Service",
+      "found_by": {
+        "link": "",
+        "name": "Anonymous",
+        "email": ""
+      },
+      "reported_by": {
+        "link": "",
+        "name": "Anonymous",
+        "email": ""
+      },
+      "module_name": "hosted-git-info",
+      "cves": [
+        "CVE-2021-23362"
+      ],
+      "vulnerable_versions": "<2.8.9 || >=3.0.0 <3.0.8",
+      "patched_versions": ">=2.8.9 <3.0.0 || >=3.0.8",
+      "overview": "`hosted-git-info` before versions 2.8.9 and 3.0.8 are vulnerable to Regular Expression Denial of Service (ReDoS) via regular expression shortcutMatch in the fromUrl function in index.js. The affected regular expression exhibits polynomial worst-case time complexity",
+      "recommendation": "Upgrade to version 3.0.8 or later",
+      "references": "- [CVE](https://nvd.nist.gov/vuln/detail/CVE-2021-23362)\n- [GitHub Advisory](https://github.com/advisories/GHSA-43f8-2h32-f4cj)\n",
+      "access": "public",
+      "severity": "moderate",
+      "cwe": "CWE-400",
+      "metadata": {
+        "module_type": "",
+        "exploitability": 5,
+        "affected_components": ""
+      },
+      "url": "https://npmjs.com/advisories/1677"
+    }
+  },
+  "muted": [],
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 1,
+      "high": 0,
+      "critical": 0
+    },
+    "dependencies": 0,
+    "devDependencies": 228,
+    "optionalDependencies": 0,
+    "totalDependencies": 228
+  },
+  "runId": "211b7164-7c47-432b-9858-ede21e07b5c7"
+}

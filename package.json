@@ -6,7 +6,8 @@
     "scripts": {
         "start": "node index.js",
         "test": "nyc mocha",
-        "lint": "./node_modules/.bin/eslint"
+        "lint": "./node_modules/.bin/eslint",
+        "test:integration": "mocha test/integration/**/*.js"
     },
     "author": "",
     "license": "MIT",
@@ -26,6 +27,8 @@
     "devDependencies": {
         "bunyan": "^1.8.15",
         "dirty-json": "0.9.2",
+        "dockerode": "^3.3.0",
+        "dotenv": "^10.0.0",
         "eslint": "7.28.0",
         "eslint-config-standard": "16.0.2",
         "eslint-plugin-import": "2.22.1",
