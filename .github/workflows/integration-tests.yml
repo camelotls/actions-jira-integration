@@ -17,3 +17,4 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Integration Tests
+        run: npm run test:integration
