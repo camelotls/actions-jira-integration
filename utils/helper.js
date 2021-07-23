@@ -60,8 +60,10 @@ const amendHandleBarTemplate = (
   try {
     beautifiedTemplate = dirtyJSON.parse(templateModifier);
     Object.assign(beautifiedTemplate.fields, issueLabelMapper);
+
     const beautifiedTemplateStringified = JSON.stringify(beautifiedTemplate);
     const isValidSchema = (jsonValidator.validate(JSON.parse(beautifiedTemplateStringified), jiraIssueSchema).errors.length === 0);
+
     try {
       if (isValidSchema) {
         fs.writeFileSync(`${config.UTILS.PAYLOADS_DIR}/${payload}`, beautifiedTemplateStringified, 'utf8');

@@ -82,14 +82,14 @@ const createJiraIssue = async function (authHeaders, filePayload) {
   return response;
 };
 
-const searchExistingJiraIssues = async function (authHeaders) {
+const searchExistingJiraIssues = async function (authHeaders, payload) {
   const response = await rest.POSTRequestWrapper(
     searchExistingJiraIssues.name,
     process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
     config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT,
     config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
     authHeaders,
-    config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD
+    payload
   );
 
   return response;
