@@ -85,7 +85,7 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT)
         .reply(200, mocks.MOCK_JIRA_ISSUE_SEARCH_RESPONSE);
 
-      const response = await jira.searchExistingJiraIssues(authHeaders);
+      const response = await jira.searchExistingJiraIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
       expect(response.body)
         .to.be.instanceOf(Object)
         .to.have.all.keys('expand', 'startAt', 'maxResults', 'total', 'issues');
@@ -148,7 +148,7 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT)
         .reply(400, mocks.MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE);
 
-      const error = await jira.searchExistingJiraIssues(authHeaders);
+      const error = await jira.searchExistingJiraIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
       expect(error.response.body).to.haveOwnProperty('errorMessages');
     });
 
