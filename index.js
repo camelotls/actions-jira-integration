@@ -41,16 +41,27 @@ const kickOffAction = async (inputJson) => {
 
   jiraAuthHeaderValue = await jira.createJiraSessionHeaders(jiraSession);
 
-  log.info('Attempting to search for existing JIRA issues...');
-  const { body: retrievedIssues } = await jira.searchExistingJiraIssues(jiraAuthHeaderValue);
-  const { issues } = retrievedIssues;
   const retrievedIssuesSummaries = [];
 
-  issues.forEach((issue) => {
-    retrievedIssuesSummaries.push(issue.fields.summary);
+  log.info('Attempting to search for existing JIRA issues...');
+
+  // Gather the issues that have been resolved with certain criteria
+  const { body: resolvedRetrievedIssues } = await jira.searchExistingJiraIssues(jiraAuthHeaderValue, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_RESOLVED_ISSUES);
+  const { issues: resolvedIssues } = resolvedRetrievedIssues;
+  resolvedIssues.forEach((issue) => {
+    retrievedIssuesSummaries.push(issue.fields.summary.split(' ').join(''));
   });
 
-  if (issues.length !== 0) {
+  // Gather the Open issues
+  const { body: openRetrievedIssues } = await jira.searchExistingJiraIssues(jiraAuthHeaderValue, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
+  const { issues: openIssues } = openRetrievedIssues;
+  openIssues.forEach((issue) => {
+    retrievedIssuesSummaries.push(issue.fields.summary.split(' ').join(''));
+  });
+
+  const retrievedIssuesUniqueSummaries = _.uniq(retrievedIssuesSummaries);
+
+  if (resolvedIssues.length !== 0 && openIssues.length !== 0) {
     log.info('Existing JIRA issues retrieved successfully!');
   }
 
@@ -73,10 +84,10 @@ const kickOffAction = async (inputJson) => {
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
     if (severityMap !== undefined) {
       if (
-        !retrievedIssuesSummaries.includes(reportMapperInstance.issueSummary) &&
-        !_.isEmpty(retrievedIssuesSummaries)
+        !retrievedIssuesUniqueSummaries.includes(reportMapperInstance.issueSummary.split(' ').join('')) &&
+        !_.isEmpty(retrievedIssuesUniqueSummaries)
       ) {
-        log.info(`Attempting to create json payload for module ${reportMapperInstance.vulnerabilityName}...`);
+        log.info(`Attempting to create JSON payload for module ${reportMapperInstance.vulnerabilityName}...`);
         utils.amendHandleBarTemplate(
           config.UTILS.CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE,
           reportMapperInstance.vulnerabilityName,
@@ -86,12 +97,6 @@ const kickOffAction = async (inputJson) => {
           severityMap,
           labels
         );
-      } else {
-        const existingIssueKey =
-          issues[
-            retrievedIssuesSummaries.indexOf(reportMapperInstance.issueSummary)
-          ].key;
-        log.info(`Issue for ${reportMapperInstance.issueSummary} has already been raised - More details on https://${config.JIRA_CONFIG.JIRA_URI}/browse/${existingIssueKey}`);
       }
     } else {
       log.info(`Skipping creation of module ${reportMapperInstance.vulnerabilityName}`);

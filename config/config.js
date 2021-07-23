@@ -6,10 +6,18 @@ const JIRA_CONFIG = {
   JIRA_ISSUE_CREATION_ENDPOINT: '/rest/api/2/issue',
   JIRA_ISSUE_AUTH_SESSION_ENDPOINT: '/rest/auth/1/session',
   JIRA_ISSUE_SEARCH_ENDPOINT: '/rest/api/2/search',
-  JIRA_ISSUE_SEARCH_PAYLOAD: {
-    jql: `project=${process.env.JIRA_PROJECT || core.getInput('JIRA_PROJECT')} AND type="${'Security Vulnerability' || core.getInput('JIRA_ISSUE_TYPE')}" AND status NOT IN ("Done")`,
+  JIRA_ISSUE_SEARCH_PAYLOAD_RESOLVED_ISSUES: {
+    jql: `project=${core.getInput('JIRA_PROJECT') || process.env.JIRA_PROJECT} AND type="${core.getInput('JIRA_ISSUE_TYPE') || 'Security Vulnerability'}" AND labels IN ("${core.getInput('ISSUE_LABELS_MAPPER') || 'Security'}") AND status="Done" AND resolution IN ("Obsolete", "Duplicate", "Won't Do")`,
     startAt: 0,
-    maxResults: 100,
+    maxResults: 1000,
+    fields: [
+      'summary'
+    ]
+  },
+  JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES: {
+    jql: `project=${core.getInput('JIRA_PROJECT') || process.env.JIRA_PROJECT} AND type="${core.getInput('JIRA_ISSUE_TYPE') || 'Security Vulnerability'}" AND labels IN ("${core.getInput('ISSUE_LABELS_MAPPER') || 'Security'}") AND status NOT IN ("Done")`,
+    startAt: 0,
+    maxResults: 1000,
     fields: [
       'summary'
     ]
@@ -21,8 +29,8 @@ const REST_CONFIG = {
 };
 
 const UTILS = {
-  TEMPLATES_DIR: (process.env.RUNS_ON_GITHUB || core.getInput('RUNS_ON_GITHUB')) === 'true' ? './actions-jira-integration/templates' : './templates',
-  PAYLOADS_DIR: (process.env.RUNS_ON_GITHUB || core.getInput('RUNS_ON_GITHUB')) === 'true' ? './actions-jira-integration/payloads' : './payloads',
+  TEMPLATES_DIR: (core.getInput('RUNS_ON_GITHUB') || process.env.RUNS_ON_GITHUB) === 'true' ? './actions-jira-integration/templates' : './templates',
+  PAYLOADS_DIR: (core.getInput('RUNS_ON_GITHUB') || process.env.RUNS_ON_GITHUB) === 'true' ? './actions-jira-integration/payloads' : './payloads',
   CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE: 'issueCreation.template'
 };
 
