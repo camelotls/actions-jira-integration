@@ -34,6 +34,11 @@ const jiraIssueSchema = {
 };
 const jsonValidator = new Validator();
 
+// use this function in order to minimise the losses caused in JSON parsings when boolean values are present
+const booleanToUpper = (input) => {
+  return input.replace(/true/g, 'True').replace(/false/g, 'False');
+};
+
 const amendHandleBarTemplate = (
   template,
   issueModule,
@@ -58,7 +63,7 @@ const amendHandleBarTemplate = (
 
   let beautifiedTemplate;
   try {
-    beautifiedTemplate = dirtyJSON.parse(templateModifier);
+    beautifiedTemplate = dirtyJSON.parse(booleanToUpper(templateModifier));
     Object.assign(beautifiedTemplate.fields, issueLabelMapper);
 
     const beautifiedTemplateStringified = JSON.stringify(beautifiedTemplate);
