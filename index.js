@@ -19,7 +19,7 @@ let jiraAuthHeaderValue;
 
 const createIssue = (file) => {
   return jira.createJiraIssue(jiraAuthHeaderValue, fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8')).then((jiraIssue) => {
-    log.info(`A jira issue with the following details has been raised: ${jiraIssue.body}`);
+    log.info(`A jira issue with the following details has been raised: https://${config.JIRA_CONFIG.JIRA_URI}/browse/${jiraIssue.body.key}`);
   });
 };
 
