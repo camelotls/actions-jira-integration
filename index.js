@@ -68,6 +68,7 @@ const kickOffAction = async (inputJson) => {
   const priorityMapper = new Map(
     Object.entries(utils.populateMap(PRIORITY_MAPPER))
   );
+  console.log("The Priority Mapper is >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + priorityMapper );
   const reportPairsMapper = utils.populateMap(REPORT_INPUT_KEYS);
   const labels =
     ISSUE_LABELS_MAPPER.length !== 0
