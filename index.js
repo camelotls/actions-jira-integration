@@ -8,12 +8,12 @@ const utils = require('./utils/helper');
 const config = require('./config/config');
 const jira = require('./helpers/jira-helpers');
 
-const INPUT_JSON = core.getInput('INPUT_JSON') || process.env.INPUT_JSON;
-const JIRA_USER = core.getInput('JIRA_USER') || process.env.JIRA_USER;
-const JIRA_PASSWORD = core.getInput('JIRA_PASSWORD') || process.env.JIRA_PASSWORD;
-const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS') || process.env.REPORT_INPUT_KEYS;
-const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY_MAPPER;
-const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.ISSUE_LABELS_MAPPER;
+const INPUT_JSON =  process.env.INPUT_JSON;
+const JIRA_USER =  process.env.JIRA_USER;
+const JIRA_PASSWORD =  process.env.JIRA_PASSWORD;
+const REPORT_INPUT_KEYS =  process.env.REPORT_INPUT_KEYS;
+const PRIORITY_MAPPER =  process.env.PRIORITY_MAPPER;
+const ISSUE_LABELS_MAPPER =  process.env.ISSUE_LABELS_MAPPER;
 
 let jiraAuthHeaderValue;
 
@@ -82,6 +82,8 @@ const kickOffAction = async (inputJson) => {
       reportPairsMapper
     );
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
+    console.log("Severity map>>>>>>>>>>>>>>>>" + severityMap);
+    console.log("Report mapper instance>>>>>>>>>>" + Object.values(reportMapperInstance));
     if (severityMap !== undefined) {
       if (
         !retrievedIssuesUniqueSummaries.includes(reportMapperInstance.issueSummary.split(' ').join('')) &&
