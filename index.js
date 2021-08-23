@@ -84,9 +84,6 @@ const kickOffAction = async (inputJson) => {
     );
 
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
-    console.log("Severity Map is >>>>>>>>>>>>>>>>>>" + severityMap);
-    console.log("reportMapperInstance.vulnerabilityName is >>>>>>>>>>>>>>>>>>" + reportMapperInstance.vulnerabilityName);
-    console.log("reportMapperInstance.issueSeverity is >>>>>>>>>>>>>>>>>>" + reportMapperInstance.issueSeverity);
     if (severityMap !== undefined) {
       if (
         !retrievedIssuesUniqueSummaries.includes(reportMapperInstance.issueSummary.split(' ').join('')) &&
