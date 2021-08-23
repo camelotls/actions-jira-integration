@@ -120,7 +120,6 @@ const populateMap = (yamlKey) => {
   const yamlPairs = yamlKey.split('\n')
     .map(pair => pair.trim())
     .filter(pair => {
-      console.log("Pair is>>>>>>>>>>>>>>>>>>>>>" + pair)
       return pair !== '';
     });
 
@@ -129,9 +128,6 @@ const populateMap = (yamlKey) => {
   yamlPairs.forEach(pair => {
     const key = pair.substr(0, pair.indexOf(':'));
     const value = pair.substr(pair.indexOf(': ') + 1, pair.length - 1).trimStart();
-    console.log("Key is >>>>>>>>>>>>>>>>>>>" + key);
-    console.log("Value is >>>>>>>>>>>>>>>>>>>" + value);
-
     map[key] = value.trim();
   });
 

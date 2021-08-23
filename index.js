@@ -68,9 +68,7 @@ const kickOffAction = async (inputJson) => {
   const priorityMapper = new Map(
     Object.entries(utils.populateMap(PRIORITY_MAPPER))
   );
-  for (let [key, value] of  priorityMapper.entries()) {
-    console.log(key + " = " + value)
-  }
+
   const reportPairsMapper = utils.populateMap(REPORT_INPUT_KEYS);
   const labels =
     ISSUE_LABELS_MAPPER.length !== 0
@@ -84,10 +82,8 @@ const kickOffAction = async (inputJson) => {
       parsedInput,
       reportPairsMapper
     );
-    console.log(Object.values("The Report Mapper instance>>>>>>>>>>>>>>>>>>>" + reportMapperInstance))
+
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
-    console.log("Severity map>>>>>>>>>>>>>>>>" + severityMap);
-    console.log("Report mapper instance>>>>>>>>>>" + Object.values(reportMapperInstance));
     if (severityMap !== undefined) {
       if (
         !retrievedIssuesUniqueSummaries.includes(reportMapperInstance.issueSummary.split(' ').join('')) &&
