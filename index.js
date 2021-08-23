@@ -84,6 +84,7 @@ const kickOffAction = async (inputJson) => {
       parsedInput,
       reportPairsMapper
     );
+    console.log(Object.values("The Report Mapper instance>>>>>>>>>>>>>>>>>>>" + reportMapperInstance))
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
     console.log("Severity map>>>>>>>>>>>>>>>>" + severityMap);
     console.log("Report mapper instance>>>>>>>>>>" + Object.values(reportMapperInstance));
