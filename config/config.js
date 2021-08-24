@@ -1,6 +1,8 @@
 const core = require('@actions/core');
 
 const JIRA_CONFIG = {
+  JIRA_USER: process.env.JIRA_USER || core.getInput('JIRA_USER'),
+  JIRA_PASSWORD: process.env.JIRA_PASSWORD || core.getInput('JIRA_PASSWORD'),
   JIRA_PROJECT: process.env.JIRA_PROJECT || core.getInput('JIRA_PROJECT'),
   JIRA_URI: process.env.JIRA_URI || core.getInput('JIRA_URI'),
   JIRA_ISSUE_CREATION_ENDPOINT: '/rest/api/2/issue',

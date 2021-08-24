@@ -1,9 +1,7 @@
 const { expect } = require('chai');
 const { describe, it } = require('mocha');
-const rewire = require('rewire');
-const rest = rewire('../helpers/rest-helper');
 
-const fixJiraURI = rest.__get__('fixJiraURI');
+const { fixJiraURI } = require('../utils/helper');
 
 describe('REST helper functions are working as expected', () => {
   it('should fix the JIRA host uri by prepending https as the protocol if none is provided', () => {

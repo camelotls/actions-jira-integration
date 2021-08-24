@@ -3,6 +3,7 @@ const core = require('@actions/core');
 
 const rest = require('./rest-helper');
 const config = require('../config/config');
+const utils = require('../utils/helper');
 
 const createJiraSession = async function createJiraSession (
   jiraUser,
@@ -107,10 +108,15 @@ const invalidateJiraSession = async function (authHeaders) {
   return response.body;
 };
 
+const pushAttachment = async function (fileName, jiraIssue) {
+  utils.shellExec(`curl -D- -u ${config.JIRA_CONFIG.JIRA_USER}:${config.JIRA_CONFIG.JIRA_PASSWORD} -X POST -H "X-Atlassian-Token: no-check" -F "file=@${fileName}" ${utils.fixJiraURI(config.JIRA_CONFIG.JIRA_URI)}${config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT}/${jiraIssue}/attachments`);
+};
+
 module.exports = {
   createJiraIssue: createJiraIssue,
   createJiraSession: createJiraSession,
   createJiraSessionHeaders: createJiraSessionHeaders,
   searchExistingJiraIssues: searchExistingJiraIssues,
-  invalidateJiraSession: invalidateJiraSession
+  invalidateJiraSession: invalidateJiraSession,
+  pushAttachment: pushAttachment
 };

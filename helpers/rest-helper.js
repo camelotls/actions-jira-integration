@@ -1,13 +1,7 @@
 const got = require('got');
 const bunyan = require('bunyan');
 const log = bunyan.createLogger({ name: 'actions-jira-integration' });
-
-const fixJiraURI = (jiraURI) => {
-  if (!jiraURI.match(/^https:\/\/|^http:\/\//)) {
-    return `https://${jiraURI}`;
-  }
-  return jiraURI;
-};
+const utils = require('../utils/helper');
 
 const POSTRequestWrapper = async (
   requestName,
@@ -31,7 +25,7 @@ const POSTRequestWrapper = async (
       options.headers.Cookie = authToken;
     }
 
-    const response = await got.post(`${fixJiraURI(hostName)}${apiPath}`, options);
+    const response = await got.post(`${utils.fixJiraURI(hostName)}${apiPath}`, options);
 
     return response;
   } catch (error) {
@@ -48,7 +42,7 @@ const DELETERequestWrapper = async (
   authToken
 ) => {
   try {
-    const response = await got.delete(`${fixJiraURI(hostName)}${apiPath}`, {
+    const response = await got.delete(`${utils.fixJiraURI(hostName)}${apiPath}`, {
       retry: 0,
       headers: {
         'Content-Type': acceptHeaderValue,
