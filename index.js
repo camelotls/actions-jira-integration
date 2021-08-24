@@ -23,6 +23,8 @@ const createIssue = (file) => {
   });
 };
 
+console.log("create issue >>>>>>>>>>>>>>>>>>>>:" + createIssue);
+
 const parallelIssueCreation = (files) => {
   return Promise.all(files.map(file => createIssue(file))).catch((e) => {
     log.error(`The Jira issue creation encountered the following error: ${e}`);
@@ -84,9 +86,9 @@ const kickOffAction = async (inputJson) => {
     );
 
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
-    console.log("Severity Map is >>>>>>>>>>>>>>>>>>" + severityMap);
-    console.log("reportMapperInstance.vulnerabilityName is >>>>>>>>>>>>>>>>>>" + reportMapperInstance.vulnerabilityName);
-    console.log("reportMapperInstance.issueSeverity is >>>>>>>>>>>>>>>>>>" + reportMapperInstance.issueSeverity);
+    // console.log("Severity Map is >>>>>>>>>>>>>>>>>>" + severityMap);
+    // console.log("reportMapperInstance.vulnerabilityName is >>>>>>>>>>>>>>>>>>" + reportMapperInstance.vulnerabilityName);
+    // console.log("reportMapperInstance.issueSeverity is >>>>>>>>>>>>>>>>>>" + reportMapperInstance.issueSeverity);
     if (severityMap !== undefined) {
       if (
         !retrievedIssuesUniqueSummaries.includes(reportMapperInstance.issueSummary.split(' ').join('')) &&

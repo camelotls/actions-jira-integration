@@ -69,6 +69,7 @@ const createJiraSessionHeaders = (sessionPayload) => {
 };
 
 const createJiraIssue = async function (authHeaders, filePayload) {
+  console.log("filePayload >>>>>>>>>>>>>>>>>>>>>>>> " + filePayload)
   const issueRequestPayload = JSON.parse(filePayload);
   const response = await rest.POSTRequestWrapper(
     createJiraIssue.name,
@@ -78,7 +79,7 @@ const createJiraIssue = async function (authHeaders, filePayload) {
     authHeaders,
     issueRequestPayload
   );
-
+  console.log("response >>>>>>>>>>>>>>>>> " + response);
   return response;
 };
 
