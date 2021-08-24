@@ -23,8 +23,6 @@ const createIssue = (file) => {
   });
 };
 
-console.log("create issue >>>>>>>>>>>>>>>>>>>>:" + createIssue());
-
 const parallelIssueCreation = (files) => {
   return Promise.all(files.map(file => createIssue(file))).catch((e) => {
     log.error(`The Jira issue creation encountered the following error: ${e}`);
