@@ -6,6 +6,8 @@ const dirtyJSON = require('dirty-json');
 const Validator = require('jsonschema').Validator;
 const config = require('../config/config');
 const bunyan = require('bunyan');
+const { spawnSync } = require('child_process');
+const assert = require('assert');
 const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 
 const jiraIssueSchema = {
@@ -135,9 +137,47 @@ const populateMap = (yamlKey) => {
   return map;
 };
 
+const fixJiraURI = (jiraURI) => {
+  if (!jiraURI.match(/^https:\/\/|^http:\/\//)) {
+    return `https://${jiraURI}`;
+  }
+  return jiraURI;
+};
+
+const shellExec = (command) => {
+  let cmdOutput = '';
+  const executedCommand = spawnSync(command, {
+    shell: true
+  });
+
+  if (executedCommand.status !== 0) {
+    assert.fail(executedCommand.stderr.toString());
+  } else {
+    cmdOutput = executedCommand.stdout.toString().trim();
+    assert.strictEqual((cmdOutput.includes('FAILED') || []).length, 0, cmdOutput);
+  }
+
+  return cmdOutput;
+};
+
+const retrievePathFiles = async (path) => {
+  let files = [];
+  try {
+    files = await fs.promises.readdir(path);
+  } catch (e) {
+    log.error(e);
+    process.exit(1);
+  }
+
+  return files;
+};
+
 module.exports = {
   amendHandleBarTemplate: amendHandleBarTemplate,
   folderCleanup: folderCleanup,
   reportMapper: reportMapper,
-  populateMap: populateMap
+  populateMap: populateMap,
+  fixJiraURI: fixJiraURI,
+  shellExec: shellExec,
+  retrievePathFiles: retrievePathFiles
 };

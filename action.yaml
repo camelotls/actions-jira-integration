@@ -24,7 +24,7 @@ inputs:
         required: false
         default: "Security Vulnerability"
     RUNS_ON_GITHUB:
-        description: "Indicates if the action runs on GitHub or locally, on a Docker container, for testing purporses"
+        description: "Indicates if the action runs on GitHub or locally, on a Docker container, for testing purposes"
         required: true
         default: true
     PRIORITY_MAPPER:
@@ -40,6 +40,14 @@ inputs:
         default: ""
     LOAD_BALANCER_COOKIE_NAME:
         description: "The name of the cookie for the Load Balancer (if any used)"
+        required: false
+        default: ""
+    UPLOAD_FILES:
+        description: "Uploads a file to each Jira issue created based on a comparison of the file name and its relation to each ticket issueSummary"
+        require: false
+        default: false
+    UPLOAD_FILES_PATH:
+        description: "Used only if UPLOAD_FILES is set to true. It's the path holding the files to be uploaded"
         required: false
         default: ""
 runs:

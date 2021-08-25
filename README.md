@@ -26,6 +26,8 @@ A GitHub Action to integrate multiple tools with Jira Server and raise relevant 
 |ISSUE_LABELS_MAPPER|true|N/A|Maps the labels of the reporting issue to the relevant Jira labels field|
 |LOAD_BALANCER_COOKIE_ENABLED|false|""|Extra cookie needed for clustered Jira server to accommodate different Load Balancers such as F5, httpd etc.|
 |LOAD_BALANCER_COOKIE_NAME|false|""|The name of the cookie for the Load Balancer (if any used)|
+|UPLOAD_FILES|false|false|Uploads a file to each Jira issue created based on a comparison of the file name and its relation to each ticket issueSummary|
+|UPLOAD_FILES_PATH|false|""|Used only if UPLOAD_FILE is set to true. It's the path holding the files to be uploaded|
 
 ### Outputs
 
@@ -88,6 +90,8 @@ jobs:
                 ISSUE_LABELS_MAPPER: 'security,performance' 
                 LOAD_BALANCER_COOKIE_ENABLED: true
                 LOAD_BALANCER_COOKIE_NAME: 'AWSALB'
+                UPLOAD_FILES: true
+                UPLOAD_FILES_PATH: './upload_file_path'
 ```
 
 **NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important for the parsing of the action to work properly. Also, the submitted JSON **must** be in its final form that you want it to be processed (not purely the raw output of your report).

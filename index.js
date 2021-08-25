@@ -9,17 +9,40 @@ const config = require('./config/config');
 const jira = require('./helpers/jira-helpers');
 
 const INPUT_JSON = core.getInput('INPUT_JSON') || process.env.INPUT_JSON;
-const JIRA_USER = core.getInput('JIRA_USER') || process.env.JIRA_USER;
-const JIRA_PASSWORD = core.getInput('JIRA_PASSWORD') || process.env.JIRA_PASSWORD;
 const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS') || process.env.REPORT_INPUT_KEYS;
 const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY_MAPPER;
 const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.ISSUE_LABELS_MAPPER;
+const UPLOAD_FILES = (core.getInput('UPLOAD_FILES') || process.env.UPLOAD_FILES) === 'true';
+const UPLOAD_FILES_PATH = core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH;
 
 let jiraAuthHeaderValue;
 
-const createIssue = (file) => {
-  return jira.createJiraIssue(jiraAuthHeaderValue, fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8')).then((jiraIssue) => {
-    log.info(`A jira issue with the following details has been raised: https://${config.JIRA_CONFIG.JIRA_URI}/browse/${jiraIssue.body.key}`);
+const createIssue = async (file) => {
+  const fileContent = fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8');
+
+  // this is done here in order to handle more easily the async nature of the call
+  let filesToBeUploaded = [];
+  if (UPLOAD_FILES) {
+    filesToBeUploaded = await utils.retrievePathFiles(UPLOAD_FILES_PATH);
+  }
+
+  return jira.createJiraIssue(jiraAuthHeaderValue, fileContent).then((jiraIssue) => {
+    const jiraIssueKey = jiraIssue.body.key;
+    const jiraIssueSummary = JSON.parse(fileContent).fields.summary;
+
+    log.info(`A jira issue with the following details has been raised: https://${config.JIRA_CONFIG.JIRA_URI}/browse/${jiraIssueKey}`);
+
+    // upload the attachments to the relevant issue created
+    if (UPLOAD_FILES) {
+      filesToBeUploaded.forEach((file) => {
+        // focus on the file name, not the file extension
+        if (jiraIssueSummary.toLowerCase().includes(file.substr(0, file.indexOf('.')).toLowerCase())) {
+          return jira.pushAttachment(`${UPLOAD_FILES_PATH}/${file}`, jiraIssueKey).then(() => {
+            log.info(`Pushing attachment ${file} to issue ${jiraIssueKey}...`);
+          });
+        }
+      });
+    }
   });
 };
 
@@ -36,7 +59,7 @@ const logout = async (jiraAuthHeaderValue) => {
 };
 
 const kickOffAction = async (inputJson) => {
-  const jiraSession = await jira.createJiraSession(JIRA_USER, JIRA_PASSWORD);
+  const jiraSession = await jira.createJiraSession(config.JIRA_CONFIG.JIRA_USER, config.JIRA_CONFIG.JIRA_PASSWORD);
   log.info('JIRA session created successfully!');
 
   jiraAuthHeaderValue = await jira.createJiraSessionHeaders(jiraSession);
@@ -103,13 +126,7 @@ const kickOffAction = async (inputJson) => {
     }
   }
 
-  let files = [];
-  try {
-    files = await fs.promises.readdir(config.UTILS.PAYLOADS_DIR);
-  } catch (e) {
-    log.error(e);
-    process.exit(1);
-  }
+  const files = await utils.retrievePathFiles(config.UTILS.PAYLOADS_DIR);
 
   if (files.length !== 0) {
     await parallelIssueCreation(files);
