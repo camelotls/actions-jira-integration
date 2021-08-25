@@ -79,7 +79,7 @@ const createJiraIssue = async function (authHeaders, filePayload) {
     authHeaders,
     issueRequestPayload
   );
-  console.log("response >>>>>>>>>>>>>>>>> " + Object.values(response));
+  console.log("response >>>>>>>>>>>>>>>>> " + JSON.parse(response));
   return response;
 };
 

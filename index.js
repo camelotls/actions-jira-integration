@@ -102,6 +102,8 @@ const kickOffAction = async (inputJson) => {
           severityMap,
           labels
         );
+      } else {
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I'm Here");
       }
     } else {
       log.info(`Skipping creation of module ${reportMapperInstance.vulnerabilityName}`);
