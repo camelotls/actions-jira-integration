@@ -1,10 +1,11 @@
 const Docker = require('dockerode');
-
+const got = require('got');
+const Spinner = require('cli-spinner').Spinner;
 const docker = new Docker();
 
-const pullImageAndSpawnContainer = (callback, setContainerId, auth) => {
+const pullImageAndSpawnContainer = (callback, setContainerId, auth, jiraEndpointTestReadyState) => {
   docker.pull(
-    'docker.pkg.github.com/camelotls/jira-development/jira-dev:latest',
+    'ghcr.io/camelotls/jira-development/jira-dev:latest',
     { authconfig: auth },
     (err, stream) => {
       if (err) {
@@ -18,16 +19,16 @@ const pullImageAndSpawnContainer = (callback, setContainerId, auth) => {
           callback(err);
           throw err;
         }
-        createAndStartContainer(callback, setContainerId);
+        createAndStartContainer(callback, setContainerId, jiraEndpointTestReadyState);
       }
     }
   );
 };
 
-const createAndStartContainer = (callback, setContainerId) => {
+const createAndStartContainer = (callback, setContainerId, jiraEndpointTestReadyState) => {
   docker.createContainer(
     {
-      Image: 'docker.pkg.github.com/camelotls/jira-development/jira-dev:latest',
+      Image: 'ghcr.io/camelotls/jira-development/jira-dev:latest',
       name: 'int-test-co',
       Tty: true,
       ExposedPorts: { '8080/tcp': {} },
@@ -38,9 +39,24 @@ const createAndStartContainer = (callback, setContainerId) => {
         callback(err);
       }
       console.log(`created container with id ${container.id}`);
-      container.start((err, data) => {
-        callback();
-        setContainerId(container.id);
+      const spinner = new Spinner('Waiting for the service to start...');
+      spinner.setSpinnerString(19);
+      spinner.start();
+      container.start((_1, _2) => {
+        got.get(jiraEndpointTestReadyState,
+          {
+            retry: {
+              limit: 15
+            }
+          }).then(async response => {
+          console.log(response);
+          callback();
+          setContainerId(container.id);
+          spinner.stop(true);
+        }).catch(error => {
+          console.log(error);
+          spinner.stop(false);
+        });
       });
     }
   );
