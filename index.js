@@ -60,6 +60,7 @@ const kickOffAction = async (inputJson) => {
   });
 
   const retrievedIssuesUniqueSummaries = _.uniq(retrievedIssuesSummaries);
+  console.log(">>>>>>>>>>>>>>>> retrievedIssuesUniqueSummaries: " + retrievedIssuesUniqueSummaries);
 
   if (resolvedIssues.length !== 0 && openIssues.length !== 0) {
     log.info('Existing JIRA issues retrieved successfully!');
@@ -104,6 +105,7 @@ const kickOffAction = async (inputJson) => {
         );
       } else {
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> I'm Here");
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>reportMapperInstance.issueSummary:" + reportMapperInstance.issueSummary);
       }
     } else {
       log.info(`Skipping creation of module ${reportMapperInstance.vulnerabilityName}`);
