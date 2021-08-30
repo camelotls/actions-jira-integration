@@ -60,7 +60,7 @@ const kickOffAction = async (inputJson) => {
   });
 
   const retrievedIssuesUniqueSummaries = _.uniq(retrievedIssuesSummaries);
-  console.log(">>>>>>>>>>>>>>>> retrievedIssuesUniqueSummaries: " + retrievedIssuesUniqueSummaries);
+  // console.log(">>>>>>>>>>>>>>>> retrievedIssuesUniqueSummaries: " + retrievedIssuesUniqueSummaries);
 
   if (resolvedIssues.length !== 0 && openIssues.length !== 0) {
     log.info('Existing JIRA issues retrieved successfully!');
