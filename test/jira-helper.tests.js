@@ -20,7 +20,7 @@ describe('Jira REST are functioning properly', () => {
     // eslint-disable-next-line no-undef
     before('a JIRA session can be created', async () => {
       nock(mocks.MOCK_JIRA_URI)
-        .post(config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT)
+        .post(config.JIRA_CONFIG.get().JIRA_ISSUE_AUTH_SESSION_ENDPOINT)
         .reply(200, mocks.MOCK_LOGIN_SESSION);
 
       sessionPayload = await jira.createJiraSession(
@@ -55,7 +55,7 @@ describe('Jira REST are functioning properly', () => {
 
     it('a JIRA issue can be created', async () => {
       nock(mocks.MOCK_JIRA_URI)
-        .post(config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT)
+        .post(config.JIRA_CONFIG.get().JIRA_ISSUE_CREATION_ENDPOINT)
         .reply(200, mocks.MOCK_JIRA_ISSUE_CREATION_PAYLOAD);
 
       const response = await jira.createJiraIssue(
@@ -82,7 +82,7 @@ describe('Jira REST are functioning properly', () => {
 
     it('a list of JIRA issues can be queried', async () => {
       nock(mocks.MOCK_JIRA_URI)
-        .post(config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT)
+        .post(config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_ENDPOINT)
         .reply(200, mocks.MOCK_JIRA_ISSUE_SEARCH_RESPONSE);
 
       const response = await jira.searchExistingJiraIssues(authHeaders);
@@ -93,7 +93,7 @@ describe('Jira REST are functioning properly', () => {
 
     it('a JIRA session can be invalidated', async () => {
       nock(mocks.MOCK_JIRA_URI)
-        .delete(config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT)
+        .delete(config.JIRA_CONFIG.get().JIRA_ISSUE_AUTH_SESSION_ENDPOINT)
         .reply(204, '');
 
       const response = await jira.invalidateJiraSession(authHeaders);
@@ -132,7 +132,7 @@ describe('Jira REST are functioning properly', () => {
 
     it('a JIRA issue fails to be created when a wrong payload is supplied', async () => {
       nock(mocks.MOCK_JIRA_URI)
-        .post(config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT)
+        .post(config.JIRA_CONFIG.get().JIRA_ISSUE_CREATION_ENDPOINT)
         .reply(400, mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE);
 
       const error = await jira.createJiraIssue(
@@ -145,7 +145,7 @@ describe('Jira REST are functioning properly', () => {
 
     it('a list of JIRA issues fails to be fetched when a wrong payload is supplied', async () => {
       nock(mocks.MOCK_JIRA_URI)
-        .post(config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT)
+        .post(config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_ENDPOINT)
         .reply(400, mocks.MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE);
 
       const error = await jira.searchExistingJiraIssues(authHeaders);

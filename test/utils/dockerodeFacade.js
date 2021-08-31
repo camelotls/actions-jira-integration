@@ -49,7 +49,6 @@ const createAndStartContainer = (callback, setContainerId, jiraEndpointTestReady
               limit: 15
             }
           }).then(async response => {
-          console.log(response);
           callback();
           setContainerId(container.id);
           spinner.stop(true);

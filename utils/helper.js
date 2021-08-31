@@ -7,6 +7,7 @@ const Validator = require('jsonschema').Validator;
 const config = require('../config/config');
 const bunyan = require('bunyan');
 const log = bunyan.createLogger({ name: 'actions-jira-integration' });
+const core = require('@actions/core');
 
 const jiraIssueSchema = {
   type: 'object',
@@ -47,7 +48,7 @@ const amendHandleBarTemplate = (
   const templateReader = handlebars.compile(templateStored, { noEscape: true });
 
   const templateModifier = templateReader({
-    PROJECT_ID: config.JIRA_CONFIG.JIRA_PROJECT,
+    PROJECT_ID: config.JIRA_CONFIG.get().JIRA_PROJECT,
     ISSUE_SUMMARY: `${issueSummary}`,
     ISSUE_DESCRIPTION: `${issueDescription}`,
     ISSUE_SEVERITY: `${issueSeverity}`,
@@ -128,9 +129,14 @@ const populateMap = (yamlKey) => {
   return map;
 };
 
+const getInput = (name) => {
+  return core.getInput(name) || process.env[name];
+};
+
 module.exports = {
   amendHandleBarTemplate: amendHandleBarTemplate,
   folderCleanup: folderCleanup,
   reportMapper: reportMapper,
-  populateMap: populateMap
+  populateMap: populateMap,
+  getInput: getInput
 };

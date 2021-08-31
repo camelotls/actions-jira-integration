@@ -18,8 +18,8 @@ const createJiraSession = async function createJiraSession (
 
   const response = await rest.POSTRequestWrapper(
     createJiraSession.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
+    process.env.JIRA_URI || config.JIRA_CONFIG.get().JIRA_URI,
+    config.JIRA_CONFIG.get().JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
     config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
     '',
     sessionPayload
@@ -72,8 +72,8 @@ const createJiraIssue = async function (authHeaders, filePayload) {
   const issueRequestPayload = JSON.parse(filePayload);
   const response = await rest.POSTRequestWrapper(
     createJiraIssue.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT,
+    process.env.JIRA_URI || config.JIRA_CONFIG.get().JIRA_URI,
+    config.JIRA_CONFIG.get().JIRA_ISSUE_CREATION_ENDPOINT,
     config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
     authHeaders,
     issueRequestPayload
@@ -85,11 +85,11 @@ const createJiraIssue = async function (authHeaders, filePayload) {
 const searchExistingJiraIssues = async function (authHeaders) {
   const response = await rest.POSTRequestWrapper(
     searchExistingJiraIssues.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT,
+    process.env.JIRA_URI || config.JIRA_CONFIG.get().JIRA_URI,
+    config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_ENDPOINT,
     config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
     authHeaders,
-    config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD
+    config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_PAYLOAD
   );
 
   return response;
@@ -98,8 +98,8 @@ const searchExistingJiraIssues = async function (authHeaders) {
 const invalidateJiraSession = async function (authHeaders) {
   const response = await rest.DELETERequestWrapper(
     invalidateJiraSession.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
+    process.env.JIRA_URI || config.JIRA_CONFIG.get().JIRA_URI,
+    config.JIRA_CONFIG.get().JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
     config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
     authHeaders
   );
