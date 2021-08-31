@@ -172,6 +172,10 @@ const retrievePathFiles = async (path) => {
   return files;
 };
 
+const ultraTrim = (input) => {
+  return input.split(' ').join('');
+};
+
 module.exports = {
   amendHandleBarTemplate: amendHandleBarTemplate,
   folderCleanup: folderCleanup,
@@ -179,5 +183,6 @@ module.exports = {
   populateMap: populateMap,
   fixJiraURI: fixJiraURI,
   shellExec: shellExec,
-  retrievePathFiles: retrievePathFiles
+  retrievePathFiles: retrievePathFiles,
+  ultraTrim: ultraTrim
 };

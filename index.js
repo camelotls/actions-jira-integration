@@ -12,8 +12,8 @@ const INPUT_JSON = core.getInput('INPUT_JSON') || process.env.INPUT_JSON;
 const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS') || process.env.REPORT_INPUT_KEYS;
 const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY_MAPPER;
 const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.ISSUE_LABELS_MAPPER;
-const UPLOAD_FILES = (core.getInput('UPLOAD_FILES') || process.env.UPLOAD_FILES) === 'true';
-const UPLOAD_FILES_PATH = core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH;
+const UPLOAD_FILES = (core.getInput('UPLOAD_FILES') || process.env.UPLOAD_FILES) === 'false';
+const UPLOAD_FILES_PATH = (core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH) === '';
 
 let jiraAuthHeaderValue;
 
@@ -30,7 +30,7 @@ const createIssue = async (file) => {
     const jiraIssueKey = jiraIssue.body.key;
     const jiraIssueSummary = JSON.parse(fileContent).fields.summary;
 
-    log.info(`A jira issue with the following details has been raised: https://${config.JIRA_CONFIG.JIRA_URI}/browse/${jiraIssueKey}`);
+    log.info(`A jira issue with the following details has been raised: ${utils.fixJiraURI(config.JIRA_CONFIG.JIRA_URI)}/browse/${jiraIssueKey}`);
 
     // upload the attachments to the relevant issue created
     if (UPLOAD_FILES) {
@@ -107,22 +107,34 @@ const kickOffAction = async (inputJson) => {
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
     if (severityMap !== undefined) {
       if (
-        !retrievedIssuesUniqueSummaries.includes(reportMapperInstance.issueSummary.split(' ').join('')) &&
+        !retrievedIssuesUniqueSummaries.includes(utils.ultraTrim(reportMapperInstance.issueSummary)) &&
         !_.isEmpty(retrievedIssuesUniqueSummaries)
       ) {
-        log.info(`Attempting to create JSON payload for module ${reportMapperInstance.vulnerabilityName}...`);
+        log.info(`Attempting to create JSON payload for module ${reportMapperInstance.issueName}...`);
         utils.amendHandleBarTemplate(
           config.UTILS.CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE,
-          reportMapperInstance.vulnerabilityName,
+          reportMapperInstance.issueName,
           reportMapperInstance.issueSummary,
           reportMapperInstance.issueDescription,
           reportMapperInstance.issueSeverity,
           severityMap,
           labels
         );
+      } else {
+        openIssues.forEach(openIssue => {
+          if (utils.ultraTrim(openIssue.fields.summary) === utils.ultraTrim(reportMapperInstance.issueSummary)) {
+            log.info(`The issue for ${reportMapperInstance.issueName} is already open - more details on ${utils.fixJiraURI(config.JIRA_CONFIG.JIRA_URI)}/browse/${openIssue.key}`);
+          }
+        });
+
+        resolvedIssues.forEach(resolvedIssue => {
+          if (utils.ultraTrim(resolvedIssue.fields.summary) === utils.ultraTrim(reportMapperInstance.issueSummary)) {
+            log.info(`The issue for ${reportMapperInstance.issueName} has already been resolved - more details on ${utils.fixJiraURI(config.JIRA_CONFIG.JIRA_URI)}/browse/${resolvedIssue.key}`);
+          }
+        });
       }
     } else {
-      log.info(`Skipping creation of module ${reportMapperInstance.vulnerabilityName}`);
+      log.info(`Skipping creation of module ${reportMapperInstance.issueName}`);
     }
   }
 

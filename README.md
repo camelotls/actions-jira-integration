@@ -77,7 +77,7 @@ jobs:
                 JIRA_PROJECT: MBIL
                 JIRA_URI: 'jira.camelot.global'
                 REPORT_INPUT_KEYS: |
-                                    vulnerabilityName: {{module_name}}
+                                    issueName: {{module_name}}
                                     issueSummary: npm-audit: {{module_name}} module vulnerability\n
                                     issueDescription: \`*Recommendation*:\\n\\n{{recommendation}}\\n\\n*Details for {{cwe}}*\\n\\n_Vulnerable versions_:\\n\\n{{vulnerable_versions}}\\n\\n_Patched versions_:\\n\\n{{patched_versions}}\\n\\n*Overview*\\n\\n{{overview}}\\n\\n*References*\\n\\n{{url}}\\n\\n`
                                     issueSeverity: {{severity}}
