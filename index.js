@@ -60,7 +60,7 @@ const kickOffAction = async (inputJson) => {
   });
 
   const retrievedIssuesUniqueSummaries = _.uniq(retrievedIssuesSummaries);
-  // console.log(">>>>>>>>>>>>>>>> retrievedIssuesUniqueSummaries: " + retrievedIssuesUniqueSummaries);
+   console.log(">>>>>>>>>>>>>>>> retrievedIssuesUniqueSummaries: " + retrievedIssuesUniqueSummaries);
 
   if (resolvedIssues.length !== 0 && openIssues.length !== 0) {
     log.info('Existing JIRA issues retrieved successfully!');
@@ -85,9 +85,9 @@ const kickOffAction = async (inputJson) => {
     );
 
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
-    // console.log("Severity Map is >>>>>>>>>>>>>>>>>>" + severityMap);
-    // console.log("reportMapperInstance.vulnerabilityName is >>>>>>>>>>>>>>>>>>" + reportMapperInstance.vulnerabilityName);
-    // console.log("reportMapperInstance.issueSeverity is >>>>>>>>>>>>>>>>>>" + reportMapperInstance.issueSeverity);
+     console.log("Severity Map is >>>>>>>>>>>>>>>>>>" + severityMap);
+     console.log("reportMapperInstance.vulnerabilityName is >>>>>>>>>>>>>>>>>>" + reportMapperInstance.vulnerabilityName);
+     console.log("reportMapperInstance.issueSeverity is >>>>>>>>>>>>>>>>>>" + reportMapperInstance.issueSeverity);
     if (severityMap !== undefined) {
       if (
         !retrievedIssuesUniqueSummaries.includes(reportMapperInstance.issueSummary.split(' ').join('')) &&
