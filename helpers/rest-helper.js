@@ -29,8 +29,10 @@ const POSTRequestWrapper = async (
 
     return response;
   } catch (error) {
-    log.warn(`POST request ${requestName} encountered the following error: ${error.message}`);
-    return error;
+    if (error.response && error.response.body) {
+      error.response.body.errorMessages.forEach(msg => console.log(msg));
+      console.log( error.response.body.errors);
+    }
   }
 };
 
