@@ -66,8 +66,7 @@ const kickOffAction = async (inputJson) => {
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
     if (severityMap !== undefined) {
       if (
-        !retrievedIssuesSummaries.includes(reportMapperInstance.issueSummary) &&
-        !_.isEmpty(retrievedIssuesSummaries)
+        !retrievedIssuesSummaries.includes(reportMapperInstance.issueSummary)
       ) {
         log.info(`Attempting to create json payload for module ${reportMapperInstance.vulnerabilityName}...`);
         utils.amendHandleBarTemplate(

@@ -1,5 +1,6 @@
 const Docker = require('dockerode');
 const got = require('got');
+const lodash = require('lodash');
 const Spinner = require('cli-spinner').Spinner;
 const docker = new Docker();
 
@@ -38,7 +39,7 @@ const createAndStartContainer = (callback, setContainerId, jiraEndpointTestReady
       if (err) {
         callback(err);
       }
-      console.log(`created container with id ${container.id}`);
+      console.log(`Created container with id ${container.id}...`);
       const spinner = new Spinner('Waiting for the service to start...');
       spinner.setSpinnerString(19);
       spinner.start();
@@ -61,20 +62,29 @@ const createAndStartContainer = (callback, setContainerId, jiraEndpointTestReady
   );
 };
 
-const stopAndRemoveContainer = (callback, containerId) => {
-  const container = docker.getContainer(containerId);
-  container.stop((err, _) => {
-    if (err) {
-      console.error(`container with id ${container.id} coulnd't be stopped`);
+const stopAllContainers = (callback) => {
+  docker.listContainers({ all: true }, (_, containers) => {
+    if (!lodash.isEmpty(containers)) {
+      containers.forEach((containerInfo) => {
+        const container = docker.getContainer(containerInfo.Id);
+        container.stop((err, _) => {
+          if (err) {
+            console.error(`Container with id ${container.id} coulnd't be stopped!`);
+          }
+          console.log(`Attempting to remove container with id ${container.id}...`);
+          container.remove((err, _) => {
+            console.log(`Container with id ${container.id} has been removed!`);
+            if (err) {
+              callback(err);
+            }
+            callback();
+          });
+        });
+      });
+    } else {
+      console.log('No running containers have been found!');
     }
-    container.remove((err, _) => {
-      console.log(`container with id ${container.id} is removed`);
-      if (err) {
-        callback(err);
-      }
-      callback();
-    });
   });
 };
 
-module.exports = { pullImageAndSpawnContainer, stopAndRemoveContainer };
+module.exports = { pullImageAndSpawnContainer, stopAllContainers };

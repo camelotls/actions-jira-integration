@@ -1,35 +1,26 @@
 const readFileSync = require('fs').readFileSync;
 const jira = require('../../helpers/jira-helpers');
-const rest = require('../../helpers/rest-helper');
 
 const provideEnvironment = (envVars) => {
   process.env = {
     ...envVars,
     INPUT_JSON: readFileSync('./test/testdata/audit/error.json', 'utf8'),
-    REPORT_INPUT_KEYS: readFileSync('./inputReportKeys', 'utf8'),
-    ISSUE_LABEL_MAPPER: 'Security,npm_audit',
-    PRIORITY_MAPPER: readFileSync('./priorityMapper', 'utf8')
+    REPORT_INPUT_KEYS: readFileSync('./test/testdata/envVars/inputReportKeys', 'utf8'),
+    ISSUE_LABELS_MAPPER: readFileSync('./test/testdata/envVars/labelMapper', 'utf8'),
+    // we keep the default issue types offered by the container (Improvement, Task, New Feature, Bug, Epic, Story)
+    JIRA_ISSUE_TYPE: 'Improvement',
+    // we keep the default priorities offered by the container (Highest, High, Medium, Low, Lowest) to reduce complexity
+    PRIORITY_MAPPER: readFileSync('./test/testdata/envVars/priorityMapper', 'utf8')
   };
 };
 
 const getIssuesFromJira = async () => {
   const jiraSession = await jira.createJiraSession(process.env.JIRA_USER, process.env.JIRA_PASSWORD);
   const jiraAuthHeaderValue = await jira.createJiraSessionHeaders(jiraSession);
+
   const response = await jira.searchExistingJiraIssues(jiraAuthHeaderValue);
-  await jira.invalidateJiraSession(jiraAuthHeaderValue);
+
   return response;
 };
 
-const createIssueType = async (issueType, description = 'a description', type = 'standard') => {
-  const jiraSession = await jira.createJiraSession(process.env.JIRA_USER, process.env.JIRA_PASSWORD);
-  const jiraAuthHeaderValue = await jira.createJiraSessionHeaders(jiraSession);
-  const payload = {
-    name: issueType,
-    description: description,
-    type: type
-  };
-  await rest.POSTRequestWrapper(createIssueType.name, process.env.JIRA_URI, '/rest/api/2/issuetype', 'application/json', jiraAuthHeaderValue, payload);
-  await jira.invalidateJiraSession(jiraAuthHeaderValue);
-};
-
-module.exports = { provideEnvironment, getIssuesFromJira, createIssueType };
+module.exports = { provideEnvironment, getIssuesFromJira };

@@ -21,8 +21,8 @@ inputs:
         required: true
     JIRA_ISSUE_TYPE:
         description: "The type of the issue to be used whuile searching for existing issues. This is needed in order to avoid duplicating already raised issues"
-        required: false
-        default: "Security Vulnerability"
+        required: true
+        default: ""
     RUNS_ON_GITHUB:
         description: "Indicates if the action runs on GitHub or locally, on a Docker container, for testing purporses"
         required: true

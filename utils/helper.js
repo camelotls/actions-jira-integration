@@ -50,6 +50,7 @@ const amendHandleBarTemplate = (
   const templateModifier = templateReader({
     PROJECT_ID: config.JIRA_CONFIG.get().JIRA_PROJECT,
     ISSUE_SUMMARY: `${issueSummary}`,
+    JIRA_ISSUE_TYPE: config.JIRA_CONFIG.get().JIRA_ISSUE_TYPE,
     ISSUE_DESCRIPTION: `${issueDescription}`,
     ISSUE_SEVERITY: `${issueSeverity}`,
     ISSUE_SEVERITY_MAP: `${severityMap}`
