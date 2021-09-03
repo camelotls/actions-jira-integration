@@ -16,7 +16,8 @@ const UPLOAD_FILES = core.getInput('UPLOAD_FILES') || process.env.UPLOAD_FILES;
 const UPLOAD_FILES_PATH = core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH;
 let jiraAuthHeaderValue;
 
-
+console.log(typeof core.getInput('UPLOAD_FILES'));
+console.log(">>>>>>>>>>>!!!:" + core.getInput('UPLOAD_FILES'))
 console.log(typeof UPLOAD_FILES);
 console.log("Start: UPLOAD_FILES >>>>>>>>>>>>>>>>>> " + UPLOAD_FILES )
 const createIssue = async (file) => {
