@@ -16,12 +16,13 @@ const UPLOAD_FILES = core.getInput('UPLOAD_FILES') || process.env.UPLOAD_FILES;
 const UPLOAD_FILES_PATH = (core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH) === '';
 
 let jiraAuthHeaderValue;
-
+console.log("Start: UPLOAD_FILES >>>>>>>>>>>>>>>>>> " + UPLOAD_FILES )
 const createIssue = async (file) => {
   const fileContent = fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8');
 
   // this is done here in order to handle more easily the async nature of the call
   let filesToBeUploaded = [];
+  console.log("Before IF: UPLOAD_FILES >>>>>>>>>>>>>>>>>> " + UPLOAD_FILES )
   if (UPLOAD_FILES) {
     console.log(">>>>> Inside IF UPLOAD_FILES: " + UPLOAD_FILES );
     filesToBeUploaded = await utils.retrievePathFiles(UPLOAD_FILES_PATH);
