@@ -14,8 +14,9 @@ const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY
 const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.ISSUE_LABELS_MAPPER;
 const UPLOAD_FILES = Boolean(core.getInput('UPLOAD_FILES')) || Boolean(process.env.UPLOAD_FILES);
 const UPLOAD_FILES_PATH = core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH;
-
 let jiraAuthHeaderValue;
+
+console.log(typeof UPLOAD_FILES);
 console.log("Start: UPLOAD_FILES >>>>>>>>>>>>>>>>>> " + UPLOAD_FILES )
 const createIssue = async (file) => {
   const fileContent = fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8');
