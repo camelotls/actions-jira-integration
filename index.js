@@ -15,6 +15,7 @@ const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.
 const UPLOAD_FILES = (core.getInput('UPLOAD_FILES') || process.env.UPLOAD_FILES) === 'false';
 const UPLOAD_FILES_PATH = (core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH) === '';
 
+console.log(">>>>>>>>>>> core get input UPLOAD_FILES : " + core.getInput('UPLOAD_FILES'))
 console.log(">>>>> Start UPLOAD_FILES: " + UPLOAD_FILES );
 
 let jiraAuthHeaderValue;
