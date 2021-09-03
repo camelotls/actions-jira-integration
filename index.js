@@ -12,7 +12,7 @@ const INPUT_JSON = core.getInput('INPUT_JSON') || process.env.INPUT_JSON;
 const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS') || process.env.REPORT_INPUT_KEYS;
 const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY_MAPPER;
 const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.ISSUE_LABELS_MAPPER;
-// const UPLOAD_FILES = Boolean(core.getInput('UPLOAD_FILES') || process.env.UPLOAD_FILES);
+const UPLOAD_FILES = core.getBooleanInput('UPLOAD_FILES' || process.env.UPLOAD_FILES;
 const UPLOAD_FILES_PATH = core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH;
 let jiraAuthHeaderValue;
 
