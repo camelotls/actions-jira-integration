@@ -106,10 +106,7 @@ const kickOffAction = async (inputJson) => {
     );
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
     if (severityMap !== undefined) {
-      if (
-        !retrievedIssuesUniqueSummaries.includes(utils.ultraTrim(reportMapperInstance.issueSummary)) &&
-        !_.isEmpty(retrievedIssuesUniqueSummaries)
-      ) {
+      if (!retrievedIssuesUniqueSummaries.includes(utils.ultraTrim(reportMapperInstance.issueSummary))) {
         log.info(`Attempting to create JSON payload for module ${reportMapperInstance.issueName}...`);
         utils.amendHandleBarTemplate(
           config.UTILS.CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE,
