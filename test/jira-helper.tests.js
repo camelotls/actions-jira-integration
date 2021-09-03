@@ -10,7 +10,9 @@ describe('Jira REST are functioning properly', () => {
   process.env = {
     JIRA_PROJECT: mocks.MOCK_JIRA_PROJECT,
     JIRA_URI: mocks.MOCK_JIRA_URI,
-    JIRA_ISSUE_TYPE: mocks.MOCK_JIRA_ISSUE_TYPE_FILTER
+    ISSUE_TYPE: mocks.MOCK_JIRA_ISSUE_TYPE_FILTER,
+    JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES: mocks.MOCK_JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES,
+    JQL_SEARCH_PAYLOAD_OPEN_ISSUES: mocks.MOCK_JQL_SEARCH_PAYLOAD_OPEN_ISSUES
   };
 
   let sessionPayload = '';
@@ -20,7 +22,7 @@ describe('Jira REST are functioning properly', () => {
     // eslint-disable-next-line no-undef
     before('a JIRA session can be created', async () => {
       nock(mocks.MOCK_JIRA_URI)
-        .post(config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT)
+        .post(config.JIRA_CONFIG.get().JIRA_ISSUE_AUTH_SESSION_ENDPOINT)
         .reply(200, mocks.MOCK_LOGIN_SESSION);
 
       sessionPayload = await jira.createJiraSession(
@@ -55,7 +57,7 @@ describe('Jira REST are functioning properly', () => {
 
     it('a JIRA issue can be created', async () => {
       nock(mocks.MOCK_JIRA_URI)
-        .post(config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT)
+        .post(config.JIRA_CONFIG.get().JIRA_ISSUE_CREATION_ENDPOINT)
         .reply(200, mocks.MOCK_JIRA_ISSUE_CREATION_PAYLOAD);
 
       const response = await jira.createJiraIssue(
@@ -80,12 +82,37 @@ describe('Jira REST are functioning properly', () => {
       ]);
     });
 
-    it('a list of JIRA issues can be queried', async () => {
+    it('a list of JIRA open issues can be queried', async () => {
       nock(mocks.MOCK_JIRA_URI)
-        .post(config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT)
+        .post(config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_ENDPOINT)
         .reply(200, mocks.MOCK_JIRA_ISSUE_SEARCH_RESPONSE);
 
-      const response = await jira.searchExistingJiraIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
+      const response = await jira.searchExistingJiraIssues(authHeaders, config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
+      expect(response.body)
+        .to.be.instanceOf(Object)
+        .to.have.all.keys('expand', 'startAt', 'maxResults', 'total', 'issues');
+    });
+
+    it('a list of JIRA resolved issues can be queried', async () => {
+      nock(mocks.MOCK_JIRA_URI)
+        .post(config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_ENDPOINT)
+        .reply(200, mocks.MOCK_JIRA_ISSUE_SEARCH_RESPONSE);
+
+      const response = await jira.searchExistingJiraIssues(authHeaders, config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
+      expect(response.body)
+        .to.be.instanceOf(Object)
+        .to.have.all.keys('expand', 'startAt', 'maxResults', 'total', 'issues');
+    });
+
+    it('a list of JIRA issues without a supplied jql query can be queried', async () => {
+      process.env.JQL_SEARCH_PAYLOAD_OPEN_ISSUES = mocks.MOCK_JQL_SEARCH_PAYLOAD_OPEN_ISSUES_EMPTY;
+      process.env.JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES = mocks.MOCK_JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES_EMPTY;
+
+      nock(mocks.MOCK_JIRA_URI)
+        .post(config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_ENDPOINT)
+        .reply(200, mocks.MOCK_JIRA_ISSUE_SEARCH_RESPONSE);
+
+      const response = await jira.searchExistingJiraIssues(authHeaders, config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
       expect(response.body)
         .to.be.instanceOf(Object)
         .to.have.all.keys('expand', 'startAt', 'maxResults', 'total', 'issues');
@@ -93,7 +120,7 @@ describe('Jira REST are functioning properly', () => {
 
     it('a JIRA session can be invalidated', async () => {
       nock(mocks.MOCK_JIRA_URI)
-        .delete(config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT)
+        .delete(config.JIRA_CONFIG.get().JIRA_ISSUE_AUTH_SESSION_ENDPOINT)
         .reply(204, '');
 
       const response = await jira.invalidateJiraSession(authHeaders);
@@ -113,7 +140,7 @@ describe('Jira REST are functioning properly', () => {
     process.env = {
       JIRA_PROJECT: mocks.MOCK_JIRA_PROJECT,
       JIRA_URI: mocks.MOCK_JIRA_URI,
-      JIRA_ISSUE_TYPE: mocks.MOCK_JIRA_ISSUE_TYPE_FILTER
+      ISSUE_TYPE: mocks.MOCK_JIRA_ISSUE_TYPE_FILTER
     };
 
     it('a JIRA session fails to be created when the Jira URI is invalid', async () => {
@@ -132,7 +159,7 @@ describe('Jira REST are functioning properly', () => {
 
     it('a JIRA issue fails to be created when a wrong payload is supplied', async () => {
       nock(mocks.MOCK_JIRA_URI)
-        .post(config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT)
+        .post(config.JIRA_CONFIG.get().JIRA_ISSUE_CREATION_ENDPOINT)
         .reply(400, mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE);
 
       const error = await jira.createJiraIssue(
@@ -145,7 +172,7 @@ describe('Jira REST are functioning properly', () => {
 
     it('a list of JIRA issues fails to be fetched when a wrong payload is supplied', async () => {
       nock(mocks.MOCK_JIRA_URI)
-        .post(config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT)
+        .post(config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_ENDPOINT)
         .reply(400, mocks.MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE);
 
       const error = await jira.searchExistingJiraIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);

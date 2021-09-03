@@ -8,12 +8,11 @@ const utils = require('./utils/helper');
 const config = require('./config/config');
 const jira = require('./helpers/jira-helpers');
 
-const INPUT_JSON = core.getInput('INPUT_JSON') || process.env.INPUT_JSON;
-const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS') || process.env.REPORT_INPUT_KEYS;
-const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY_MAPPER;
-const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.ISSUE_LABELS_MAPPER;
-const UPLOAD_FILES = (core.getInput('UPLOAD_FILES') || process.env.UPLOAD_FILES) === 'false';
-const UPLOAD_FILES_PATH = (core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH) === '';
+const UPLOAD_FILES = (core.getInput('UPLOAD_FILES') || process.env.UPLOAD_FILES) === 'true' ? true : false;
+const UPLOAD_FILES_PATH = core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH;
+
+console.log(`UPLOAD_FILES: ${UPLOAD_FILES}`);
+console.log(`UPLOAD_FILES_PATH: ${UPLOAD_FILES_PATH}`);
 
 let jiraAuthHeaderValue;
 
@@ -30,7 +29,7 @@ const createIssue = async (file) => {
     const jiraIssueKey = jiraIssue.body.key;
     const jiraIssueSummary = JSON.parse(fileContent).fields.summary;
 
-    log.info(`A jira issue with the following details has been raised: ${utils.fixJiraURI(config.JIRA_CONFIG.JIRA_URI)}/browse/${jiraIssueKey}`);
+    log.info(`A jira issue with the following details has been raised: ${utils.fixJiraURI(config.JIRA_CONFIG.get().JIRA_URI)}/browse/${jiraIssueKey}`);
 
     // upload the attachments to the relevant issue created
     if (UPLOAD_FILES) {
@@ -59,24 +58,23 @@ const logout = async (jiraAuthHeaderValue) => {
 };
 
 const kickOffAction = async (inputJson) => {
-  const jiraSession = await jira.createJiraSession(config.JIRA_CONFIG.JIRA_USER, config.JIRA_CONFIG.JIRA_PASSWORD);
+  const jiraSession = await jira.createJiraSession(config.JIRA_CONFIG.get().JIRA_USER, config.JIRA_CONFIG.get().JIRA_PASSWORD);
   log.info('JIRA session created successfully!');
 
   jiraAuthHeaderValue = await jira.createJiraSessionHeaders(jiraSession);
-
   const retrievedIssuesSummaries = [];
 
   log.info('Attempting to search for existing JIRA issues...');
 
   // Gather the issues that have been resolved with certain criteria
-  const { body: resolvedRetrievedIssues } = await jira.searchExistingJiraIssues(jiraAuthHeaderValue, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_RESOLVED_ISSUES);
+  const { body: resolvedRetrievedIssues } = await jira.searchExistingJiraIssues(jiraAuthHeaderValue, config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_PAYLOAD_RESOLVED_ISSUES);
   const { issues: resolvedIssues } = resolvedRetrievedIssues;
   resolvedIssues.forEach((issue) => {
     retrievedIssuesSummaries.push(issue.fields.summary.split(' ').join(''));
   });
 
   // Gather the Open issues
-  const { body: openRetrievedIssues } = await jira.searchExistingJiraIssues(jiraAuthHeaderValue, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
+  const { body: openRetrievedIssues } = await jira.searchExistingJiraIssues(jiraAuthHeaderValue, config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
   const { issues: openIssues } = openRetrievedIssues;
   openIssues.forEach((issue) => {
     retrievedIssuesSummaries.push(issue.fields.summary.split(' ').join(''));
@@ -89,12 +87,13 @@ const kickOffAction = async (inputJson) => {
   }
 
   const priorityMapper = new Map(
-    Object.entries(utils.populateMap(PRIORITY_MAPPER))
+    Object.entries(utils.populateMap(utils.getInput('PRIORITY_MAPPER')))
   );
-  const reportPairsMapper = utils.populateMap(REPORT_INPUT_KEYS);
+  const reportPairsMapper = utils.populateMap(utils.getInput('REPORT_INPUT_KEYS'));
+  const issueLabelsMapper = utils.getInput('ISSUE_LABELS_MAPPER');
   const labels =
-    ISSUE_LABELS_MAPPER.length !== 0
-      ? { labels: ISSUE_LABELS_MAPPER.split(',') }
+    issueLabelsMapper.length !== 0
+      ? { labels: issueLabelsMapper.split(',') }
       : { labels: [] };
 
   const parsedInput = JSON.parse(inputJson);
@@ -107,8 +106,7 @@ const kickOffAction = async (inputJson) => {
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
     if (severityMap !== undefined) {
       if (
-        !retrievedIssuesUniqueSummaries.includes(utils.ultraTrim(reportMapperInstance.issueSummary)) &&
-        !_.isEmpty(retrievedIssuesUniqueSummaries)
+        !retrievedIssuesUniqueSummaries.includes(utils.ultraTrim(reportMapperInstance.issueSummary))
       ) {
         log.info(`Attempting to create JSON payload for module ${reportMapperInstance.issueName}...`);
         utils.amendHandleBarTemplate(
@@ -123,13 +121,13 @@ const kickOffAction = async (inputJson) => {
       } else {
         openIssues.forEach(openIssue => {
           if (utils.ultraTrim(openIssue.fields.summary) === utils.ultraTrim(reportMapperInstance.issueSummary)) {
-            log.info(`The issue for ${reportMapperInstance.issueName} is already open - more details on ${utils.fixJiraURI(config.JIRA_CONFIG.JIRA_URI)}/browse/${openIssue.key}`);
+            log.info(`The issue for ${reportMapperInstance.issueName} is already open - more details on ${utils.fixJiraURI(config.JIRA_CONFIG.get().JIRA_URI)}/browse/${openIssue.key}`);
           }
         });
 
         resolvedIssues.forEach(resolvedIssue => {
           if (utils.ultraTrim(resolvedIssue.fields.summary) === utils.ultraTrim(reportMapperInstance.issueSummary)) {
-            log.info(`The issue for ${reportMapperInstance.issueName} has already been resolved - more details on ${utils.fixJiraURI(config.JIRA_CONFIG.JIRA_URI)}/browse/${resolvedIssue.key}`);
+            log.info(`The issue for ${reportMapperInstance.issueName} has already been resolved - more details on ${utils.fixJiraURI(config.JIRA_CONFIG.get().JIRA_URI)}/browse/${resolvedIssue.key}`);
           }
         });
       }
@@ -151,5 +149,5 @@ const kickOffAction = async (inputJson) => {
 
 (async () => {
   utils.folderCleanup(config.UTILS.PAYLOADS_DIR);
-  await kickOffAction(INPUT_JSON);
+  await kickOffAction(utils.getInput('INPUT_JSON'));
 })();

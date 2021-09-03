@@ -30,6 +30,12 @@ const POSTRequestWrapper = async (
     return response;
   } catch (error) {
     log.warn(`POST request ${requestName} encountered the following error: ${error.message}`);
+
+    if (error.response && error.response.body) {
+      error.response.body.errorMessages.forEach(message => log.warns(message));
+      log.warn(error.response.body.errors);
+    }
+
     return error;
   }
 };
@@ -53,6 +59,12 @@ const DELETERequestWrapper = async (
     return response;
   } catch (error) {
     log.warn(`DELETE request ${requestName} encountered the following error: ${error.message}`);
+
+    if (error.response && error.response.body) {
+      error.response.body.errorMessages.forEach(message => console.log(message));
+      log.warn(error.response.body.errors);
+    }
+
     return error;
   }
 };

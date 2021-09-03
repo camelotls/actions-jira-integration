@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Integration Tests
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Run Unit Tests
+    name: Run Integration Tests
 
     steps:
       - uses: actions/checkout@v2
@@ -16,5 +16,6 @@ jobs:
           node-version: 12.x
       - name: Install Dependencies
         run: npm install
-      - name: Test
-        run: npm run test:unit
+      - name: Integration Tests
+        run: npm run test:integration
+

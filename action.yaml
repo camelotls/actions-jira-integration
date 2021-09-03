@@ -19,10 +19,10 @@ inputs:
     REPORT_INPUT_KEYS:
         description: "A list of keys of the input JSON you provide that will be parsed and included in the report"
         required: true
-    JIRA_ISSUE_TYPE:
-        description: "The type of the issue to be used whuile searching for existing issues. This is needed in order to avoid duplicating already raised issues"
-        required: false
-        default: "Security Vulnerability"
+    ISSUE_TYPE:
+        description: "The type of the issue to be used while searching for existing issues. This is needed in order to avoid duplicating already raised issues"
+        required: true
+        default: ""
     RUNS_ON_GITHUB:
         description: "Indicates if the action runs on GitHub or locally, on a Docker container, for testing purposes"
         required: true
@@ -48,6 +48,14 @@ inputs:
         default: false
     UPLOAD_FILES_PATH:
         description: "Used only if UPLOAD_FILES is set to true. It's the path holding the files to be uploaded"
+        required: false
+        default: ""
+    JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES:
+        description: "The filter you want to apply in order to check for issues that have already been resolved. It is the jql query you get from the \"Advanced\" section while searching Jira tickets and it's used for the duplication mechanism prevention."
+        required: false
+        default: ""
+    JQL_SEARCH_PAYLOAD_OPEN_ISSUES:
+        description: "The filter you want to apply in order to check for issues that are already Open. It is the jql query you get from the \"Advanced\" section while searching Jira tickets and it's used for the duplication mechanism prevention."
         required: false
         default: ""
 runs:
