@@ -134,7 +134,6 @@ const kickOffAction = async (inputJson) => {
     }
   }
 
-  console.log(">>>>>>>>>>>>>>>>>>>>>>> PAYLOADS_DIR: " + config.UTILS.PAYLOADS_DIR)
   const files = await utils.retrievePathFiles(config.UTILS.PAYLOADS_DIR);
 
   if (files.length !== 0) {
