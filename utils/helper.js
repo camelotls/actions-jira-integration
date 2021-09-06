@@ -9,6 +9,7 @@ const bunyan = require('bunyan');
 const { spawnSync } = require('child_process');
 const assert = require('assert');
 const log = bunyan.createLogger({ name: 'actions-jira-integration' });
+const core = require('@actions/core');
 
 const jiraIssueSchema = {
   type: 'object',
@@ -56,6 +57,7 @@ const amendHandleBarTemplate = (
   const templateModifier = templateReader({
     PROJECT_ID: config.JIRA_CONFIG.JIRA_PROJECT,
     ISSUE_SUMMARY: `${issueSummary}`,
+    ISSUE_TYPE: config.JIRA_CONFIG.ISSUE_TYPE,
     ISSUE_DESCRIPTION: `${issueDescription}`,
     ISSUE_SEVERITY: `${issueSeverity}`,
     ISSUE_SEVERITY_MAP: `${severityMap}`
@@ -176,6 +178,10 @@ const ultraTrim = (input) => {
   return input.split(' ').join('');
 };
 
+const getInput = (name) => {
+  return core.getInput(name) || process.env[name];
+};
+
 module.exports = {
   amendHandleBarTemplate: amendHandleBarTemplate,
   folderCleanup: folderCleanup,
@@ -184,5 +190,6 @@ module.exports = {
   fixJiraURI: fixJiraURI,
   shellExec: shellExec,
   retrievePathFiles: retrievePathFiles,
-  ultraTrim: ultraTrim
+  ultraTrim: ultraTrim,
+  getInput: getInput
 };

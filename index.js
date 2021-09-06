@@ -8,11 +8,9 @@ const utils = require('./utils/helper');
 const config = require('./config/config');
 const jira = require('./helpers/jira-helpers');
 
-const INPUT_JSON = core.getInput('INPUT_JSON') || process.env.INPUT_JSON;
-const REPORT_INPUT_KEYS = core.getInput('REPORT_INPUT_KEYS') || process.env.REPORT_INPUT_KEYS;
-const PRIORITY_MAPPER = core.getInput('PRIORITY_MAPPER') || process.env.PRIORITY_MAPPER;
-const ISSUE_LABELS_MAPPER = core.getInput('ISSUE_LABELS_MAPPER') || process.env.ISSUE_LABELS_MAPPER;
-const UPLOAD_FILES = (core.getInput('UPLOAD_FILES') || process.env.UPLOAD_FILES) === 'false';
+const REPORT_INPUT_KEYS = utils.getInput('REPORT_INPUT_KEYS');
+const PRIORITY_MAPPER = utils.getInput('PRIORITY_MAPPER');
+const UPLOAD_FILES = utils.getInput('UPLOAD_FILES') === 'true';
 const UPLOAD_FILES_PATH = (core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH) === '';
 
 let jiraAuthHeaderValue;
@@ -92,9 +90,10 @@ const kickOffAction = async (inputJson) => {
     Object.entries(utils.populateMap(PRIORITY_MAPPER))
   );
   const reportPairsMapper = utils.populateMap(REPORT_INPUT_KEYS);
+  const issueLabelsMapper = utils.getInput('ISSUE_LABELS_MAPPER');
   const labels =
-    ISSUE_LABELS_MAPPER.length !== 0
-      ? { labels: ISSUE_LABELS_MAPPER.split(',') }
+    issueLabelsMapper.length !== 0
+      ? { labels: issueLabelsMapper.split(',') }
       : { labels: [] };
 
   const parsedInput = JSON.parse(inputJson);
@@ -107,8 +106,7 @@ const kickOffAction = async (inputJson) => {
     const severityMap = priorityMapper.get(reportMapperInstance.issueSeverity);
     if (severityMap !== undefined) {
       if (
-        !retrievedIssuesUniqueSummaries.includes(utils.ultraTrim(reportMapperInstance.issueSummary)) &&
-        !_.isEmpty(retrievedIssuesUniqueSummaries)
+        !retrievedIssuesUniqueSummaries.includes(utils.ultraTrim(reportMapperInstance.issueSummary))
       ) {
         log.info(`Attempting to create JSON payload for module ${reportMapperInstance.issueName}...`);
         utils.amendHandleBarTemplate(
@@ -151,5 +149,5 @@ const kickOffAction = async (inputJson) => {
 
 (async () => {
   utils.folderCleanup(config.UTILS.PAYLOADS_DIR);
-  await kickOffAction(INPUT_JSON);
+  await kickOffAction(utils.getInput('INPUT_JSON'));
 })();
