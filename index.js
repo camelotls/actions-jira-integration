@@ -91,10 +91,13 @@ const kickOffAction = async (inputJson) => {
   );
   const reportPairsMapper = utils.populateMap(REPORT_INPUT_KEYS);
   const issueLabelsMapper = utils.getInput('ISSUE_LABELS_MAPPER');
-  const labels =
-    issueLabelsMapper.length !== 0
-      ? { labels: issueLabelsMapper.split(',') }
-      : { labels: [] };
+
+  let labels = { labels: [] };
+  if (issueLabelsMapper.length === 1) {
+    labels = { labels: issueLabelsMapper };
+  } else if (issueLabelsMapper.length > 1) {
+    labels = { labels: issueLabelsMapper.split(',') };
+  }
 
   const parsedInput = JSON.parse(inputJson);
   for (const inputElement in parsedInput) {

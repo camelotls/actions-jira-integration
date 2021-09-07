@@ -71,19 +71,23 @@ jobs:
             - name: Jira ticket creation
               id: jira_integration
               uses: ./actions-jira-integration/
+              env:
+                ISSUE_TYPE: 'Security Vulnerability'
+                ISSUE_LABELS_MAPPER: 'Security,Triaged,npm_audit_check'
+                JIRA_PROJECT: MBIL
               with:
                 JIRA_USER: ${{ secrets.JIRA_USER }}
                 JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
                 # the job with id npm_audit outputs a variable called npm_audit_json
                 INPUT_JSON: ${{ steps.npm_audit.outputs.npm_audit_json }}
-                JIRA_PROJECT: MBIL
+                JIRA_PROJECT: ${{ env.JIRA_PROJECT }}
                 JIRA_URI: 'jira.camelot.global'
                 REPORT_INPUT_KEYS: |
                                     issueName: {{module_name}}
                                     issueSummary: npm-audit: {{module_name}} module vulnerability\n
                                     issueDescription: \`*Recommendation*:\\n\\n{{recommendation}}\\n\\n*Details for {{cwe}}*\\n\\n_Vulnerable versions_:\\n\\n{{vulnerable_versions}}\\n\\n_Patched versions_:\\n\\n{{patched_versions}}\\n\\n*Overview*\\n\\n{{overview}}\\n\\n*References*\\n\\n{{url}}\\n\\n`
                                     issueSeverity: {{severity}}
-                ISSUE_TYPE: 'Security Vulnerability'
+                ISSUE_TYPE: ${{ env.ISSUE_TYPE }}
                 RUNS_ON_GITHUB: true
                 PRIORITY_MAPPER: |
                                      low: P3
