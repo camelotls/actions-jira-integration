@@ -20,7 +20,7 @@ A GitHub Action to integrate multiple tools with Jira Server and raise relevant 
 |JIRA_URI|true|N/A|The JIRA URI for your organisation|
 |INPUT_JSON|true|N/A|The JSON input to be parsed|
 |REPORT_INPUT_KEYS|true|N/A|A list of keys of the input JSON you provide that will be parsed and included in the report|
-|JIRA_ISSUE_TYPE|false|Security Vulnerability|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
+|ISSUE_TYPE|true|""|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
 |RUNS_ON_GITHUB|true|true|Indicates if the action runs on GitHub or locally, on a Docker container, for testing purporses|
 |PRIORITY_MAPPER|false|""|Maps the severity level of the reporting issue to the relevant Jira priority score (A severity level can be skipped if not needed)|
 |ISSUE_LABELS_MAPPER|true|N/A|Maps the labels of the reporting issue to the relevant Jira labels field|
@@ -28,6 +28,8 @@ A GitHub Action to integrate multiple tools with Jira Server and raise relevant 
 |LOAD_BALANCER_COOKIE_NAME|false|""|The name of the cookie for the Load Balancer (if any used)|
 |UPLOAD_FILES|false|false|Uploads a file to each Jira issue created based on a comparison of the file name and its relation to each ticket issueSummary|
 |UPLOAD_FILES_PATH|false|""|Used only if UPLOAD_FILE is set to true. It's the path holding the files to be uploaded|
+|JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES|false|""|The filter you want to apply in order to check for issues that have already been resolved. It is the jql query you get from the \"Advanced\" section while searching Jira tickets and it's used for the duplication mechanism prevention|
+|JQL_SEARCH_PAYLOAD_OPEN_ISSUES|false|""|The filter you want to apply in order to check for issues that are already Open. It is the jql query you get from the \"Advanced\" section while searching Jira tickets and it's used for the duplication mechanism prevention|
 
 ### Outputs
 
@@ -69,19 +71,23 @@ jobs:
             - name: Jira ticket creation
               id: jira_integration
               uses: ./actions-jira-integration/
+              env:
+                ISSUE_TYPE: 'Security Vulnerability'
+                ISSUE_LABELS_MAPPER: 'Security,Triaged,npm_audit_check'
+                JIRA_PROJECT: MBIL
               with:
                 JIRA_USER: ${{ secrets.JIRA_USER }}
                 JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
                 # the job with id npm_audit outputs a variable called npm_audit_json
                 INPUT_JSON: ${{ steps.npm_audit.outputs.npm_audit_json }}
-                JIRA_PROJECT: MBIL
+                JIRA_PROJECT: ${{ env.JIRA_PROJECT }}
                 JIRA_URI: 'jira.camelot.global'
                 REPORT_INPUT_KEYS: |
                                     issueName: {{module_name}}
                                     issueSummary: npm-audit: {{module_name}} module vulnerability\n
                                     issueDescription: \`*Recommendation*:\\n\\n{{recommendation}}\\n\\n*Details for {{cwe}}*\\n\\n_Vulnerable versions_:\\n\\n{{vulnerable_versions}}\\n\\n_Patched versions_:\\n\\n{{patched_versions}}\\n\\n*Overview*\\n\\n{{overview}}\\n\\n*References*\\n\\n{{url}}\\n\\n`
                                     issueSeverity: {{severity}}
-                JIRA_ISSUE_TYPE: 'Security Vulnerability'
+                ISSUE_TYPE: ${{ env.ISSUE_TYPE }}
                 RUNS_ON_GITHUB: true
                 PRIORITY_MAPPER: |
                                      low: P3
@@ -92,7 +98,8 @@ jobs:
                 LOAD_BALANCER_COOKIE_NAME: 'AWSALB'
                 UPLOAD_FILES: true
                 UPLOAD_FILES_PATH: './upload_file_path'
-```
+                JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES: 'project=${{ env.JIRA_PROJECT }} AND type="${{ env.ISSUE_TYPE }}" AND labels IN (${{ env.ISSUE_LABELS_MAPPER }}) AND status=Done AND resolution IN (Obsolete,Duplicate,"Won''t Do")'
+                JQL_SEARCH_PAYLOAD_OPEN_ISSUES: 'project=${{ env.JIRA_PROJECT }} AND type="${{ env.ISSUE_TYPE }}" AND labels IN (${{ env.ISSUE_LABELS_MAPPER }}) AND status NOT IN (Done)'
 
 **NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important for the parsing of the action to work properly. Also, the submitted JSON **must** be in its final form that you want it to be processed (not purely the raw output of your report).
 

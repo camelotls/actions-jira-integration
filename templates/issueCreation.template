@@ -3,7 +3,7 @@
         "project": {"key": "{{PROJECT_ID}}"},
         "summary": "{{ISSUE_SUMMARY}}",
         "issuetype": {
-            "name": "Security Vulnerability"
+            "name": "{{ISSUE_TYPE}}"
         },
         "priority": {
             "name": "{{ISSUE_SEVERITY_MAP}}"
