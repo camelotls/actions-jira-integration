@@ -5,118 +5,118 @@ const rest = require('./rest-helper');
 const config = require('../config/config');
 const utils = require('../utils/helper');
 
-const createJiraSession = async function createJiraSession (
-  jiraUser,
-  jiraPassword
+const createJiraSession = async function createJiraSession(
+    jiraUser,
+    jiraPassword
 ) {
-  const LOAD_BALANCER_COOKIE_ENABLED = core.getInput('LOAD_BALANCER_COOKIE_ENABLED') === 'true' || process.env.LOAD_BALANCER_COOKIE_ENABLED === 'true';
-  const LOAD_BALANCER_COOKIE_NAME = core.getInput('LOAD_BALANCER_COOKIE_NAME') || process.env.LOAD_BALANCER_COOKIE_NAME || '';
+    const LOAD_BALANCER_COOKIE_ENABLED = core.getInput('LOAD_BALANCER_COOKIE_ENABLED') === 'true' || process.env.LOAD_BALANCER_COOKIE_ENABLED === 'true';
+    const LOAD_BALANCER_COOKIE_NAME = core.getInput('LOAD_BALANCER_COOKIE_NAME') || process.env.LOAD_BALANCER_COOKIE_NAME || '';
 
-  const sessionPayload = {
-    username: jiraUser,
-    password: jiraPassword
-  };
+    const sessionPayload = {
+        username: jiraUser,
+        password: jiraPassword
+    };
 
-  const response = await rest.POSTRequestWrapper(
-    createJiraSession.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
-    config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
-    '',
-    sessionPayload
-  );
+    const response = await rest.POSTRequestWrapper(
+        createJiraSession.name,
+        process.env.JIRA_URI || config.JIRA_CONFIG.get().JIRA_URI,
+        config.JIRA_CONFIG.get().JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
+        config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
+        '',
+        sessionPayload
+    );
 
-  assert(
-    response.statusCode === 200,
-    `Jira session cannot be created: ${response.message}`
-  );
+    assert(
+        response.statusCode === 200,
+        `Jira session cannot be created: ${response.message}`
+    );
 
-  const SESSION_PAYLOAD = {
-    sessionID: {
-      name: response.body.session.name,
-      value: response.body.session.value
-    },
-    loadBalancerCookie: {
-      name: '',
-      value: ''
+    const SESSION_PAYLOAD = {
+        sessionID: {
+            name: response.body.session.name,
+            value: response.body.session.value
+        },
+        loadBalancerCookie: {
+            name: '',
+            value: ''
+        }
+    };
+
+    if(LOAD_BALANCER_COOKIE_ENABLED) {
+        const LOAD_BALANCER = response.headers['set-cookie'][0];
+        const LOAD_BALANCER_HEADER = `${LOAD_BALANCER_COOKIE_NAME}=`;
+        const LOAD_BALANCER_HEADER_LENGTH = LOAD_BALANCER.indexOf(LOAD_BALANCER_HEADER) + LOAD_BALANCER_HEADER.length;
+
+        Object.assign(SESSION_PAYLOAD.loadBalancerCookie, {
+            name: LOAD_BALANCER_HEADER,
+            value: LOAD_BALANCER.toString().substring(
+                LOAD_BALANCER_HEADER_LENGTH,
+                LOAD_BALANCER_HEADER_LENGTH + LOAD_BALANCER.indexOf(';') - 7
+            )
+        });
     }
-  };
 
-  if (LOAD_BALANCER_COOKIE_ENABLED) {
-    const LOAD_BALANCER = response.headers['set-cookie'][0];
-    const LOAD_BALANCER_HEADER = `${LOAD_BALANCER_COOKIE_NAME}=`;
-    const LOAD_BALANCER_HEADER_LENGTH = LOAD_BALANCER.indexOf(LOAD_BALANCER_HEADER) + LOAD_BALANCER_HEADER.length;
-
-    Object.assign(SESSION_PAYLOAD.loadBalancerCookie, {
-      name: LOAD_BALANCER_HEADER,
-      value: LOAD_BALANCER.toString().substring(
-        LOAD_BALANCER_HEADER_LENGTH,
-        LOAD_BALANCER_HEADER_LENGTH + LOAD_BALANCER.indexOf(';') - 7
-      )
-    });
-  }
-
-  return SESSION_PAYLOAD;
+    return SESSION_PAYLOAD;
 };
 
 const createJiraSessionHeaders = (sessionPayload) => {
-  const authHeaderJiraCookieValue = `${sessionPayload.sessionID.name}=${sessionPayload.sessionID.value}`;
-  const authHeaderCookieValues =
+    const authHeaderJiraCookieValue = `${sessionPayload.sessionID.name}=${sessionPayload.sessionID.value}`;
+    const authHeaderCookieValues =
     sessionPayload.loadBalancerCookie.name === ''
-      ? authHeaderJiraCookieValue
-      : `${authHeaderJiraCookieValue};${sessionPayload.loadBalancerCookie.name}${sessionPayload.loadBalancerCookie.value}`;
+        ? authHeaderJiraCookieValue
+        : `${authHeaderJiraCookieValue};${sessionPayload.loadBalancerCookie.name}${sessionPayload.loadBalancerCookie.value}`;
 
-  return authHeaderCookieValues;
+    return authHeaderCookieValues;
 };
 
-const createJiraIssue = async function (authHeaders, filePayload) {
-  const issueRequestPayload = JSON.parse(filePayload);
-  const response = await rest.POSTRequestWrapper(
-    createJiraIssue.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT,
-    config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
-    authHeaders,
-    issueRequestPayload
-  );
+const createJiraIssue = async function(authHeaders, filePayload) {
+    const issueRequestPayload = JSON.parse(filePayload);
+    const response = await rest.POSTRequestWrapper(
+        createJiraIssue.name,
+        process.env.JIRA_URI || config.JIRA_CONFIG.get().JIRA_URI,
+        config.JIRA_CONFIG.get().JIRA_ISSUE_CREATION_ENDPOINT,
+        config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
+        authHeaders,
+        issueRequestPayload
+    );
 
-  return response;
+    return response;
 };
 
-const searchExistingJiraIssues = async function (authHeaders, payload) {
-  const response = await rest.POSTRequestWrapper(
-    searchExistingJiraIssues.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT,
-    config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
-    authHeaders,
-    payload
-  );
+const searchExistingJiraIssues = async function(authHeaders, payload) {
+    const response = await rest.POSTRequestWrapper(
+        searchExistingJiraIssues.name,
+        process.env.JIRA_URI || config.JIRA_CONFIG.get().JIRA_URI,
+        config.JIRA_CONFIG.get().JIRA_ISSUE_SEARCH_ENDPOINT,
+        config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
+        authHeaders,
+        payload
+    );
 
-  return response;
+    return response;
 };
 
-const invalidateJiraSession = async function (authHeaders) {
-  const response = await rest.DELETERequestWrapper(
-    invalidateJiraSession.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
-    config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
-    authHeaders
-  );
+const invalidateJiraSession = async function(authHeaders) {
+    const response = await rest.DELETERequestWrapper(
+        invalidateJiraSession.name,
+        process.env.JIRA_URI || config.JIRA_CONFIG.get().JIRA_URI,
+        config.JIRA_CONFIG.get().JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
+        config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
+        authHeaders
+    );
 
-  return response.body;
+    return response.body;
 };
 
-const pushAttachment = async function (fileName, jiraIssue) {
-  utils.shellExec(`curl -D- -u ${config.JIRA_CONFIG.JIRA_USER}:${config.JIRA_CONFIG.JIRA_PASSWORD} -X POST -H "X-Atlassian-Token: no-check" -F "file=@${fileName}" ${utils.fixJiraURI(config.JIRA_CONFIG.JIRA_URI)}${config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT}/${jiraIssue}/attachments`);
+const pushAttachment = async function(fileName, jiraIssue) {
+    utils.shellExec(`curl -D- -u ${config.JIRA_CONFIG.get().JIRA_USER}:${config.JIRA_CONFIG.get().JIRA_PASSWORD} -X POST -H "X-Atlassian-Token: no-check" -F "file=@${fileName}" ${utils.fixJiraURI(config.JIRA_CONFIG.get().JIRA_URI)}${config.JIRA_CONFIG.get().JIRA_ISSUE_CREATION_ENDPOINT}/${jiraIssue}/attachments`);
 };
 
 module.exports = {
-  createJiraIssue: createJiraIssue,
-  createJiraSession: createJiraSession,
-  createJiraSessionHeaders: createJiraSessionHeaders,
-  searchExistingJiraIssues: searchExistingJiraIssues,
-  invalidateJiraSession: invalidateJiraSession,
-  pushAttachment: pushAttachment
+    createJiraIssue: createJiraIssue,
+    createJiraSession: createJiraSession,
+    createJiraSessionHeaders: createJiraSessionHeaders,
+    searchExistingJiraIssues: searchExistingJiraIssues,
+    invalidateJiraSession: invalidateJiraSession,
+    pushAttachment: pushAttachment
 };
