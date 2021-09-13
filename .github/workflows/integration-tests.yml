@@ -1,0 +1,38 @@
+name: 'Integration Tests'
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: 'Run Integration Tests'
+    env:
+      USERNAME: ${{ github.actor }}
+      PASSWORD: ${{ github.token }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'Use Node.js 12.x'
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: 'Install Dependencies'
+        run: npm install
+      - name: 'Login to GitHub registry'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ env.USERNAME }}
+          password: ${{ env.PASSWORD }}
+      - name: 'Execute Integration Tests'
+        run: npm run test:integration
+        env:
+          GITHUB_USER: ${{ env.USERNAME }}
+          GITHUB_TOKEN: ${{ env.PASSWORD }}
+          GITHUB_RUN: true
+          JIRA_USER: admin
+          JIRA_PASSWORD_INTEGRATION: ${{ secrets.JIRA_PASSWORD_INTEGRATION}}
+          JIRA_PROJECT: SET1
+          JIRA_URI: 'http://localhost:8080'
+          JIRA_ALIVE_URI: 'http://localhost:8080/rest/api/2/status'

@@ -145,6 +145,31 @@ The Unit Tests have been implemented using `Mocha` and `Chai`. For the test cove
 
 To run them locally, simply run `npm run test`.
 
+## Run the Integration Tests
+The integration tests built for that project are based on a public Docker image offering a vanilla Jira instance on top
+of which a dev license and a basic setup have been added as a layer. The tests run for every attempt to merge to master
+in order to ensure that the action does what it's supposed to do: raise Jira issues! 
+
+In order to make sure that your PR does not break the tests, you can run them locally by executing:
+
+```
+npm run test:integration
+```
+
+Since the tests use the `dotenv` module, you need to have locally a `.env` file with the key value pairs described in the
+`.env.example` file.
+
+
+The tests then will:
+
+1. search for any running containers serving Jira to http://localhost:8080
+2. if any, attempt to stop them
+3. pull the relevant image down, if it cannot be found locally
+4. spin off a container based on that image
+5. validate that the action can create an issue on the Jira instance created
+6. validate that teh aforementioned issue has been created
+
+Note that the steps 1 and 2 are applicable only when you execute the tests locally.
 
 ## Run the GitHub Action locally
 To run this action locally, you can simply build a Docker image and then run it to see that you get the desired result. To do so, follow the instructions below:
@@ -186,3 +211,6 @@ docker run -e JIRA_USER=$JIRA_USER \
             -e RUNS_ON_GITHUB=$RUNS_ON_GITHUB \
             <image_name>:<image_version>
 ```
+
+Alternatively, you can spin off a container via the [integration tests](#run-the-integration-tests) and use the Jira
+instance server in http://localhost:8080 as your main target.

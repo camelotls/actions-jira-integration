@@ -1,0 +1,39 @@
+{
+  "532": {
+    "findings": [
+      {
+        "version": "2.19.2",
+        "paths": [
+          "moment"
+        ]
+      }
+    ],
+    "id": 532,
+    "created": "2017-09-21T20:40:00.889Z",
+    "updated": "2019-06-24T15:10:05.868Z",
+    "deleted": null,
+    "title": "Regular Expression Denial of Service",
+    "found_by": {
+      "name": "Cristian-Alexandru Staicu"
+    },
+    "reported_by": {
+      "name": "Cristian-Alexandru Staicu"
+    },
+    "module_name": "moment",
+    "cves": [],
+    "vulnerable_versions": "<2.19.3",
+    "patched_versions": ">=2.19.3",
+    "overview": "Affected versions of `moment` are vulnerable to a low severity regular expression denial of service when parsing dates as strings.",
+    "recommendation": "Update to version 2.19.3 or later.",
+    "references": "- [Issue #4163](https://github.com/moment/moment/issues/4163)\n- [PR #4326](https://github.com/moment/moment/pull/4326)",
+    "access": "public",
+    "severity": "low",
+    "cwe": "CWE-400",
+    "metadata": {
+      "module_type": "",
+      "exploitability": 5,
+      "affected_components": ""
+    },
+    "url": "https://npmjs.com/advisories/532"
+  }
+}

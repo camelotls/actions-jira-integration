@@ -1,16 +1,110 @@
 {
-    "env": {
-        "browser": false,
-        "es2021": true
-    },
     "extends": [
-        "standard"
+        "eslint:recommended"
     ],
     "parserOptions": {
-        "ecmaVersion": 12,
+        "ecmaVersion": 2018,
         "sourceType": "module"
     },
+    "env": {
+        "es6": true,
+        "node": true,
+        "browser": true
+    },
     "rules": {
-        "semi": [2, "always"]
+        "strict": [
+            2,
+            "global"
+        ],
+        "semi": [
+            2,
+            "always"
+        ],
+        "quotes": [
+            2,
+            "single",
+            {
+                "allowTemplateLiterals": true
+            }
+        ],
+        "curly": 2,
+        "brace-style": [
+            2,
+            "stroustrup",
+            {
+                "allowSingleLine": true
+            }
+        ],
+        "indent": [
+            2,
+            4,
+            {
+                "SwitchCase": 1,
+                "VariableDeclarator": 2
+            }
+        ],
+        "key-spacing": [
+            2,
+            {
+                "beforeColon": false,
+                "afterColon": true
+            }
+        ],
+        "space-before-blocks": [
+            2,
+            "always"
+        ],
+        "space-before-function-paren": [
+            2,
+            "never"
+        ],
+        "keyword-spacing": [
+            2,
+            {
+                "overrides": {
+                    "if": {
+                        "after": false
+                    },
+                    "for": {
+                        "after": false
+                    },
+                    "while": {
+                        "after": false
+                    }
+                }
+            }
+        ],
+        "space-in-parens": [
+            2,
+            "never"
+        ],
+        "comma-spacing": [
+            2,
+            {
+                "before": false,
+                "after": true
+            }
+        ],
+        "eqeqeq": 2,
+        "no-multi-spaces": 2,
+        "space-infix-ops": 2,
+        "no-debugger": 2,
+        "no-console": 0,
+        "no-var": 2,
+        "no-trailing-spaces": 2,
+        "eol-last": 0,
+        "no-unused-vars": 2,
+        "no-underscore-dangle": 0,
+        "no-alert": 2,
+        "no-lone-blocks": 1,
+        "no-warning-comments": 1,
+        "no-empty-function": 2,
+        "default-case": 2,
+        "handle-callback-err": 2,
+        "no-lonely-if": 2,
+        "no-self-compare": 2,
+        "no-throw-literal": 2,
+        "implicit-arrow-linebreak": 2,
+        "arrow-spacing": 2
     }
 }

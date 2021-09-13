@@ -1,6 +1,6 @@
 name: Linter
 
-on: 
+on:
   pull_request:
 
 jobs:
