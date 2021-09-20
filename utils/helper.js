@@ -1,6 +1,5 @@
 const fs = require('fs');
 const rimraf = require('rimraf');
-const handlebars = require('handlebars');
 const { v4 } = require('uuid');
 const dirtyJSON = require('dirty-json');
 const Validator = require('jsonschema').Validator;
@@ -10,6 +9,7 @@ const { spawnSync } = require('child_process');
 const assert = require('assert');
 const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 const core = require('@actions/core');
+const _ = require('lodash');
 
 const jiraIssueSchema = {
   type: 'object',
@@ -43,7 +43,6 @@ const booleanToUpper = (input) => {
 };
 
 const amendHandleBarTemplate = (
-  template,
   issueModule,
   issueSummary,
   issueDescription,
@@ -51,17 +50,109 @@ const amendHandleBarTemplate = (
   severityMap,
   issueLabelMapper
 ) => {
-  const templateStored = fs.readFileSync(`${config.UTILS.TEMPLATES_DIR}/${template}`, 'utf8').toString();
-  const templateReader = handlebars.compile(templateStored, { noEscape: true });
+  const defaultTemplate = { };
+  const templateBluePrint = {
+    PROJECT_ID: [{
+      keys: ['project', 'key'],
+      value: config.JIRA_CONFIG.JIRA_PROJECT
+    }],
+    ISSUE_SUMMARY: [{
+      keys: ['summary'],
+      value: `${issueSummary}`
+    }],
+    ISSUE_TYPE: [{
+      keys: ['issuetype', 'name'],
+      value: config.JIRA_CONFIG.ISSUE_TYPE
+    }],
+    ISSUE_ASSIGNEE: [{
+      keys: ['assignee', 'name'],
+      value: config.JIRA_CONFIG.ISSUE_ASSIGNEE
+    }],
+    ISSUE_REPORTER: [{
+      keys: ['reporter', 'name'],
+      value: config.JIRA_CONFIG.ISSUE_REPORTER
+    }],
+    ISSUE_PRIORITY: [{
+      keys: ['priority', 'id'],
+      value: config.JIRA_CONFIG.ISSUE_PRIORITY
+    }],
+    ISSUE_LABELS: [{
+      keys: ['labels'],
+      value: config.JIRA_CONFIG.ISSUE_LABELS
+    }],
+    ISSUE_TIME_TRACKING: [{
+      keys: ['timetracking', 'originalEstimate'],
+      value: 'testValue1'
+    },
+    {
+      keys: ['timetracking', 'remainingEstimate'],
+      value: 'testValue2'
+    }
+    ],
+    ISSUE_SECURITY: [{
+      keys: ['security', 'id'],
+      value: config.JIRA_CONFIG.ISSUE_SECURITY
+    }],
+    ISSUE_VERSIONS: [{
+      keys: ['versions'],
+      value: config.JIRA_CONFIG.ISSUE_VERSIONS
+    }],
+    ISSUE_ENVIRONMENT: [{
+      keys: ['environment'],
+      value: config.JIRA_CONFIG.ISSUE_ENVIRONMENT
+    }],
+    ISSUE_DESCRIPTION: [{
+      keys: ['description'],
+      value: `${issueDescription}`
+    }],
+    ISSUE_DUE_DATE: [{
+      keys: ['duedate'],
+      value: config.JIRA_CONFIG.ISSUE_DUE_DATE
+    }],
+    ISSUE_FIX_VERSIONS: [{
+      keys: ['fixVersions'],
+      value: config.JIRA_CONFIG.ISSUE_FIX_VERSIONS
+    }],
+    ISSUE_COMPONENTS: [{
+      keys: ['components'],
+      value: config.JIRA_CONFIG.ISSUE_COMPONENTS
+    }],
+    ISSUE_SEVERITY_MAP: [{
+      keys: ['priority', 'name'],
+      value: `${severityMap}`
+    }]
+  };
+  const fieldKeys = Object.keys(templateBluePrint);
 
-  const templateModifier = templateReader({
-    PROJECT_ID: config.JIRA_CONFIG.JIRA_PROJECT,
-    ISSUE_SUMMARY: `${issueSummary}`,
-    ISSUE_TYPE: config.JIRA_CONFIG.ISSUE_TYPE,
-    ISSUE_DESCRIPTION: `${issueDescription}`,
-    ISSUE_SEVERITY: `${issueSeverity}`,
-    ISSUE_SEVERITY_MAP: `${severityMap}`
-  });
+  const addToTemplate = (field, template) => {
+    if (fieldKeys.includes(field)) {
+      console.log('HERE IT IS ' + JSON.stringify(templateBluePrint));
+      templateBluePrint[field].forEach((valueKeyPair) => {
+        console.log('VALUEPAIR: ' + JSON.stringify(valueKeyPair));
+        if (valueKeyPair.value) {
+          _.set(template, valueKeyPair.keys, valueKeyPair.value);
+        }
+      });
+    }
+    return template;
+  };
+
+  const finalTemplate = (fields) => {
+    const template = defaultTemplate;
+    fields.forEach((field) => {
+      addToTemplate(field, template);
+      console.log(addToTemplate(field, template));
+    });
+    return _.set({}, 'fields', template);
+  };
+
+  const templateModifier = finalTemplate(fieldKeys);
+  // TODO REMOVE BELOW CONSOLE LOG
+  console.log('----------------DEBUG------------------- ',
+    '\n',
+    dirtyJSON.parse(booleanToUpper(JSON.stringify(finalTemplate(fieldKeys)))),
+    '\n',
+    '-------- END OF DEBUG-------');
 
   const payload = `${issueModule}_${v4()}_payload.json`;
 

@@ -20,7 +20,7 @@ inputs:
         description: "A list of keys of the input JSON you provide that will be parsed and included in the report"
         required: true
     ISSUE_TYPE:
-        description: "The type of the issue to be used whuile searching for existing issues. This is needed in order to avoid duplicating already raised issues"
+        description: "The type of the issue to be used while searching for existing issues. This is needed in order to avoid duplicating already raised issues"
         required: true
         default: ""
     RUNS_ON_GITHUB:

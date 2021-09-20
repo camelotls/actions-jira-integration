@@ -99,7 +99,7 @@ const kickOffAction = async (inputJson) => {
     labels = { labels: issueLabelsMapper.split(',') };
   }
 
-  const parsedInput = JSON.parse(inputJson);
+  const parsedInput = JSON.parse(inputJson).advisories;
   for (const inputElement in parsedInput) {
     const reportMapperInstance = utils.reportMapper(
       inputElement,
@@ -141,11 +141,11 @@ const kickOffAction = async (inputJson) => {
 
   const files = await utils.retrievePathFiles(config.UTILS.PAYLOADS_DIR);
 
-  if (files.length !== 0) {
-    await parallelIssueCreation(files);
-  } else {
-    log.info('All the vulnerabilities have already been captured as issues on Jira.');
-  }
+  // if (files.length !== 0) {
+  //   await parallelIssueCreation(files);
+  // } else {
+  //   log.info('All the vulnerabilities have already been captured as issues on Jira.');
+  // }
 
   await logout(jiraAuthHeaderValue);
 };
