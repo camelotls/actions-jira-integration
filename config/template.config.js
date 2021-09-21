@@ -43,11 +43,11 @@ const templateBluePrint = (
     ISSUE_TIME_TRACKING:
       [{
         keys: ['timetracking', 'originalEstimate'],
-        value: config.JIRA_CONFIG.ISSUE_TIME_TRACKING[0]
+        value: config.JIRA_CONFIG.ISSUE_TIME_TRACKING
       },
       {
         keys: ['timetracking', 'remainingEstimate'],
-        value: config.JIRA_CONFIG.ISSUE_TIME_TRACKING[1]
+        value: config.JIRA_CONFIG.ISSUE_TIME_TRACKING
       }
       ],
     ISSUE_SECURITY:
