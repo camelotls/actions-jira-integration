@@ -111,7 +111,16 @@ const reportMapper = (inputElement, parsedInput, reportPairsMapper) => {
       if (reportInputVariablesFetcher.length === 1 || firstPass === false) {
         mapper[reportKey] = reportPairsMapper[reportKey].replace(`{{${keyName}}}`, `${parsedInput[inputElement][keyName]}`);
       } else {
-        mapper[reportKey] = mapper[reportKey].replace(`{{${keyName}}}`, `${parsedInput[inputElement][keyName]}`);
+        const parsedInputValue = parsedInput[inputElement][keyName];
+        if (typeof parsedInputValue === 'object') {
+          let formattedInput = '';
+          parsedInputValue.forEach((singleParsedInputValue) => {
+            formattedInput += `\u2022 ${singleParsedInputValue}\n`;
+          });
+          mapper[reportKey] = mapper[reportKey].replace(`{{${keyName}}}`, formattedInput);
+        } else {
+          mapper[reportKey] = mapper[reportKey].replace(`{{${keyName}}}`, `${parsedInputValue}`);
+        }
       }
       firstPass = true;
     }
