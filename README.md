@@ -18,7 +18,7 @@ A GitHub Action to integrate multiple tools with Jira Server and raise relevant 
 |JIRA_PASSWORD|true|N/A|GitHub secret for the JIRA API token for external access|
 |JIRA_PROJECT|true|N/A|The project key for Jira|
 |JIRA_URI|true|N/A|The JIRA URI for your organisation|
-|INPUT_JSON|true|N/A|The JSON input to be parsed|
+|INPUT_JSON|true|N/A|The path where the JSON input to be parsed|
 |REPORT_INPUT_KEYS|true|N/A|A list of keys of the input JSON you provide that will be parsed and included in the report|
 |ISSUE_TYPE|true|""|Indicates if the JSON to be used for the JIRA REST calls is based on npm audit since there is a need for special treating of the overview report field|
 |RUNS_ON_GITHUB|true|true|Indicates if the action runs on GitHub or locally, on a Docker container, for testing purporses|

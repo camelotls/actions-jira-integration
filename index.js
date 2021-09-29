@@ -12,6 +12,7 @@ const REPORT_INPUT_KEYS = utils.getInput('REPORT_INPUT_KEYS');
 const PRIORITY_MAPPER = utils.getInput('PRIORITY_MAPPER');
 const UPLOAD_FILES = utils.getInput('UPLOAD_FILES') === 'true';
 const UPLOAD_FILES_PATH = (core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH) === '';
+const INPUT_JSON = utils.getInput('INPUT_JSON') || process.env.INPUT_JSON;
 
 let jiraAuthHeaderValue;
 
@@ -100,6 +101,7 @@ const kickOffAction = async (inputJson) => {
   }
 
   const parsedInput = JSON.parse(inputJson);
+  console.log(parsedInput);
   for (const inputElement in parsedInput) {
     const reportMapperInstance = utils.reportMapper(
       inputElement,
@@ -150,7 +152,9 @@ const kickOffAction = async (inputJson) => {
   await logout(jiraAuthHeaderValue);
 };
 
+const tempReportInputFile = fs.readFileSync(INPUT_JSON, 'utf8');
+
 (async () => {
   utils.folderCleanup(config.UTILS.PAYLOADS_DIR);
-  await kickOffAction(utils.getInput('INPUT_JSON'));
+  await kickOffAction(tempReportInputFile);
 })();
