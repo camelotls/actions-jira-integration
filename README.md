@@ -79,7 +79,7 @@ jobs:
                 JIRA_USER: ${{ secrets.JIRA_USER }}
                 JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
                 # the job with id npm_audit outputs a variable called npm_audit_json
-                INPUT_JSON: './nowsecure-report.json'
+                INPUT_JSON: './report.json'
                 JIRA_PROJECT: ${{ env.JIRA_PROJECT }}
                 JIRA_URI: 'jira.camelot.global'
                 REPORT_INPUT_KEYS: |
