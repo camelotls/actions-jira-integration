@@ -11,6 +11,7 @@ const { spawnSync } = require('child_process');
 const assert = require('assert');
 const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 const core = require('@actions/core');
+const _ = require('lodash');
 
 const jiraIssueSchema = {
   type: 'object',
@@ -56,7 +57,12 @@ const amendHandleBarTemplate = (
     issueDescription,
     issueSeverity
   );
-  const templateModifier = createTemplate(templateInput);
+  const extraFieldsUserInput = { 'fields.test.component': 'testValue', 'fields.project.key': 'testValue' };
+
+  const finalTemplate = { ...templateInput, ...extraFieldsUserInput };
+
+  const templateModifier = createTemplate(finalTemplate);
+  console.log('------DEBUG------' + JSON.stringify(templateModifier));
   const payload = `${issueModule}_${v4()}_payload.json`;
 
   let beautifiedTemplate;
