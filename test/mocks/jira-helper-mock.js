@@ -25,6 +25,10 @@ const MOCK_JIRA_ISSUE_TYPE = {
 };
 const MOCK_JIRA_ISSUE_LABELS = ['mock1', 'mock2'];
 const MOCK_JIRA_ISSUE_DESCRIPTION = 'This is a mock description';
+const MOCK_JIRA_ISSUE_EXTRA_FIELD_KEY = [
+  { id: 'This is a mock component' },
+  { id: 'This is another mock component' }]
+;
 const MOCK_JIRA_ISSUE_CREATION_PAYLOAD = {
   fields: {
     project: {
@@ -36,6 +40,35 @@ const MOCK_JIRA_ISSUE_CREATION_PAYLOAD = {
     },
     labels: ['mock1', 'mock2'],
     description: 'This is a mock description'
+  }
+};
+const MOCK_JIRA_ISSUE_WITH_EXTRA_FIELD_CREATION_PAYLOAD = {
+  fields: {
+    project: {
+      key: 'project'
+    },
+    summary: 'This is a mock',
+    issuetype: {
+      name: 'This is a mock security vulnerability'
+    },
+    labels: ['mock1', 'mock2'],
+    description: 'This is a mock description',
+    components: [{ id: 'This is a mock component' }, { id: 'This is another mock component' }]
+  }
+};
+
+const MOCK_JIRA_ISSUE_WITH_WRONG_EXTRA_FIELD_CREATION_PAYLOAD = {
+  fields: {
+    project: {
+      key: 'project'
+    },
+    summary: 'This is a mock',
+    issuetype: {
+      name: 'This is a mock security vulnerability'
+    },
+    labels: ['mock1', 'mock2'],
+    description: 'This is a mock description',
+    components: 'This is a wrong mock component'
   }
 };
 const MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD = {
@@ -88,12 +121,15 @@ module.exports = {
   MOCK_JIRA_SESSION_NAME: MOCK_JIRA_SESSION_NAME,
   MOCK_JIRA_SESSION_VALUE: MOCK_JIRA_SESSION_VALUE,
   MOCK_JIRA_ISSUE_CREATION_PAYLOAD: MOCK_JIRA_ISSUE_CREATION_PAYLOAD,
+  MOCK_JIRA_ISSUE_WITH_WRONG_EXTRA_FIELD_CREATION_PAYLOAD: MOCK_JIRA_ISSUE_WITH_WRONG_EXTRA_FIELD_CREATION_PAYLOAD,
+  MOCK_JIRA_ISSUE_WITH_EXTRA_FIELD_CREATION_PAYLOAD: MOCK_JIRA_ISSUE_WITH_EXTRA_FIELD_CREATION_PAYLOAD,
   MOCK_JIRA_ISSUE_SEARCH_RESPONSE: MOCK_JIRA_ISSUE_SEARCH_RESPONSE,
   MOCK_JIRA_ISSUE_PROJECT_KEY: MOCK_JIRA_ISSUE_PROJECT_KEY,
   MOCK_JIRA_ISSUE_SUMMARY: MOCK_JIRA_ISSUE_SUMMARY,
   MOCK_JIRA_ISSUE_TYPE: MOCK_JIRA_ISSUE_TYPE,
   MOCK_JIRA_ISSUE_LABELS: MOCK_JIRA_ISSUE_LABELS,
   MOCK_JIRA_ISSUE_DESCRIPTION: MOCK_JIRA_ISSUE_DESCRIPTION,
+  MOCK_JIRA_ISSUE_EXTRA_FIELD_KEY: MOCK_JIRA_ISSUE_EXTRA_FIELD_KEY,
   MOCK_JIRA_URI: MOCK_JIRA_URI,
   MOCK_JIRA_PROJECT: MOCK_JIRA_PROJECT,
   MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD: MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD,
