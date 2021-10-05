@@ -58,6 +58,10 @@ inputs:
         description: "The filter you want to apply in order to check for issues that are already Open. It is the jql query you get from the \"Advanced\" section while searching Jira tickets and it's used for the duplication mechanism prevention."
         required: false
         default: ""
+    EXTRA_JIRA_FIELDS:
+        description: "Provide the extra fields you need to include in the payload sent to Jira during an issue creation."
+        required: false
+        default: ""
 runs:
     using: "docker"
     image: "Dockerfile"

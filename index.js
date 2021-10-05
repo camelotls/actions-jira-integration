@@ -12,6 +12,7 @@ const REPORT_INPUT_KEYS = utils.getInput('REPORT_INPUT_KEYS');
 const PRIORITY_MAPPER = utils.getInput('PRIORITY_MAPPER');
 const UPLOAD_FILES = utils.getInput('UPLOAD_FILES') === 'true';
 const UPLOAD_FILES_PATH = (core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH) === '';
+const EXTRA_JIRA_FIELDS = utils.getInput('EXTRA_JIRA_FIELDS');
 
 let jiraAuthHeaderValue;
 
@@ -99,7 +100,14 @@ const kickOffAction = async (inputJson) => {
     labels = { labels: issueLabelsMapper.split(',') };
   }
 
-  const parsedInput = JSON.parse(inputJson).advisories;
+  /*
+  * wrapping all the extra keys supplied with the "fields" keyword since it's required for Jira while sending over
+  * the issue payload
+  */
+  const extraJiraFieldsMapper = !(EXTRA_JIRA_FIELDS) ? {} : Object.fromEntries(new Map(Object.entries(utils.populateMap(EXTRA_JIRA_FIELDS))));
+  utils.updateObjectKeys('fields', extraJiraFieldsMapper);
+
+  const parsedInput = JSON.parse(inputJson);
   for (const inputElement in parsedInput) {
     const reportMapperInstance = utils.reportMapper(
       inputElement,
@@ -112,14 +120,14 @@ const kickOffAction = async (inputJson) => {
         !retrievedIssuesUniqueSummaries.includes(utils.ultraTrim(reportMapperInstance.issueSummary))
       ) {
         log.info(`Attempting to create JSON payload for module ${reportMapperInstance.issueName}...`);
-        utils.amendHandleBarTemplate(
-          config.UTILS.CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE,
+        utils.populateTemplate(
           reportMapperInstance.issueName,
           reportMapperInstance.issueSummary,
           reportMapperInstance.issueDescription,
           reportMapperInstance.issueSeverity,
           severityMap,
-          labels
+          labels,
+          extraJiraFieldsMapper
         );
       } else {
         openIssues.forEach(openIssue => {
@@ -141,11 +149,11 @@ const kickOffAction = async (inputJson) => {
 
   const files = await utils.retrievePathFiles(config.UTILS.PAYLOADS_DIR);
 
-  // if (files.length !== 0) {
-  //   await parallelIssueCreation(files);
-  // } else {
-  //   log.info('All the vulnerabilities have already been captured as issues on Jira.');
-  // }
+  if (files.length !== 0) {
+    await parallelIssueCreation(files);
+  } else {
+    log.info('All the vulnerabilities have already been captured as issues on Jira.');
+  }
 
   await logout(jiraAuthHeaderValue);
 };

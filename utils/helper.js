@@ -3,16 +3,16 @@ const rimraf = require('rimraf');
 const { v4 } = require('uuid');
 const dirtyJSON = require('dirty-json');
 const Validator = require('jsonschema').Validator;
-const config = require('../config/config');
-const { templateBluePrint } = require('../config/template.config');
-const { createTemplate } = require('../utils/templates.flexible.creation');
-const bunyan = require('bunyan');
 const { spawnSync } = require('child_process');
 const assert = require('assert');
-const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 const core = require('@actions/core');
-const _ = require('lodash');
+const bunyan = require('bunyan');
+const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 
+const config = require('../config/config');
+const template = require('../utils/template');
+
+const jsonValidator = new Validator();
 const jiraIssueSchema = {
   type: 'object',
   fields: {
@@ -37,33 +37,37 @@ const jiraIssueSchema = {
     }
   }
 };
-const jsonValidator = new Validator();
 
 // use this function in order to minimise the losses caused in JSON parsings when boolean values are present
 const booleanToUpper = (input) => {
   return input.replace(/true/g, 'True').replace(/false/g, 'False');
 };
 
-const amendHandleBarTemplate = (
-  issueModule,
+const populateTemplate = (
+  issueName,
   issueSummary,
   issueDescription,
   issueSeverity,
   severityMap,
-  issueLabelMapper
+  issueLabelMapper,
+  extraJiraFields
 ) => {
-  const templateInput = templateBluePrint(
+  const templateInput = template.blueprint(
     issueSummary,
     issueDescription,
     issueSeverity
   );
-  const extraFieldsUserInput = { 'fields.test.component': 'testValue', 'fields.project.key': 'testValue' };
 
-  const finalTemplate = { ...templateInput, ...extraFieldsUserInput };
+  /*
+   * wrapping all the current template keys with the "fields" keyword since it's required for Jira while sending over
+   * the issue payload
+   */
+  updateObjectKeys('fields', templateInput);
 
-  const templateModifier = createTemplate(finalTemplate);
-  console.log('------DEBUG------' + JSON.stringify(templateModifier));
-  const payload = `${issueModule}_${v4()}_payload.json`;
+  const finalTemplate = { ...templateInput, ...extraJiraFields };
+
+  const templateModifier = template.create(finalTemplate);
+  const payload = `${issueName}_${v4()}_payload.json`;
 
   let beautifiedTemplate;
   try {
@@ -77,13 +81,13 @@ const amendHandleBarTemplate = (
       if (isValidSchema) {
         fs.writeFileSync(`${config.UTILS.PAYLOADS_DIR}/${payload}`, beautifiedTemplateStringified, 'utf8');
       } else {
-        throw new Error(`The beautification of ${issueModule} was not possible!`);
+        throw new Error(`The beautification of ${issueName} was not possible!`);
       }
     } catch (e) {
       log.warn(e);
     }
   } catch (e) {
-    log.warn(`Vulnerability "${issueModule}" cannot be turned into a Jira issue since the data provided in the given JSON are malformed and cannot be beautified!`);
+    log.warn(`Vulnerability "${issueName}" cannot be turned into a Jira issue since the data provided in the given JSON are malformed and cannot be beautified!`);
   }
 };
 
@@ -182,14 +186,23 @@ const getInput = (name) => {
   return core.getInput(name) || process.env[name];
 };
 
+const updateObjectKeys = (newKey, examinedObject) => {
+  // eslint-disable-next-line no-unused-vars
+  for (const [key, value] of Object.entries(examinedObject)) {
+    Object.defineProperty(examinedObject, `${newKey}.${key}`, Object.getOwnPropertyDescriptor(examinedObject, key));
+    delete examinedObject[key];
+  }
+};
+
 module.exports = {
-  amendHandleBarTemplate: amendHandleBarTemplate,
-  folderCleanup: folderCleanup,
-  reportMapper: reportMapper,
-  populateMap: populateMap,
-  fixJiraURI: fixJiraURI,
-  shellExec: shellExec,
-  retrievePathFiles: retrievePathFiles,
-  ultraTrim: ultraTrim,
-  getInput: getInput
+  populateTemplate,
+  folderCleanup,
+  reportMapper,
+  populateMap,
+  fixJiraURI,
+  shellExec,
+  retrievePathFiles,
+  ultraTrim,
+  getInput,
+  updateObjectKeys
 };
