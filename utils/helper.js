@@ -6,6 +6,7 @@ const Validator = require('jsonschema').Validator;
 const { spawnSync } = require('child_process');
 const assert = require('assert');
 const core = require('@actions/core');
+const _ = require('lodash');
 const bunyan = require('bunyan');
 const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 
@@ -13,7 +14,7 @@ const config = require('../config/config');
 const template = require('../utils/template');
 
 const jsonValidator = new Validator();
-const jiraIssueSchema = {
+const jiraIssueSchemaBase = {
   type: 'object',
   fields: {
     project: {
@@ -66,16 +67,20 @@ const populateTemplate = (
 
   const finalTemplate = { ...templateInput, ...extraJiraFields };
 
-  const templateModifier = template.create(finalTemplate);
+  const { template: templateModifier, extraFieldsAtomicView } = template.create(finalTemplate, extraJiraFields);
+  const jiraIssueSchemaExpansion = extraFieldsAtomicView.fields;
+  // construct the new JSON schema that we will use to verify the input JSON
+  Object.assign(jiraIssueSchemaBase.fields, jiraIssueSchemaExpansion);
+
   const payload = `${issueName}_${v4()}_payload.json`;
 
   let beautifiedTemplate;
   try {
-    beautifiedTemplate = dirtyJSON.parse(booleanToUpper(templateModifier));
+    beautifiedTemplate = dirtyJSON.parse(booleanToUpper(JSON.stringify(templateModifier)));
     Object.assign(beautifiedTemplate.fields, issueLabelMapper);
 
     const beautifiedTemplateStringified = JSON.stringify(beautifiedTemplate);
-    const isValidSchema = (jsonValidator.validate(JSON.parse(beautifiedTemplateStringified), jiraIssueSchema).errors.length === 0);
+    const isValidSchema = (jsonValidator.validate(JSON.parse(beautifiedTemplateStringified), jiraIssueSchemaBase).errors.length === 0);
 
     try {
       if (isValidSchema) {

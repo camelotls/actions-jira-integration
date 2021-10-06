@@ -107,7 +107,7 @@ const kickOffAction = async (inputJson) => {
   const extraJiraFieldsMapper = !(EXTRA_JIRA_FIELDS) ? {} : Object.fromEntries(new Map(Object.entries(utils.populateMap(EXTRA_JIRA_FIELDS))));
   utils.updateObjectKeys('fields', extraJiraFieldsMapper);
 
-  const parsedInput = JSON.parse(inputJson);
+  const parsedInput = JSON.parse(inputJson).advisories;
   for (const inputElement in parsedInput) {
     const reportMapperInstance = utils.reportMapper(
       inputElement,
