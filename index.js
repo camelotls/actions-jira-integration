@@ -101,7 +101,6 @@ const kickOffAction = async (inputJson) => {
   }
 
   const parsedInput = JSON.parse(inputJson);
-  console.log(parsedInput);
   for (const inputElement in parsedInput) {
     const reportMapperInstance = utils.reportMapper(
       inputElement,
@@ -152,9 +151,9 @@ const kickOffAction = async (inputJson) => {
   await logout(jiraAuthHeaderValue);
 };
 
-const tempReportInputFile = fs.readFileSync(INPUT_JSON, 'utf8');
+const reportInputFile = fs.readFileSync(INPUT_JSON, 'utf8');
 
 (async () => {
   utils.folderCleanup(config.UTILS.PAYLOADS_DIR);
-  await kickOffAction(tempReportInputFile);
+  await kickOffAction(reportInputFile);
 })();
