@@ -156,8 +156,6 @@ const kickOffAction = async (inputJson) => {
   await logout(jiraAuthHeaderValue);
 };
 
-const reportInputFile = fs.readFileSync(INPUT_JSON, 'utf8');
-
 (async () => {
   await kickOffAction(utils.getInput('INPUT_JSON'));
 })();
