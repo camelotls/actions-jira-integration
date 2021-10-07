@@ -14,7 +14,7 @@ inputs:
         description: "The Jira URI used for the REST API to make the requests to"
         required: true
     INPUT_JSON:
-        description: "The JSON input to be parsed"
+        description: "The path where the JSON input to be parsed"
         required: true
     REPORT_INPUT_KEYS:
         description: "A list of keys of the input JSON you provide that will be parsed and included in the report"
