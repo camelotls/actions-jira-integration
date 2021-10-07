@@ -1,5 +1,4 @@
 const core = require('@actions/core');
-const fs = require('fs');
 const _ = require('lodash');
 const bunyan = require('bunyan');
 const log = bunyan.createLogger({ name: 'actions-jira-integration' });
@@ -16,18 +15,16 @@ const EXTRA_JIRA_FIELDS = utils.getInput('EXTRA_JIRA_FIELDS');
 
 let jiraAuthHeaderValue;
 
-const createIssue = async (file) => {
-  const fileContent = fs.readFileSync(`${config.UTILS.PAYLOADS_DIR}/${file}`, 'utf8');
-
+const createIssue = async (payload) => {
   // this is done here in order to handle more easily the async nature of the call
   let filesToBeUploaded = [];
   if (UPLOAD_FILES) {
     filesToBeUploaded = await utils.retrievePathFiles(UPLOAD_FILES_PATH);
   }
 
-  return jira.createJiraIssue(jiraAuthHeaderValue, fileContent).then((jiraIssue) => {
+  return jira.createJiraIssue(jiraAuthHeaderValue, payload).then((jiraIssue) => {
     const jiraIssueKey = jiraIssue.body.key;
-    const jiraIssueSummary = JSON.parse(fileContent).fields.summary;
+    const jiraIssueSummary = JSON.parse(payload).fields.summary;
 
     log.info(`A jira issue with the following details has been raised: ${utils.fixJiraURI(config.JIRA_CONFIG.JIRA_URI)}/browse/${jiraIssueKey}`);
 
@@ -45,8 +42,8 @@ const createIssue = async (file) => {
   });
 };
 
-const parallelIssueCreation = (files) => {
-  return Promise.all(files.map(file => createIssue(file))).catch((e) => {
+const parallelIssueCreation = (jiraIssuesPayloads) => {
+  return Promise.all(jiraIssuesPayloads.map(payload => createIssue(payload))).catch((e) => {
     log.error(`The Jira issue creation encountered the following error: ${e}`);
   });
 };
@@ -108,6 +105,7 @@ const kickOffAction = async (inputJson) => {
   utils.updateObjectKeys('fields', extraJiraFieldsMapper);
 
   const parsedInput = JSON.parse(inputJson).advisories;
+  const jiraIssuesPayloadHolder = [];
   for (const inputElement in parsedInput) {
     const reportMapperInstance = utils.reportMapper(
       inputElement,
@@ -120,7 +118,7 @@ const kickOffAction = async (inputJson) => {
         !retrievedIssuesUniqueSummaries.includes(utils.ultraTrim(reportMapperInstance.issueSummary))
       ) {
         log.info(`Attempting to create JSON payload for module ${reportMapperInstance.issueName}...`);
-        utils.populateTemplate(
+        const jiraIssuePayload = utils.constructJiraIssuePayload(
           reportMapperInstance.issueName,
           reportMapperInstance.issueSummary,
           reportMapperInstance.issueDescription,
@@ -129,6 +127,8 @@ const kickOffAction = async (inputJson) => {
           labels,
           extraJiraFieldsMapper
         );
+
+        jiraIssuesPayloadHolder.push(jiraIssuePayload);
       } else {
         openIssues.forEach(openIssue => {
           if (utils.ultraTrim(openIssue.fields.summary) === utils.ultraTrim(reportMapperInstance.issueSummary)) {
@@ -147,10 +147,8 @@ const kickOffAction = async (inputJson) => {
     }
   }
 
-  const files = await utils.retrievePathFiles(config.UTILS.PAYLOADS_DIR);
-
-  if (files.length !== 0) {
-    await parallelIssueCreation(files);
+  if (jiraIssuesPayloadHolder.length !== 0) {
+    await parallelIssueCreation(jiraIssuesPayloadHolder);
   } else {
     log.info('All the vulnerabilities have already been captured as issues on Jira.');
   }
@@ -159,6 +157,5 @@ const kickOffAction = async (inputJson) => {
 };
 
 (async () => {
-  utils.folderCleanup(config.UTILS.PAYLOADS_DIR);
   await kickOffAction(utils.getInput('INPUT_JSON'));
 })();

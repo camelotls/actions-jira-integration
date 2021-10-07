@@ -44,7 +44,7 @@ const booleanToUpper = (input) => {
   return input.replace(/true/g, 'True').replace(/false/g, 'False');
 };
 
-const populateTemplate = (
+const constructJiraIssuePayload = (
   issueName,
   issueSummary,
   issueDescription,
@@ -84,7 +84,7 @@ const populateTemplate = (
 
     try {
       if (isValidSchema) {
-        fs.writeFileSync(`${config.UTILS.PAYLOADS_DIR}/${payload}`, beautifiedTemplateStringified, 'utf8');
+        return beautifiedTemplateStringified;
       } else {
         throw new Error(`The beautification of ${issueName} was not possible!`);
       }
@@ -200,7 +200,7 @@ const updateObjectKeys = (newKey, examinedObject) => {
 };
 
 module.exports = {
-  populateTemplate,
+  constructJiraIssuePayload,
   folderCleanup,
   reportMapper,
   populateMap,
