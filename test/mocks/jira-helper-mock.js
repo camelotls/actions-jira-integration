@@ -68,7 +68,7 @@ const MOCK_JIRA_ISSUE_WITH_WRONG_EXTRA_FIELD_CREATION_PAYLOAD = {
     },
     labels: ['mock1', 'mock2'],
     description: 'This is a mock description',
-    components: 'This is a wrong mock component'
+    nonExistingKey: 'What is this?'
   }
 };
 const MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD = {
@@ -86,6 +86,10 @@ const MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD = {
 };
 const MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE = {
   errorMessages: ["Field 'priority' is required"],
+  errors: {}
+};
+const MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD = {
+  errorMessages: ["Field 'nonExistingKey' is not valid"],
   errors: {}
 };
 const MOCK_JIRA_ISSUE_SEARCH_RESPONSE = {
@@ -139,5 +143,6 @@ module.exports = {
   MOCK_JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES,
   MOCK_JQL_SEARCH_PAYLOAD_OPEN_ISSUES,
   MOCK_JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES_EMPTY,
-  MOCK_JQL_SEARCH_PAYLOAD_OPEN_ISSUES_EMPTY
+  MOCK_JQL_SEARCH_PAYLOAD_OPEN_ISSUES_EMPTY,
+  MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD
 };

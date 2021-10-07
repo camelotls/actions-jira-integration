@@ -37,7 +37,7 @@ const UTILS = {
 };
 
 module.exports = {
-  JIRA_CONFIG: JIRA_CONFIG,
-  REST_CONFIG: REST_CONFIG,
-  UTILS: UTILS
+  JIRA_CONFIG,
+  REST_CONFIG,
+  UTILS
 };

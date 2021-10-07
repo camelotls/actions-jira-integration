@@ -198,22 +198,23 @@ describe('Jira REST are functioning properly', () => {
       expect(error.response.statusCode).to.be.equal(400);
       expect(error.response.body)
         .to.be.instanceOf(Object)
-        .to.have.all.keys('errorMessages', 'errors');
+        .to.deep.equal({ errorMessages: mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE.errorMessages, errors: {} });
     });
 
     it('a JIRA issue fails to be created when a wrong extra field is supplied', async () => {
       nock(mocks.MOCK_JIRA_URI)
         .post(config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT)
-        .reply(400, mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE);
+        .reply(400, mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD);
 
       const error = await jira.createJiraIssue(
         authHeaders,
-        JSON.stringify(mocks.MOCK_JIRA_ISSUE_WITH_WRONG_EXTRA_FIELD_CREATION_PAYLOAD)
+        JSON.stringify(mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD)
       );
+
       expect(error.response.statusCode).to.be.equal(400);
       expect(error.response.body)
         .to.be.instanceOf(Object)
-        .to.have.all.keys('errorMessages', 'errors');
+        .to.deep.equal({ errorMessages: mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD.errorMessages, errors: {} });
     });
 
     it('a list of JIRA issues fails to be fetched when a wrong payload is supplied', async () => {

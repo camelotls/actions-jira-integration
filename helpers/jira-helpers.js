@@ -113,10 +113,10 @@ const pushAttachment = async function (fileName, jiraIssue) {
 };
 
 module.exports = {
-  createJiraIssue: createJiraIssue,
-  createJiraSession: createJiraSession,
-  createJiraSessionHeaders: createJiraSessionHeaders,
-  searchExistingJiraIssues: searchExistingJiraIssues,
-  invalidateJiraSession: invalidateJiraSession,
-  pushAttachment: pushAttachment
+  createJiraIssue,
+  createJiraSession,
+  createJiraSessionHeaders,
+  searchExistingJiraIssues,
+  invalidateJiraSession,
+  pushAttachment
 };
