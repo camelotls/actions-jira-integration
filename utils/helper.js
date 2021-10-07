@@ -1,6 +1,5 @@
 const fs = require('fs');
 const rimraf = require('rimraf');
-const { v4 } = require('uuid');
 const dirtyJSON = require('dirty-json');
 const Validator = require('jsonschema').Validator;
 const { spawnSync } = require('child_process');
