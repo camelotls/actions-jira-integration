@@ -70,6 +70,6 @@ const DELETERequestWrapper = async (
 };
 
 module.exports = {
-  POSTRequestWrapper: POSTRequestWrapper,
-  DELETERequestWrapper: DELETERequestWrapper
+  POSTRequestWrapper,
+  DELETERequestWrapper
 };

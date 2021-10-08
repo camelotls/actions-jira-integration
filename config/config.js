@@ -33,12 +33,11 @@ const REST_CONFIG = {
 
 const UTILS = {
   TEMPLATES_DIR: (core.getInput('RUNS_ON_GITHUB') || process.env.RUNS_ON_GITHUB) === 'true' ? './actions-jira-integration/templates' : './templates',
-  PAYLOADS_DIR: (core.getInput('RUNS_ON_GITHUB') || process.env.RUNS_ON_GITHUB) === 'true' ? './actions-jira-integration/payloads' : './payloads',
   CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE: 'issueCreation.template'
 };
 
 module.exports = {
-  JIRA_CONFIG: JIRA_CONFIG,
-  REST_CONFIG: REST_CONFIG,
-  UTILS: UTILS
+  JIRA_CONFIG,
+  REST_CONFIG,
+  UTILS
 };

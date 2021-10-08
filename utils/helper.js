@@ -1,17 +1,17 @@
 const fs = require('fs');
 const rimraf = require('rimraf');
-const handlebars = require('handlebars');
-const { v4 } = require('uuid');
 const dirtyJSON = require('dirty-json');
 const Validator = require('jsonschema').Validator;
-const config = require('../config/config');
-const bunyan = require('bunyan');
 const { spawnSync } = require('child_process');
 const assert = require('assert');
-const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 const core = require('@actions/core');
+const bunyan = require('bunyan');
+const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 
-const jiraIssueSchema = {
+const template = require('../utils/template');
+
+const jsonValidator = new Validator();
+const jiraIssueSchemaBase = {
   type: 'object',
   fields: {
     project: {
@@ -35,55 +35,59 @@ const jiraIssueSchema = {
     }
   }
 };
-const jsonValidator = new Validator();
 
 // use this function in order to minimise the losses caused in JSON parsings when boolean values are present
 const booleanToUpper = (input) => {
   return input.replace(/true/g, 'True').replace(/false/g, 'False');
 };
 
-const amendHandleBarTemplate = (
-  template,
-  issueModule,
+const constructJiraIssuePayload = (
+  issueName,
   issueSummary,
   issueDescription,
   issueSeverity,
   severityMap,
-  issueLabelMapper
+  issueLabelMapper,
+  extraJiraFields
 ) => {
-  const templateStored = fs.readFileSync(`${config.UTILS.TEMPLATES_DIR}/${template}`, 'utf8').toString();
-  const templateReader = handlebars.compile(templateStored, { noEscape: true });
+  const templateInput = template.blueprint(
+    issueSummary,
+    issueDescription,
+    issueSeverity
+  );
 
-  const templateModifier = templateReader({
-    PROJECT_ID: config.JIRA_CONFIG.JIRA_PROJECT,
-    ISSUE_SUMMARY: `${issueSummary}`,
-    ISSUE_TYPE: config.JIRA_CONFIG.ISSUE_TYPE,
-    ISSUE_DESCRIPTION: `${issueDescription}`,
-    ISSUE_SEVERITY: `${issueSeverity}`,
-    ISSUE_SEVERITY_MAP: `${severityMap}`
-  });
+  /*
+   * wrapping all the current template keys with the "fields" keyword since it's required for Jira while sending over
+   * the issue payload
+   */
+  updateObjectKeys('fields', templateInput);
 
-  const payload = `${issueModule}_${v4()}_payload.json`;
+  const finalTemplate = { ...templateInput, ...extraJiraFields };
+
+  const { template: templateModifier, extraFieldsAtomicView } = template.create(finalTemplate, extraJiraFields);
+  const jiraIssueSchemaExpansion = extraFieldsAtomicView.fields;
+  // construct the new JSON schema that we will use to verify the input JSON
+  Object.assign(jiraIssueSchemaBase.fields, jiraIssueSchemaExpansion);
 
   let beautifiedTemplate;
   try {
-    beautifiedTemplate = dirtyJSON.parse(booleanToUpper(templateModifier));
+    beautifiedTemplate = dirtyJSON.parse(booleanToUpper(JSON.stringify(templateModifier)));
     Object.assign(beautifiedTemplate.fields, issueLabelMapper);
 
     const beautifiedTemplateStringified = JSON.stringify(beautifiedTemplate);
-    const isValidSchema = (jsonValidator.validate(JSON.parse(beautifiedTemplateStringified), jiraIssueSchema).errors.length === 0);
+    const isValidSchema = (jsonValidator.validate(JSON.parse(beautifiedTemplateStringified), jiraIssueSchemaBase).errors.length === 0);
 
     try {
       if (isValidSchema) {
-        fs.writeFileSync(`${config.UTILS.PAYLOADS_DIR}/${payload}`, beautifiedTemplateStringified, 'utf8');
+        return beautifiedTemplateStringified;
       } else {
-        throw new Error(`The beautification of ${issueModule} was not possible!`);
+        throw new Error(`The beautification of ${issueName} was not possible!`);
       }
     } catch (e) {
       log.warn(e);
     }
   } catch (e) {
-    log.warn(`Vulnerability "${issueModule}" cannot be turned into a Jira issue since the data provided in the given JSON are malformed and cannot be beautified!`);
+    log.warn(`Vulnerability "${issueName}" cannot be turned into a Jira issue since the data provided in the given JSON are malformed and cannot be beautified!`);
   }
 };
 
@@ -191,14 +195,23 @@ const getInput = (name) => {
   return core.getInput(name) || process.env[name];
 };
 
+const updateObjectKeys = (newKey, examinedObject) => {
+  // eslint-disable-next-line no-unused-vars
+  for (const [key, value] of Object.entries(examinedObject)) {
+    Object.defineProperty(examinedObject, `${newKey}.${key}`, Object.getOwnPropertyDescriptor(examinedObject, key));
+    delete examinedObject[key];
+  }
+};
+
 module.exports = {
-  amendHandleBarTemplate: amendHandleBarTemplate,
-  folderCleanup: folderCleanup,
-  reportMapper: reportMapper,
-  populateMap: populateMap,
-  fixJiraURI: fixJiraURI,
-  shellExec: shellExec,
-  retrievePathFiles: retrievePathFiles,
-  ultraTrim: ultraTrim,
-  getInput: getInput
+  constructJiraIssuePayload,
+  folderCleanup,
+  reportMapper,
+  populateMap,
+  fixJiraURI,
+  shellExec,
+  retrievePathFiles,
+  ultraTrim,
+  getInput,
+  updateObjectKeys
 };
