@@ -23,7 +23,6 @@ ENV JIRA_USER=$JIRA_USER \
 COPY index.js package.json package-lock.json ./
 COPY config/ ./config
 COPY helpers/ ./helpers
-COPY templates/ ./templates
 COPY utils/ ./utils
 
 RUN npm install
