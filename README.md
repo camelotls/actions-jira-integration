@@ -30,6 +30,7 @@ A GitHub Action to integrate multiple tools with Jira Server and raise relevant 
 |UPLOAD_FILES_PATH|false|""|Used only if UPLOAD_FILE is set to true. It's the path holding the files to be uploaded|
 |JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES|false|""|The filter you want to apply in order to check for issues that have already been resolved. It is the jql query you get from the \"Advanced\" section while searching Jira tickets and it's used for the duplication mechanism prevention|
 |JQL_SEARCH_PAYLOAD_OPEN_ISSUES|false|""|The filter you want to apply in order to check for issues that are already Open. It is the jql query you get from the \"Advanced\" section while searching Jira tickets and it's used for the duplication mechanism prevention|
+|EXTRA_JIRA_FIELDS|false|""|Provide the extra fields you need to include in the payload sent to Jira during an issue creation.
 
 ### Outputs
 
@@ -100,6 +101,9 @@ jobs:
                 UPLOAD_FILES_PATH: './upload_file_path'
                 JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES: 'project=${{ env.JIRA_PROJECT }} AND type="${{ env.ISSUE_TYPE }}" AND labels IN (${{ env.ISSUE_LABELS_MAPPER }}) AND status=Done AND resolution IN (Obsolete,Duplicate,"Won''t Do")'
                 JQL_SEARCH_PAYLOAD_OPEN_ISSUES: 'project=${{ env.JIRA_PROJECT }} AND type="${{ env.ISSUE_TYPE }}" AND labels IN (${{ env.ISSUE_LABELS_MAPPER }}) AND status NOT IN (Done)'
+                EXTRA_JIRA_FIELDS: |
+                                     component: npm
+                                     affectedVersion: release 7
 ```
 **NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important for the parsing of the action to work properly. Also, the submitted JSON **must** be in its final form that you want it to be processed (not purely the raw output of your report).
 
@@ -159,6 +163,7 @@ docker build --build-arg JIRA_USER=$JIRA_USER \
             --build-arg INPUT_JSON=$INPUT_JSON \
             --build-arg REPORT_INPUT_KEYS=$REPORT_INPUT_KEYS \
             --build-arg RUNS_ON_GITHUB=$RUNS_ON_GITHUB \
+            --build-arg <rest-of-parameters> \ 
             -t <image_name>:<image_version> .
 ```
 
@@ -184,5 +189,6 @@ docker run -e JIRA_USER=$JIRA_USER \
             -e INPUT_JSON=$INPUT_JSON \
             -e REPORT_INPUT_KEYS=$REPORT_INPUT_KEYS \
             -e RUNS_ON_GITHUB=$RUNS_ON_GITHUB \
+            -e <rest-of-parameters> \
             <image_name>:<image_version>
 ```
