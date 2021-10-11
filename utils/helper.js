@@ -53,7 +53,7 @@ const constructJiraIssuePayload = (
   const templateInput = template.blueprint(
     issueSummary,
     issueDescription,
-    issueSeverity
+    severityMap
   );
 
   /*
