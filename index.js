@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const _ = require('lodash');
+const fs = require('fs');
 const bunyan = require('bunyan');
 const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 
@@ -12,6 +13,7 @@ const PRIORITY_MAPPER = utils.getInput('PRIORITY_MAPPER');
 const UPLOAD_FILES = utils.getInput('UPLOAD_FILES') === 'true';
 const UPLOAD_FILES_PATH = (core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH) === '';
 const EXTRA_JIRA_FIELDS = utils.getInput('EXTRA_JIRA_FIELDS');
+const INPUT_JSON = fs.readFileSync(utils.getInput('INPUT_JSON'), 'utf8');
 
 let jiraAuthHeaderValue;
 
@@ -157,5 +159,5 @@ const kickOffAction = async (inputJson) => {
 };
 
 (async () => {
-  await kickOffAction(utils.getInput('INPUT_JSON'));
+  await kickOffAction(INPUT_JSON);
 })();
