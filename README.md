@@ -102,13 +102,14 @@ jobs:
                 JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES: 'project=${{ env.JIRA_PROJECT }} AND type="${{ env.ISSUE_TYPE }}" AND labels IN (${{ env.ISSUE_LABELS_MAPPER }}) AND status=Done AND resolution IN (Obsolete,Duplicate,"Won''t Do")'
                 JQL_SEARCH_PAYLOAD_OPEN_ISSUES: 'project=${{ env.JIRA_PROJECT }} AND type="${{ env.ISSUE_TYPE }}" AND labels IN (${{ env.ISSUE_LABELS_MAPPER }}) AND status NOT IN (Done)'
                 EXTRA_JIRA_FIELDS: |
+                                      summary: something's wrong
                                       components.{id}: [npm]
-                                      affectedVersion: release 7
+                                      versions: [release 7]
 ```
 **NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important for the parsing of the action to work properly. Also, the submitted JSON **must** be in its final form that you want it to be processed (not purely the raw output of your report).
 
-**NOTE**: if for the extra field you want to add contains an array with nested objects as values you should enclose the key of the objects in single curly brackets (`{<keyName>}`). For example `components.{id} : [value1, value2]` will result in: `{
-components: [{ id: value1 }, { id: value2 } ] 
+**NOTE**: if the extra field you want to add contains an array with nested objects as values you should enclose the key of the objects in single curly brackets (`{<keyName>}`). For example `components.{id} : [value1, value2]` will result in: `{
+components: [{ id: value1 }, { id: value2 }] 
 }`.
 
 **Example**:
