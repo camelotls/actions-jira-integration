@@ -5,7 +5,7 @@ const rest = require('./rest-helper');
 const config = require('../config/config');
 const utils = require('../utils/helper');
 
-const createJiraSession = async function createJiraSession (
+const createSession = async function createSession (
   jiraUser,
   jiraPassword
 ) {
@@ -18,7 +18,7 @@ const createJiraSession = async function createJiraSession (
   };
 
   const response = await rest.POSTRequestWrapper(
-    createJiraSession.name,
+    createSession.name,
     process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
     config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
     config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
@@ -59,7 +59,7 @@ const createJiraSession = async function createJiraSession (
   return SESSION_PAYLOAD;
 };
 
-const createJiraSessionHeaders = (sessionPayload) => {
+const createSessionHeaders = (sessionPayload) => {
   const authHeaderJiraCookieValue = `${sessionPayload.sessionID.name}=${sessionPayload.sessionID.value}`;
   const authHeaderCookieValues =
     sessionPayload.loadBalancerCookie.name === ''
@@ -69,10 +69,10 @@ const createJiraSessionHeaders = (sessionPayload) => {
   return authHeaderCookieValues;
 };
 
-const createJiraIssue = async function (authHeaders, filePayload) {
+const createIssue = async function (authHeaders, filePayload) {
   const issueRequestPayload = JSON.parse(filePayload);
   const response = await rest.POSTRequestWrapper(
-    createJiraIssue.name,
+    createIssue.name,
     process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
     config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT,
     config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
@@ -83,9 +83,10 @@ const createJiraIssue = async function (authHeaders, filePayload) {
   return response;
 };
 
-const searchExistingJiraIssues = async function (authHeaders, payload) {
+const searchIssues = async function (authHeaders, payload) {
+  console.log(payload);
   const response = await rest.POSTRequestWrapper(
-    searchExistingJiraIssues.name,
+    searchIssues.name,
     process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
     config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT,
     config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
@@ -96,9 +97,9 @@ const searchExistingJiraIssues = async function (authHeaders, payload) {
   return response;
 };
 
-const invalidateJiraSession = async function (authHeaders) {
+const invalidateSession = async function (authHeaders) {
   const response = await rest.DELETERequestWrapper(
-    invalidateJiraSession.name,
+    invalidateSession.name,
     process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
     config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
     config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
@@ -113,10 +114,10 @@ const pushAttachment = async function (fileName, jiraIssue) {
 };
 
 module.exports = {
-  createJiraIssue,
-  createJiraSession,
-  createJiraSessionHeaders,
-  searchExistingJiraIssues,
-  invalidateJiraSession,
+  createIssue,
+  createSession,
+  createSessionHeaders,
+  searchIssues,
+  invalidateSession,
   pushAttachment
 };

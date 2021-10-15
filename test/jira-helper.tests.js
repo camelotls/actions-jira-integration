@@ -25,11 +25,11 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT)
         .reply(200, mocks.MOCK_LOGIN_SESSION);
 
-      sessionPayload = await jira.createJiraSession(
+      sessionPayload = await jira.createSession(
         mocks.MOCK_JIRA_USER,
         mocks.MOCK_JIRA_PASSWORD
       );
-      authHeaders = await jira.createJiraSessionHeaders(sessionPayload);
+      authHeaders = await jira.createSessionHeaders(sessionPayload);
 
       expect(sessionPayload)
         .to.be.instanceOf(Object)
@@ -60,7 +60,7 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT)
         .reply(200, mocks.MOCK_JIRA_ISSUE_CREATION_PAYLOAD);
 
-      const response = await jira.createJiraIssue(
+      const response = await jira.createIssue(
         authHeaders,
         JSON.stringify(mocks.MOCK_JIRA_ISSUE_CREATION_PAYLOAD)
       );
@@ -87,7 +87,7 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT)
         .reply(200, mocks.MOCK_JIRA_ISSUE_WITH_EXTRA_FIELD_CREATION_PAYLOAD);
 
-      const response = await jira.createJiraIssue(
+      const response = await jira.createIssue(
         authHeaders,
         JSON.stringify(mocks.MOCK_JIRA_ISSUE_WITH_EXTRA_FIELD_CREATION_PAYLOAD)
       );
@@ -116,7 +116,7 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT)
         .reply(200, mocks.MOCK_JIRA_ISSUE_SEARCH_RESPONSE);
 
-      const response = await jira.searchExistingJiraIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
+      const response = await jira.searchIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
       expect(response.body)
         .to.be.instanceOf(Object)
         .to.have.all.keys('expand', 'startAt', 'maxResults', 'total', 'issues');
@@ -127,7 +127,7 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT)
         .reply(200, mocks.MOCK_JIRA_ISSUE_SEARCH_RESPONSE);
 
-      const response = await jira.searchExistingJiraIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
+      const response = await jira.searchIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
       expect(response.body)
         .to.be.instanceOf(Object)
         .to.have.all.keys('expand', 'startAt', 'maxResults', 'total', 'issues');
@@ -141,7 +141,7 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT)
         .reply(200, mocks.MOCK_JIRA_ISSUE_SEARCH_RESPONSE);
 
-      const response = await jira.searchExistingJiraIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
+      const response = await jira.searchIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
       expect(response.body)
         .to.be.instanceOf(Object)
         .to.have.all.keys('expand', 'startAt', 'maxResults', 'total', 'issues');
@@ -152,7 +152,7 @@ describe('Jira REST are functioning properly', () => {
         .delete(config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT)
         .reply(204, '');
 
-      const response = await jira.invalidateJiraSession(authHeaders);
+      const response = await jira.invalidateSession(authHeaders);
       expect(response).to.be.equal('');
     });
 
@@ -174,12 +174,12 @@ describe('Jira REST are functioning properly', () => {
 
     it('a JIRA session fails to be created when the Jira URI is invalid', async () => {
       return jira
-        .createJiraSession(mocks.MOCK_JIRA_USER, mocks.MOCK_JIRA_PASSWORD)
+        .createSession(mocks.MOCK_JIRA_USER, mocks.MOCK_JIRA_PASSWORD)
         .then(
           () =>
             Promise.reject(
               new Error(
-                `POST request createJiraSession encountered the following error: getaddrinfo ENOTFOUND ${process.env.JIRA_URI}`
+                `POST request createSession encountered the following error: getaddrinfo ENOTFOUND ${process.env.JIRA_URI}`
               )
             ),
           (error) => expect(error).to.be.an.instanceof(Error)
@@ -191,7 +191,7 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT)
         .reply(400, mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE);
 
-      const error = await jira.createJiraIssue(
+      const error = await jira.createIssue(
         authHeaders,
         JSON.stringify(mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD)
       );
@@ -206,7 +206,7 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT)
         .reply(400, mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD);
 
-      const error = await jira.createJiraIssue(
+      const error = await jira.createIssue(
         authHeaders,
         JSON.stringify(mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD)
       );
@@ -222,7 +222,7 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT)
         .reply(400, mocks.MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE);
 
-      const error = await jira.searchExistingJiraIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
+      const error = await jira.searchIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
       expect(error.response.body)
         .to.be.instanceOf(Object)
         .to.have.all.keys('errorMessages', 'errors');
