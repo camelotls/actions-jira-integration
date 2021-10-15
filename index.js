@@ -24,7 +24,7 @@ const createIssue = async (payload) => {
     filesToBeUploaded = await utils.retrievePathFiles(UPLOAD_FILES_PATH);
   }
 
-  return jira.createJiraIssue(jiraAuthHeaderValue, payload).then((jiraIssue) => {
+  return jira.createIssue(jiraAuthHeaderValue, payload).then((jiraIssue) => {
     const jiraIssueKey = jiraIssue.body.key;
     const jiraIssueSummary = JSON.parse(payload).fields.summary;
 
@@ -52,29 +52,30 @@ const parallelIssueCreation = (jiraIssuesPayloads) => {
 
 const logout = async (jiraAuthHeaderValue) => {
   log.info('Attempting to logout from the existing JIRA session...');
-  await jira.invalidateJiraSession(jiraAuthHeaderValue);
+  await jira.invalidateSession(jiraAuthHeaderValue);
   log.info('JIRA session invalidated successfully!');
 };
 
 const kickOffAction = async (inputJson) => {
-  const jiraSession = await jira.createJiraSession(config.JIRA_CONFIG.JIRA_USER, config.JIRA_CONFIG.JIRA_PASSWORD);
+  const jiraSession = await jira.createSession(config.JIRA_CONFIG.JIRA_USER, config.JIRA_CONFIG.JIRA_PASSWORD);
   log.info('JIRA session created successfully!');
 
-  jiraAuthHeaderValue = await jira.createJiraSessionHeaders(jiraSession);
+  jiraAuthHeaderValue = await jira.createSessionHeaders(jiraSession);
+  console.log(jiraAuthHeaderValue);
 
   const retrievedIssuesSummaries = [];
 
   log.info('Attempting to search for existing JIRA issues...');
 
   // Gather the issues that have been resolved with certain criteria
-  const { body: resolvedRetrievedIssues } = await jira.searchExistingJiraIssues(jiraAuthHeaderValue, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_RESOLVED_ISSUES);
+  const { body: resolvedRetrievedIssues } = await jira.searchIssues(jiraAuthHeaderValue, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_RESOLVED_ISSUES);
   const { issues: resolvedIssues } = resolvedRetrievedIssues;
   resolvedIssues.forEach((issue) => {
     retrievedIssuesSummaries.push(issue.fields.summary.split(' ').join(''));
   });
 
   // Gather the Open issues
-  const { body: openRetrievedIssues } = await jira.searchExistingJiraIssues(jiraAuthHeaderValue, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
+  const { body: openRetrievedIssues } = await jira.searchIssues(jiraAuthHeaderValue, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
   const { issues: openIssues } = openRetrievedIssues;
   openIssues.forEach((issue) => {
     retrievedIssuesSummaries.push(issue.fields.summary.split(' ').join(''));

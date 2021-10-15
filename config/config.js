@@ -14,7 +14,8 @@ const JIRA_CONFIG = {
     startAt: 0,
     maxResults: 1000,
     fields: [
-      'summary'
+      'summary',
+      'status'
     ]
   },
   JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES: {
@@ -22,7 +23,8 @@ const JIRA_CONFIG = {
     startAt: 0,
     maxResults: 1000,
     fields: [
-      'summary'
+      'summary',
+      'status'
     ]
   }
 };
