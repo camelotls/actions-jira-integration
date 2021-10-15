@@ -102,7 +102,7 @@ jobs:
                 JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES: 'project=${{ env.JIRA_PROJECT }} AND type="${{ env.ISSUE_TYPE }}" AND labels IN (${{ env.ISSUE_LABELS_MAPPER }}) AND status=Done AND resolution IN (Obsolete,Duplicate,"Won''t Do")'
                 JQL_SEARCH_PAYLOAD_OPEN_ISSUES: 'project=${{ env.JIRA_PROJECT }} AND type="${{ env.ISSUE_TYPE }}" AND labels IN (${{ env.ISSUE_LABELS_MAPPER }}) AND status NOT IN (Done)'
                 EXTRA_JIRA_FIELDS: |
-                                      summary: something's wrong
+                                      environment: environment
                                       components.{id}: [npm]
                                       versions: [release 7]
 ```
