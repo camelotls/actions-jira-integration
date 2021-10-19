@@ -61,7 +61,6 @@ const kickOffAction = async (inputJson) => {
   log.info('JIRA session created successfully!');
 
   jiraAuthHeaderValue = await jira.createSessionHeaders(jiraSession);
-  console.log(jiraAuthHeaderValue);
 
   const retrievedIssuesSummaries = [];
 

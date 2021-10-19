@@ -84,7 +84,6 @@ const createIssue = async function (authHeaders, filePayload) {
 };
 
 const searchIssues = async function (authHeaders, payload) {
-  console.log(payload);
   const response = await rest.POSTRequestWrapper(
     searchIssues.name,
     process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
