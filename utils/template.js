@@ -24,7 +24,8 @@ const create = (templateBluePrint) => {
     // For the extra fields supplied, we need to determine the data type in order to properly construct the JSON
     // schema to be used. Array types are special data types used in that module
     const fieldType = templateBluePrint[field].match(/\[.+\]/g) !== null ? 'array' : typeof templateBluePrint[field];
-    if (fieldType === 'array') {
+    // excluding the description field since it's considered one of the basic fields we use in the action
+    if (fieldType === 'array' && !field.includes('description')) {
       let formattedValue = templateBluePrint[field].replace(/\[|\]/g, '').replace(/,\s/g, ',').split(',');
 
       // Deconstruct field into array and gets final value

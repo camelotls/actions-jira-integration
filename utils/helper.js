@@ -55,7 +55,6 @@ const constructJiraIssuePayload = (
     issueDescription,
     severityMap
   );
-
   /*
    * wrapping all the current template keys with the "fields" keyword since it's required for Jira while sending over
    * the issue payload
@@ -64,7 +63,7 @@ const constructJiraIssuePayload = (
 
   const finalTemplate = { ...templateInput, ...extraJiraFields };
 
-  const { template: templateModifier, extraFieldsAtomicView } = template.create(finalTemplate, extraJiraFields);
+  const { template: templateModifier, extraFieldsAtomicView } = template.create(finalTemplate);
   const jiraIssueSchemaExpansion = extraFieldsAtomicView.fields;
   // construct the new JSON schema that we will use to verify the input JSON
   Object.assign(jiraIssueSchemaBase.fields, jiraIssueSchemaExpansion);
