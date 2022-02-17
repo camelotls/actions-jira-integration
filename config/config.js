@@ -16,7 +16,6 @@ const JIRA_CONFIG = {
     fields: [
       'summary',
       'status',
-      'issueType',
       'issuetype'
     ]
   },
@@ -27,7 +26,7 @@ const JIRA_CONFIG = {
     fields: [
       'summary',
       'status',
-      'issueType'
+      'issuetype'
     ]
   }
 };
