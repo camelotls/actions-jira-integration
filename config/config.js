@@ -16,7 +16,7 @@ const JIRA_CONFIG = {
     fields: [
       'summary',
       'status',
-      'issueType'
+      'issuetype'
     ]
   },
   JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES: {
@@ -26,7 +26,7 @@ const JIRA_CONFIG = {
     fields: [
       'summary',
       'status',
-      'issueType'
+      'issuetype'
     ]
   }
 };
