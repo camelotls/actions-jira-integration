@@ -71,6 +71,7 @@ const createSessionHeaders = (sessionPayload) => {
 
 const createIssue = async function (authHeaders, filePayload) {
   const issueRequestPayload = JSON.parse(filePayload);
+  console.log(issueRequestPayload)
   const response = await rest.POSTRequestWrapper(
     createIssue.name,
     process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
