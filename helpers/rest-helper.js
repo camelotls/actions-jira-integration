@@ -36,7 +36,7 @@ const POSTRequestWrapper = async (
       log.warn(error.response.body.errors);
     }
 
-    return error;
+    throw error;
   }
 };
 
@@ -65,7 +65,7 @@ const DELETERequestWrapper = async (
       log.warn(error.response.body.errors);
     }
 
-    return error;
+    throw error;
   }
 };
 

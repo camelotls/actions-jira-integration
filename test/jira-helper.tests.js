@@ -1,10 +1,12 @@
-const { expect } = require('chai');
 const nock = require('nock');
 const { describe, it } = require('mocha');
 
 const jira = require('../helpers/jira-helpers');
 const mocks = require('./mocks/jira-helper-mock');
 const config = require('../config/config');
+const chai = require('chai')
+const expect = chai.expect;
+chai.use(require('chai-as-promised'))
 
 describe('Jira REST are functioning properly', () => {
   process.env = {
@@ -191,14 +193,12 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT)
         .reply(400, mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE);
 
-      const error = await jira.createIssue(
-        authHeaders,
-        JSON.stringify(mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD)
-      );
-      expect(error.response.statusCode).to.be.equal(400);
-      expect(error.response.body)
-        .to.be.instanceOf(Object)
-        .to.deep.equal({ errorMessages: mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE.errorMessages, errors: {} });
+      expect(
+        jira.createIssue(
+          authHeaders,
+          JSON.stringify(mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD)
+        )
+      ).to.be.rejectedWith(Error)
     });
 
     it('a JIRA issue fails to be created when a wrong extra field is supplied', async () => {
@@ -206,15 +206,12 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT)
         .reply(400, mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD);
 
-      const error = await jira.createIssue(
-        authHeaders,
-        JSON.stringify(mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD)
-      );
-
-      expect(error.response.statusCode).to.be.equal(400);
-      expect(error.response.body)
-        .to.be.instanceOf(Object)
-        .to.deep.equal({ errorMessages: mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD.errorMessages, errors: {} });
+      expect(
+        jira.createIssue(
+          authHeaders,
+          JSON.stringify(mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD)
+        )
+      ).to.be.rejectedWith(Error)
     });
 
     it('a list of JIRA issues fails to be fetched when a wrong payload is supplied', async () => {
@@ -222,10 +219,9 @@ describe('Jira REST are functioning properly', () => {
         .post(config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT)
         .reply(400, mocks.MOCK_JIRA_ISSUE_WRONG_SEARCH_RESPONSE);
 
-      const error = await jira.searchIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
-      expect(error.response.body)
-        .to.be.instanceOf(Object)
-        .to.have.all.keys('errorMessages', 'errors');
+      expect(
+        jira.searchIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES)
+      ).to.be.rejectedWith(Error)
     });
 
     // eslint-disable-next-line no-undef
