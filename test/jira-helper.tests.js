@@ -4,9 +4,9 @@ const { describe, it } = require('mocha');
 const jira = require('../helpers/jira-helpers');
 const mocks = require('./mocks/jira-helper-mock');
 const config = require('../config/config');
-const chai = require('chai')
+const chai = require('chai');
 const expect = chai.expect;
-chai.use(require('chai-as-promised'))
+chai.use(require('chai-as-promised'));
 
 describe('Jira REST are functioning properly', () => {
   process.env = {
@@ -198,7 +198,7 @@ describe('Jira REST are functioning properly', () => {
           authHeaders,
           JSON.stringify(mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_PAYLOAD)
         )
-      ).to.be.rejectedWith(Error)
+      ).to.be.rejectedWith(Error);
     });
 
     it('a JIRA issue fails to be created when a wrong extra field is supplied', async () => {
@@ -211,7 +211,7 @@ describe('Jira REST are functioning properly', () => {
           authHeaders,
           JSON.stringify(mocks.MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD)
         )
-      ).to.be.rejectedWith(Error)
+      ).to.be.rejectedWith(Error);
     });
 
     it('a list of JIRA issues fails to be fetched when a wrong payload is supplied', async () => {
@@ -221,7 +221,7 @@ describe('Jira REST are functioning properly', () => {
 
       expect(
         jira.searchIssues(authHeaders, config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES)
-      ).to.be.rejectedWith(Error)
+      ).to.be.rejectedWith(Error);
     });
 
     // eslint-disable-next-line no-undef
