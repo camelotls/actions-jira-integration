@@ -9,13 +9,12 @@ const config = require('./config/config');
 const jira = require('./helpers/jira-helpers');
 const {shellExec} = require("./utils/helper");
 
-const REPORT_INPUT_KEYS = process.env.REPORT_INPUT_KEYS;
-const PRIORITY_MAPPER = process.env.PRIORITY_MAPPER;
+const REPORT_INPUT_KEYS = utils.getInput('REPORT_INPUT_KEYS');
+const PRIORITY_MAPPER = utils.getInput('PRIORITY_MAPPER');
 const UPLOAD_FILES = utils.getInput('UPLOAD_FILES') === 'true';
 const UPLOAD_FILES_PATH = core.getInput('UPLOAD_FILES_PATH') || process.env.UPLOAD_FILES_PATH;
-const EXTRA_JIRA_FIELDS = process.env.EXTRA_JIRA_FIELDS;
-// const INPUT_JSON = fs.readFileSync(utils.getInput('INPUT_JSON'), 'utf8');
-const INPUT_JSON = process.env.INPUT_JSON;
+const EXTRA_JIRA_FIELDS = utils.getInput('EXTRA_JIRA_FIELDS');
+const INPUT_JSON = fs.readFileSync(utils.getInput('INPUT_JSON'), 'utf8');
 
 let jiraAuthHeaderValue;
 
