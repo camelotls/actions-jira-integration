@@ -147,7 +147,6 @@ const populateMap = (yamlKey) => {
 
     map[key] = value.trim();
   });
-
   return map;
 };
 
