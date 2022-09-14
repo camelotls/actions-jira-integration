@@ -3,7 +3,6 @@ const _ = require('lodash');
 const fs = require('fs');
 const bunyan = require('bunyan');
 const log = bunyan.createLogger({ name: 'actions-jira-integration' });
-const shell = require('shelljs');
 
 const utils = require('./utils/helper');
 const config = require('./config/config');
