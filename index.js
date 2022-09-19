@@ -4,7 +4,6 @@ const fs = require('fs');
 const bunyan = require('bunyan');
 const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 
-
 const utils = require('./utils/helper');
 const config = require('./config/config');
 const jira = require('./helpers/jira-helpers');
