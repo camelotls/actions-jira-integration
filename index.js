@@ -47,6 +47,7 @@ const createIssue = async (payload) => {
 const parallelIssueCreation = (jiraIssuesPayloads) => {
   return Promise.all(jiraIssuesPayloads.map(payload => createIssue(payload))).catch((e) => {
     log.error(`The Jira issue creation encountered the following error: ${e}`);
+    core.exportVariable('ERROR_MSG', `${e}`);
   });
 };
 
