@@ -4,6 +4,7 @@ const core = require('@actions/core');
 const rest = require('./rest-helper');
 const config = require('../config/config');
 const utils = require('../utils/helper');
+let response;
 
 const createSession = async function createSession (
   jiraUser,
@@ -17,20 +18,23 @@ const createSession = async function createSession (
     password: jiraPassword
   };
 
-  const response = await rest.POSTRequestWrapper(
-    createSession.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
-    config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
-    '',
-    sessionPayload
-  );
+  try {
+    response = await rest.POSTRequestWrapper(
+      createSession.name,
+      process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
+      config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
+      config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
+      '',
+      sessionPayload
+    );
 
-  assert(
-    response.statusCode === 200,
-    `Jira session cannot be created: ${response.message}`
-  );
-
+    assert(
+      response.statusCode === 200,
+        `Jira session cannot be created: ${response.message}`
+    );
+  } catch (error) {
+    console.error(`Error creating Jira session: ${error}`);
+  }
   const SESSION_PAYLOAD = {
     sessionID: {
       name: response.body.session.name,
