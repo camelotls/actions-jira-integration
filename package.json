@@ -7,7 +7,7 @@
     "scripts": {
         "start": "node index.js",
         "test:unit": "c8 mocha",
-        "lint": "./node_modules/.bin/eslint"
+        "lint": "eslint index.js config/ helpers/ test/ utils/ --ext js --quiet --fix"
     },
     "author": "",
     "license": "MIT",

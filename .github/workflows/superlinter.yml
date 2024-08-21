@@ -8,16 +8,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Lint Code Base
-        uses: github/super-linter@v4
+        uses: github/super-linter@v5
         env:
           DEFAULT_BRANCH: main
-          VALIDATE_DOCKERFILE: true 
+          VALIDATE_DOCKERFILE: true
           VALIDATE_JAVASCRIPT_ES: true
           VALIDATE_YAML: true
           VALIDATE_ALL_CODEBASE: false

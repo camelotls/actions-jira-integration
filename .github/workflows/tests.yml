@@ -8,7 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Run Unit Tests
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -25,5 +26,5 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Test
-        run: pnpm run test:unit
+      - name: Run Tests
+        run: pnpm test:unit
