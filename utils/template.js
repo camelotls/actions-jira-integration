@@ -1,21 +1,21 @@
-const config = require('../config/config');
-const _ = require('lodash');
+import { JIRA_CONFIG } from '../config/config.js';
+import _ from 'lodash';
 
-const blueprint = (
+export const blueprint = (
   issueSummary,
   issueDescription,
   severityMap
 ) => {
   return {
-    'project.key': config.JIRA_CONFIG.JIRA_PROJECT,
+    'project.key': JIRA_CONFIG.JIRA_PROJECT,
     summary: `${issueSummary}`,
-    'issuetype.name': config.JIRA_CONFIG.ISSUE_TYPE,
+    'issuetype.name': JIRA_CONFIG.ISSUE_TYPE,
     'priority.name': `${severityMap}`,
     description: `${issueDescription}`
   };
 };
 
-const create = (templateBluePrint) => {
+export const createFromTemplate = (templateBluePrint) => {
   const fieldKeys = Object.keys(templateBluePrint);
   const template = {};
   const extraFieldsAtomicView = {};
@@ -45,5 +45,3 @@ const create = (templateBluePrint) => {
   });
   return { template, extraFieldsAtomicView };
 };
-
-module.exports = { blueprint, create };

@@ -1,11 +1,10 @@
-const assert = require('assert');
-const core = require('@actions/core');
+import assert from 'assert';
+import core from '@actions/core';
+import { DELETERequestWrapper, POSTRequestWrapper } from './rest-helper.js';
+import { JIRA_CONFIG, REST_CONFIG } from '../config/config.js';
+import { shellExec, fixJiraURI } from '../utils/helper.js';
 
-const rest = require('./rest-helper');
-const config = require('../config/config');
-const utils = require('../utils/helper');
-
-const createSession = async function createSession (
+export const createSession = async function createSession (
   jiraUser,
   jiraPassword
 ) {
@@ -17,11 +16,11 @@ const createSession = async function createSession (
     password: jiraPassword
   };
 
-  const response = await rest.POSTRequestWrapper(
+  const response = await POSTRequestWrapper(
     createSession.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
-    config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
+    process.env.JIRA_URI || JIRA_CONFIG.JIRA_URI,
+    JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
+    REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
     '',
     sessionPayload
   );
@@ -59,7 +58,7 @@ const createSession = async function createSession (
   return SESSION_PAYLOAD;
 };
 
-const createSessionHeaders = (sessionPayload) => {
+export const createSessionHeaders = (sessionPayload) => {
   const authHeaderJiraCookieValue = `${sessionPayload.sessionID.name}=${sessionPayload.sessionID.value}`;
   const authHeaderCookieValues =
     sessionPayload.loadBalancerCookie.name === ''
@@ -69,13 +68,13 @@ const createSessionHeaders = (sessionPayload) => {
   return authHeaderCookieValues;
 };
 
-const createIssue = async function (authHeaders, filePayload) {
+export const createIssue = async function (authHeaders, filePayload) {
   const issueRequestPayload = JSON.parse(filePayload);
-  const response = await rest.POSTRequestWrapper(
+  const response = await POSTRequestWrapper(
     createIssue.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT,
-    config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
+    process.env.JIRA_URI || JIRA_CONFIG.JIRA_URI,
+    JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT,
+    REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
     authHeaders,
     issueRequestPayload
   );
@@ -83,12 +82,12 @@ const createIssue = async function (authHeaders, filePayload) {
   return response;
 };
 
-const searchIssues = async function (authHeaders, payload) {
-  const response = await rest.POSTRequestWrapper(
+export const searchIssues = async function (authHeaders, payload) {
+  const response = await POSTRequestWrapper(
     searchIssues.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT,
-    config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
+    process.env.JIRA_URI || JIRA_CONFIG.JIRA_URI,
+    JIRA_CONFIG.JIRA_ISSUE_SEARCH_ENDPOINT,
+    REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
     authHeaders,
     payload
   );
@@ -96,27 +95,18 @@ const searchIssues = async function (authHeaders, payload) {
   return response;
 };
 
-const invalidateSession = async function (authHeaders) {
-  const response = await rest.DELETERequestWrapper(
+export const invalidateSession = async function (authHeaders) {
+  const response = await DELETERequestWrapper(
     invalidateSession.name,
-    process.env.JIRA_URI || config.JIRA_CONFIG.JIRA_URI,
-    config.JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
-    config.REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
+    process.env.JIRA_URI || JIRA_CONFIG.JIRA_URI,
+    JIRA_CONFIG.JIRA_ISSUE_AUTH_SESSION_ENDPOINT,
+    REST_CONFIG.HEADER_ACCEPT_APPLICATION_JSON,
     authHeaders
   );
 
   return response.body;
 };
 
-const pushAttachment = async function (fileName, jiraIssue) {
-  utils.shellExec(`curl -D- -u ${config.JIRA_CONFIG.JIRA_USER}:${config.JIRA_CONFIG.JIRA_PASSWORD} -X POST -H "X-Atlassian-Token: no-check" -F "file=@${fileName}" ${utils.fixJiraURI(config.JIRA_CONFIG.JIRA_URI)}${config.JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT}/${jiraIssue}/attachments`);
-};
-
-module.exports = {
-  createIssue,
-  createSession,
-  createSessionHeaders,
-  searchIssues,
-  invalidateSession,
-  pushAttachment
+export const pushAttachment = async function (fileName, jiraIssue) {
+  shellExec(`curl -D- -u ${JIRA_CONFIG.JIRA_USER}:${JIRA_CONFIG.JIRA_PASSWORD} -X POST -H "X-Atlassian-Token: no-check" -F "file=@${fileName}" ${fixJiraURI(JIRA_CONFIG.JIRA_URI)}${JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT}/${jiraIssue}/attachments`);
 };

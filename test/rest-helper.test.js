@@ -1,7 +1,6 @@
-const { expect } = require('chai');
-const { describe, it } = require('mocha');
-
-const { fixJiraURI } = require('../utils/helper');
+import { expect } from 'chai';
+import { describe, it } from 'mocha';
+import { fixJiraURI } from '../utils/helper.js';
 
 describe('REST helper functions are working as expected', () => {
   it('should fix the JIRA host uri by prepending https as the protocol if none is provided', () => {
