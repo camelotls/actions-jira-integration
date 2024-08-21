@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "start": "node index.js",
-        "test:unit": "nyc mocha",
+        "test:unit": "c8 mocha",
         "lint": "./node_modules/.bin/eslint"
     },
     "author": "",
@@ -32,7 +32,7 @@
         "eslint-plugin-node": "11.1.0",
         "eslint-plugin-promise": "7.1.0",
         "jsonschema": "1.4.1",
-        "nyc": "17.0.0",
+        "c8": "10.1.2",
         "uuid": "10.0.0"
     }
 }
