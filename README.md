@@ -7,7 +7,7 @@
 ![Build Status](https://github.com/camelotls/actions-jira-integration/workflows/Lint%20Code%20Base/badge.svg)
 
 ## Action description
-A GitHub Action to integrate multiple tools with Jira Server and raise relevant issues. The action utilises [Jira's REST API version 8.4.3](https://docs.atlassian.com/software/jira/docs/api/REST/8.4.3/).
+A GitHub Action to integrate multiple tools with Jira Server and raise relevant issues.
 
 ## Usage
 ### Inputs
@@ -46,69 +46,74 @@ on:
     pull_request:
 
 jobs:
-    chore:
-        name: 'This is a sample workflow incorporating the jira integration action'
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout uk-mobile repo
-              uses: actions/checkout@v2
-            - name: Use Node.js 12.x
-              uses: actions/setup-node@v1
-              with:
-                node-version: 12.x
-            - name: Prepare files
-              run: |
-                cp package.json ${GITHUB_WORKSPACE}/.github/actions/npm-audit/package-root.json
-                cp package-lock.json ${GITHUB_WORKSPACE}/.github/actions/npm-audit/package-lock-root.json
-            - name: Execute npm audit
-              id: npm_audit
-              uses: ./.github/actions/npm-audit
-            -  name: Checkout Jira integration GitHub Action Repo
-               uses: actions/checkout@v2
-               with:
-                repository: camelotls/actions-jira-integration
-                ref: <version-to-be-pulled>
-                token: ${{ secrets.MACHINEUSER_GITHUB_TOKEN }}
-                path: actions-jira-integration
-            - name: Jira ticket creation
-              id: jira_integration
-              uses: ./actions-jira-integration/
-              env:
-                ISSUE_TYPE: 'Security Vulnerability'
-                ISSUE_LABELS_MAPPER: 'Security,Triaged,npm_audit_check'
-                JIRA_PROJECT: MBIL
-              with:
-                JIRA_ON_CLOUD: 'false'
-                JIRA_CLOUD_TOKEN: ${{ secrets.JIRA_CLOUD_TOKEN }}
-                JIRA_USER: ${{ secrets.JIRA_USER }}
-                JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
-                # the job with id npm_audit outputs a variable called npm_audit_json
-                INPUT_JSON: './report.json'
-                JIRA_PROJECT: ${{ env.JIRA_PROJECT }}
-                JIRA_URI: 'jira.camelot.global'
-                REPORT_INPUT_KEYS: |
-                                    issueName: {{module_name}}
-                                    issueSummary: npm-audit: {{module_name}} module vulnerability\n
-                                    issueDescription: \`*Recommendation*:\\n\\n{{recommendation}}\\n\\n*Details for {{cwe}}*\\n\\n_Vulnerable versions_:\\n\\n{{vulnerable_versions}}\\n\\n_Patched versions_:\\n\\n{{patched_versions}}\\n\\n*Overview*\\n\\n{{overview}}\\n\\n*References*\\n\\n{{url}}\\n\\n`
-                                    issueSeverity: {{severity}}
-                ISSUE_TYPE: ${{ env.ISSUE_TYPE }}
-                RUNS_ON_GITHUB: true
-                PRIORITY_MAPPER: |
-                                     low: P3
-                                     moderate: P2
-                                     high: P1
-                ISSUE_LABELS_MAPPER: 'security,performance' 
-                LOAD_BALANCER_COOKIE_ENABLED: true
-                LOAD_BALANCER_COOKIE_NAME: 'AWSALB'
-                UPLOAD_FILES: true
-                UPLOAD_FILES_PATH: './upload_file_path'
-                JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES: 'project=${{ env.JIRA_PROJECT }} AND type="${{ env.ISSUE_TYPE }}" AND labels IN (${{ env.ISSUE_LABELS_MAPPER }}) AND status=Done AND resolution IN (Obsolete,Duplicate,"Won''t Do")'
-                JQL_SEARCH_PAYLOAD_OPEN_ISSUES: 'project=${{ env.JIRA_PROJECT }} AND type="${{ env.ISSUE_TYPE }}" AND labels IN (${{ env.ISSUE_LABELS_MAPPER }}) AND status NOT IN (Done)'
-                EXTRA_JIRA_FIELDS: |
-                                      environment: environment
-                                      components.{id}: [npm]
-                                      versions: [release 7]
+      name: 'This is a sample workflow incorporating the jira integration action'
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            ref: ${{ github.event.pull_request.head.sha }}
+        - name: Install pnpm
+          uses: pnpm/action-setup@v4
+          with:
+            version: 9
+        - name: Use Node.js 20
+          uses: actions/setup-node@v4
+          with:
+            node-version: 20
+        - name: Install Dependencies
+          run: pnpm install
+        - name: Prepare files
+          run: |
+            cp package.json ${GITHUB_WORKSPACE}/.github/actions/npm-audit/package-root.json
+            cp package-lock.json ${GITHUB_WORKSPACE}/.github/actions/npm-audit/package-lock-root.json
+        - name: Execute npm audit
+          id: npm_audit
+          uses: ./.github/actions/npm-audit
+        -  name: Checkout Jira integration GitHub Action Repo
+           uses: actions/checkout@v4
+           with:
+            repository: camelotls/actions-jira-integration
+            ref: <version-to-be-pulled>
+            token: ${{ secrets.MACHINEUSER_GITHUB_TOKEN }}
+            path: actions-jira-integration
+        - name: Jira ticket creation
+          id: jira_integration
+          uses: ./actions-jira-integration/
+          env:
+            ISSUE_TYPE: 'Security Vulnerability'
+            ISSUE_LABELS_MAPPER: 'Security,Triaged,npm_audit_check'
+            JIRA_PROJECT: MBIL
+          with:
+            JIRA_ON_CLOUD: 'false'
+            JIRA_CLOUD_TOKEN: ${{ secrets.JIRA_CLOUD_TOKEN }}
+            JIRA_USER: ${{ secrets.JIRA_USER }}
+            JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
+            # the job with id npm_audit outputs a variable called npm_audit_json
+            INPUT_JSON: './report.json'
+            JIRA_PROJECT: ${{ env.JIRA_PROJECT }}
+            JIRA_URI: 'jira.camelot.global'
+            REPORT_INPUT_KEYS: |
+                                issueName: {{module_name}}
+                                issueSummary: npm-audit: {{module_name}} module vulnerability\n
+                                issueDescription: \`*Recommendation*:\\n\\n{{recommendation}}\\n\\n*Details for {{cwe}}*\\n\\n_Vulnerable versions_:\\n\\n{{vulnerable_versions}}\\n\\n_Patched versions_:\\n\\n{{patched_versions}}\\n\\n*Overview*\\n\\n{{overview}}\\n\\n*References*\\n\\n{{url}}\\n\\n`
+                                issueSeverity: {{severity}}
+            ISSUE_TYPE: ${{ env.ISSUE_TYPE }}
+            RUNS_ON_GITHUB: true
+            PRIORITY_MAPPER: |
+                                 low: P3
+                                 moderate: P2
+                                 high: P1
+            ISSUE_LABELS_MAPPER: 'security,performance' 
+            LOAD_BALANCER_COOKIE_ENABLED: true
+            LOAD_BALANCER_COOKIE_NAME: 'AWSALB'
+            UPLOAD_FILES: true
+            UPLOAD_FILES_PATH: './upload_file_path'
+            JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES: 'project=${{ env.JIRA_PROJECT }} AND type="${{ env.ISSUE_TYPE }}" AND labels IN (${{ env.ISSUE_LABELS_MAPPER }}) AND status=Done AND resolution IN (Obsolete,Duplicate,"Won''t Do")'
+            JQL_SEARCH_PAYLOAD_OPEN_ISSUES: 'project=${{ env.JIRA_PROJECT }} AND type="${{ env.ISSUE_TYPE }}" AND labels IN (${{ env.ISSUE_LABELS_MAPPER }}) AND status NOT IN (Done)'
+            EXTRA_JIRA_FIELDS: |
+                                  environment: environment
+                                  components.{id}: [npm]
+                                  versions: [release 7]
 ```
 **NOTE**: when you specify the JSON keys you want to be parsed and evaluated in your final payload, you **must** enclose them in double curly brackets (`{{<keyName>}}`). This is important for the parsing of the action to work properly. Also, the submitted JSON **must** be in its final form that you want it to be processed (not purely the raw output of your report).
 
@@ -165,7 +170,9 @@ To run this action locally, you can simply build a Docker image and then run it 
 - Build and run your Docker image with specific arguments:
 
 ```
-docker build --build-arg JIRA_USER=$JIRA_USER \
+docker build --build-arg JIRA_USER=$JIRA_ON_CLOUD \
+            --build-arg JIRA_CLOUD_TOKEN=$JIRA_CLOUD_TOKEN \ 
+            --build-arg JIRA_USER=$JIRA_USER \
             --build-arg JIRA_PASSWORD=$JIRA_PASSWORD \
             --build-arg JIRA_PROJECT=$JIRA_PROJECT \
             --build-arg JIRA_URI=$JIRA_URI \
@@ -191,7 +198,9 @@ docker build -t <image_name>:<image_version> .
 and
 
 ```
-docker run -e JIRA_USER=$JIRA_USER \
+docker run -e JIRA_USER=$JIRA_ON_CLOUD \
+            -e JIRA_CLOUD_TOKEN=$JIRA_CLOUD_TOKEN \ 
+            -e JIRA_USER=$JIRA_USER \
             -e JIRA_PASSWORD=$JIRA_PASSWORD \
             -e JIRA_PROJECT=$JIRA_PROJECT \
             -e JIRA_URI=$JIRA_URI \
