@@ -1,6 +1,8 @@
 import core from '@actions/core';
 
 export const JIRA_CONFIG = {
+  JIRA_ON_CLOUD: process.env.JIRA_ON_CLOUD || core.getInput('JIRA_ON_CLOUD'),
+  JIRA_CLOUD_TOKEN: process.env.JIRA_CLOUD_TOKEN || core.getInput('JIRA_CLOUD_TOKEN'),
   JIRA_USER: process.env.JIRA_USER || core.getInput('JIRA_USER'),
   JIRA_PASSWORD: process.env.JIRA_PASSWORD || core.getInput('JIRA_PASSWORD'),
   JIRA_PROJECT: process.env.JIRA_PROJECT || core.getInput('JIRA_PROJECT'),

@@ -1,12 +1,19 @@
 name: "Jira ticket creation"
 description: "Creates a Jira ticket base on the input of a previous action"
 inputs:
+    JIRA_ON_CLOUD:
+        description: "If you are using Jira on Cloud set this environment variable to true"
+        required: false
+        default: false
+    JIRA_CLOUD_TOKEN:
+        description: "Github secret for the JIRA basic authentication token. NOTE: Should be in base64"
+        required: false
     JIRA_USER:
         description: "Github secret for the JIRA user email for external access"
         required: true
     JIRA_PASSWORD:
         description: "Github secret for the JIRA API token for external access"
-        required: true
+        required: false
     JIRA_PROJECT:
         description: "The project key for Jira"
         required: true

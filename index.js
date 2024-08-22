@@ -73,10 +73,14 @@ const logout = async (jiraAuthHeaderValue) => {
 };
 
 const kickOffAction = async (inputJson) => {
-  const jiraSession = await createSession(JIRA_CONFIG.JIRA_USER, JIRA_CONFIG.JIRA_PASSWORD);
-  log.info('JIRA session created successfully!');
+  if (JIRA_CONFIG.JIRA_ON_CLOUD === 'true') {
+    jiraAuthHeaderValue = `Basic ${JIRA_CONFIG.JIRA_CLOUD_TOKEN}`;
+  } else {
+    const jiraSession = await createSession(JIRA_CONFIG.JIRA_USER, JIRA_CONFIG.JIRA_PASSWORD);
+    log.info('JIRA session created successfully!');
 
-  jiraAuthHeaderValue = createSessionHeaders(jiraSession);
+    jiraAuthHeaderValue = createSessionHeaders(jiraSession);
+  }
 
   const retrievedIssuesSummaries = [];
 
@@ -170,8 +174,9 @@ const kickOffAction = async (inputJson) => {
   } else {
     log.info('All the vulnerabilities have already been captured as issues on Jira.');
   }
-
-  await logout(jiraAuthHeaderValue);
+  if (JIRA_CONFIG.JIRA_ON_CLOUD === 'false') {
+    await logout(jiraAuthHeaderValue);
+  }
 };
 
 (async () => {

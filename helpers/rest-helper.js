@@ -1,6 +1,7 @@
 import got from 'got';
 import bunyan from 'bunyan';
 import { fixJiraURI } from '../utils/helper.js';
+import { JIRA_CONFIG } from '../config/config.js';
 
 const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 
@@ -23,7 +24,11 @@ export const POSTRequestWrapper = async (
     };
 
     if (authToken !== '') {
-      options.headers.Cookie = authToken;
+      if (JIRA_CONFIG.JIRA_ON_CLOUD === 'true') {
+        options.headers.Authorization = authToken;
+      } else {
+        options.headers.Cookie = authToken;
+      }
     }
 
     const response = await got.post(`${fixJiraURI(hostName)}${apiPath}`, options);
