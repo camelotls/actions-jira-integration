@@ -14,6 +14,8 @@ A GitHub Action to integrate multiple tools with Jira Server and raise relevant 
 
 |Parameter|Required|Default value|Description|
 |:--:|:--:|:--:|:--:|
+|JIRA_ON_CLOUD|false|false|If you are using Jira on Cloud set this environment variable to true|
+|JIRA_CLOUD_TOKEN|false|N/A|Github secret for the JIRA basic authentication token. NOTE: Should be in base64|
 |JIRA_USER|true|N/A|GitHub secret for the JIRA user email for external access|
 |JIRA_PASSWORD|true|N/A|GitHub secret for the JIRA API token for external access|
 |JIRA_PROJECT|true|N/A|The project key for Jira|
@@ -77,6 +79,8 @@ jobs:
                 ISSUE_LABELS_MAPPER: 'Security,Triaged,npm_audit_check'
                 JIRA_PROJECT: MBIL
               with:
+                JIRA_ON_CLOUD: 'false'
+                JIRA_CLOUD_TOKEN: ${{ secrets.JIRA_CLOUD_TOKEN }}
                 JIRA_USER: ${{ secrets.JIRA_USER }}
                 JIRA_PASSWORD: ${{ secrets.JIRA_PASSWORD }}
                 # the job with id npm_audit outputs a variable called npm_audit_json

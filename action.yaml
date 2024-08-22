@@ -13,7 +13,7 @@ inputs:
         required: true
     JIRA_PASSWORD:
         description: "Github secret for the JIRA API token for external access"
-        required: false
+        required: true
     JIRA_PROJECT:
         description: "The project key for Jira"
         required: true
