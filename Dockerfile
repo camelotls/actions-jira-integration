@@ -1,4 +1,4 @@
-FROM node:12.9.0
+FROM node:20-slim
 
 WORKDIR /
 
@@ -20,10 +20,12 @@ ENV JIRA_USER=$JIRA_USER \
     ISSUE_TYPE=$ISSUE_TYPE \
     RUNS_ON_GITHUB=$RUNS_ON_GITHUB
 
-COPY index.js package.json package-lock.json ./
+COPY index.js package.json pnpm-lock.yaml ./
 COPY config/ ./config
 COPY helpers/ ./helpers
 COPY utils/ ./utils
+
+RUN npm i -g pnpm@9.6.0
 
 RUN npm install
 
