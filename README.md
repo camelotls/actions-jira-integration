@@ -16,8 +16,8 @@ A GitHub Action to integrate multiple tools with Jira Server and raise relevant 
 |:--:|:--:|:--:|:--:|
 |JIRA_ON_CLOUD|false|false|If you are using Jira on Cloud set this environment variable to true|
 |JIRA_CLOUD_TOKEN|false|N/A|Github secret for the JIRA basic authentication token. NOTE: Should be in base64|
-|JIRA_USER|true|N/A|GitHub secret for the JIRA user email for external access|
-|JIRA_PASSWORD|true|N/A|GitHub secret for the JIRA API token for external access|
+|JIRA_USER|false|N/A|GitHub secret for the JIRA user email for external access|
+|JIRA_PASSWORD|false|N/A|GitHub secret for the JIRA API token for external access|
 |JIRA_PROJECT|true|N/A|The project key for Jira|
 |JIRA_URI|true|N/A|The JIRA URI for your organisation|
 |INPUT_JSON|true|N/A|The path where the JSON input to be parsed|

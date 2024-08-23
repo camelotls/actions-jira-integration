@@ -10,10 +10,10 @@ inputs:
         required: false
     JIRA_USER:
         description: "Github secret for the JIRA user email for external access"
-        required: true
+        required: false
     JIRA_PASSWORD:
         description: "Github secret for the JIRA API token for external access"
-        required: true
+        required: false
     JIRA_PROJECT:
         description: "The project key for Jira"
         required: true

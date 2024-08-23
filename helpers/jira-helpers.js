@@ -108,5 +108,9 @@ export const invalidateSession = async function (authHeaders) {
 };
 
 export const pushAttachment = async function (fileName, jiraIssue) {
-  shellExec(`curl -D- -u ${JIRA_CONFIG.JIRA_USER}:${JIRA_CONFIG.JIRA_PASSWORD} -X POST -H "X-Atlassian-Token: no-check" -F "file=@${fileName}" ${fixJiraURI(JIRA_CONFIG.JIRA_URI)}${JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT}/${jiraIssue}/attachments`);
+  if (JIRA_CONFIG.JIRA_ON_CLOUD === 'true') {
+    shellExec(`curl -D- -X POST -H "Authorization: Basic ${JIRA_CONFIG.JIRA_CLOUD_TOKEN}" -H "X-Atlassian-Token: no-check" -F "file=@${fileName}" ${fixJiraURI(JIRA_CONFIG.JIRA_URI)}${JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT}/${jiraIssue}/attachments`);
+  } else {
+    shellExec(`curl -D- -u ${JIRA_CONFIG.JIRA_USER}:${JIRA_CONFIG.JIRA_PASSWORD} -X POST -H "X-Atlassian-Token: no-check" -F "file=@${fileName}" ${fixJiraURI(JIRA_CONFIG.JIRA_URI)}${JIRA_CONFIG.JIRA_ISSUE_CREATION_ENDPOINT}/${jiraIssue}/attachments`);
+  }
 };

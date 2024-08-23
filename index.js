@@ -174,7 +174,7 @@ const kickOffAction = async (inputJson) => {
   } else {
     log.info('All the vulnerabilities have already been captured as issues on Jira.');
   }
-  if (JIRA_CONFIG.JIRA_ON_CLOUD === 'false') {
+  if (JIRA_CONFIG.JIRA_ON_CLOUD !== 'true') {
     await logout(jiraAuthHeaderValue);
   }
 };
