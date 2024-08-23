@@ -31,6 +31,6 @@ COPY utils/ ./utils
 
 RUN npm i -g pnpm@9.6.0
 
-RUN npm install
+RUN pnpm install
 
 ENTRYPOINT ["node", "/index.js"]
