@@ -1,6 +1,8 @@
-const core = require('@actions/core');
+import core from '@actions/core';
 
-const JIRA_CONFIG = {
+export const JIRA_CONFIG = {
+  JIRA_ON_CLOUD: process.env.JIRA_ON_CLOUD || core.getInput('JIRA_ON_CLOUD'),
+  JIRA_CLOUD_TOKEN: process.env.JIRA_CLOUD_TOKEN || core.getInput('JIRA_CLOUD_TOKEN'),
   JIRA_USER: process.env.JIRA_USER || core.getInput('JIRA_USER'),
   JIRA_PASSWORD: process.env.JIRA_PASSWORD || core.getInput('JIRA_PASSWORD'),
   JIRA_PROJECT: process.env.JIRA_PROJECT || core.getInput('JIRA_PROJECT'),
@@ -31,17 +33,11 @@ const JIRA_CONFIG = {
   }
 };
 
-const REST_CONFIG = {
+export const REST_CONFIG = {
   HEADER_ACCEPT_APPLICATION_JSON: 'application/json'
 };
 
-const UTILS = {
+export const UTILS = {
   TEMPLATES_DIR: (core.getInput('RUNS_ON_GITHUB') || process.env.RUNS_ON_GITHUB) === 'true' ? './actions-jira-integration/templates' : './templates',
   CREATE_JIRA_ISSUE_PAYLOAD_TEMPLATE: 'issueCreation.template'
-};
-
-module.exports = {
-  JIRA_CONFIG,
-  REST_CONFIG,
-  UTILS
 };

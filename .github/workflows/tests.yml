@@ -7,14 +7,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Run Unit Tests
-
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js 12.x
-        uses: actions/setup-node@v1
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
-          node-version: 12.x
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Install Dependencies
-        run: npm install
-      - name: Test
-        run: npm run test:unit
+        run: pnpm install
+
+      - name: Run Tests
+        run: pnpm test:unit

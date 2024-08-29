@@ -1,14 +1,14 @@
-const fs = require('fs');
-const rimraf = require('rimraf');
-const dirtyJSON = require('dirty-json');
-const Validator = require('jsonschema').Validator;
-const { spawnSync } = require('child_process');
-const assert = require('assert');
-const core = require('@actions/core');
-const bunyan = require('bunyan');
-const log = bunyan.createLogger({ name: 'actions-jira-integration' });
+import fs from 'fs';
+import * as rimraf from 'rimraf';
+import dirtyJSON from 'dirty-json';
+import { Validator } from 'jsonschema';
+import { spawnSync } from 'child_process';
+import assert from 'assert';
+import core from '@actions/core';
+import bunyan from 'bunyan';
+import { blueprint, createFromTemplate } from './template.js';
 
-const template = require('../utils/template');
+const log = bunyan.createLogger({ name: 'actions-jira-integration' });
 
 const jsonValidator = new Validator();
 const jiraIssueSchemaBase = {
@@ -41,7 +41,7 @@ const booleanToUpper = (input) => {
   return input.replace(/true/g, 'True').replace(/false/g, 'False');
 };
 
-const constructJiraIssuePayload = (
+export const constructJiraIssuePayload = (
   issueName,
   issueSummary,
   issueDescription,
@@ -50,7 +50,7 @@ const constructJiraIssuePayload = (
   issueLabelMapper,
   extraJiraFields
 ) => {
-  const templateInput = template.blueprint(
+  const templateInput = blueprint(
     issueSummary,
     issueDescription,
     severityMap
@@ -63,7 +63,7 @@ const constructJiraIssuePayload = (
 
   const finalTemplate = { ...templateInput, ...extraJiraFields };
 
-  const { template: templateModifier, extraFieldsAtomicView } = template.create(finalTemplate);
+  const { template: templateModifier, extraFieldsAtomicView } = createFromTemplate(finalTemplate);
   const jiraIssueSchemaExpansion = extraFieldsAtomicView.fields;
   // construct the new JSON schema that we will use to verify the input JSON
   Object.assign(jiraIssueSchemaBase.fields, jiraIssueSchemaExpansion);
@@ -90,7 +90,7 @@ const constructJiraIssuePayload = (
   }
 };
 
-const folderCleanup = (folder) => {
+export const folderCleanup = (folder) => {
   if (!fs.existsSync(folder)) {
     fs.mkdirSync(folder);
   } else {
@@ -99,7 +99,7 @@ const folderCleanup = (folder) => {
   }
 };
 
-const reportMapper = (inputElement, parsedInput, reportPairsMapper) => {
+export const reportMapper = (inputElement, parsedInput, reportPairsMapper) => {
   const mapper = {};
   // eslint-disable-next-line no-unused-vars
   for (const [reportKey, reportValue] of Object.entries(reportPairsMapper)) {
@@ -132,7 +132,7 @@ const reportMapper = (inputElement, parsedInput, reportPairsMapper) => {
   return mapper;
 };
 
-const populateMap = (yamlKey) => {
+export const populateMap = (yamlKey) => {
   const yamlPairs = yamlKey.split('\n')
     .map(pair => pair.trim())
     .filter(pair => {
@@ -151,14 +151,14 @@ const populateMap = (yamlKey) => {
   return map;
 };
 
-const fixJiraURI = (jiraURI) => {
+export const fixJiraURI = (jiraURI) => {
   if (!jiraURI.match(/^https:\/\/|^http:\/\//)) {
     return `https://${jiraURI}`;
   }
   return jiraURI;
 };
 
-const shellExec = (command) => {
+export const shellExec = (command) => {
   let cmdOutput = '';
   const executedCommand = spawnSync(command, {
     shell: true
@@ -174,7 +174,7 @@ const shellExec = (command) => {
   return cmdOutput;
 };
 
-const retrievePathFiles = async (path) => {
+export const retrievePathFiles = async (path) => {
   let files = [];
   try {
     files = await fs.promises.readdir(path);
@@ -186,31 +186,18 @@ const retrievePathFiles = async (path) => {
   return files;
 };
 
-const ultraTrim = (input) => {
+export const ultraTrim = (input) => {
   return input.split(' ').join('');
 };
 
-const getInput = (name) => {
+export const getInput = (name) => {
   return core.getInput(name) || process.env[name];
 };
 
-const updateObjectKeys = (newKey, examinedObject) => {
+export const updateObjectKeys = (newKey, examinedObject) => {
   // eslint-disable-next-line no-unused-vars
   for (const [key, value] of Object.entries(examinedObject)) {
     Object.defineProperty(examinedObject, `${newKey}.${key}`, Object.getOwnPropertyDescriptor(examinedObject, key));
     delete examinedObject[key];
   }
-};
-
-module.exports = {
-  constructJiraIssuePayload,
-  folderCleanup,
-  reportMapper,
-  populateMap,
-  fixJiraURI,
-  shellExec,
-  retrievePathFiles,
-  ultraTrim,
-  getInput,
-  updateObjectKeys
 };

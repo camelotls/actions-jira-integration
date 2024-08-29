@@ -1,7 +1,9 @@
-FROM node:12.9.0
+FROM node:20
 
 WORKDIR /
 
+ARG JIRA_ON_CLOUD
+ARG JIRA_CLOUD_TOKEN
 ARG JIRA_USER
 ARG JIRA_PASSWORD
 ARG JIRA_PROJECT
@@ -11,7 +13,9 @@ ARG REPORT_INPUT_KEYS
 ARG ISSUE_TYPE
 ARG RUNS_ON_GITHUB
 
-ENV JIRA_USER=$JIRA_USER \
+ENV JIRA_ON_CLOUD=$JIRA_ON_CLOUD \
+    JIRA_CLOUD_TOKEN=$JIRA_CLOUD_TOKEN \
+    JIRA_USER=$JIRA_USER \
     JIRA_PASSWORD=$JIRA_PASSWORD \
     JIRA_PROJECT=$JIRA_PROJECT \
     JIRA_URI=$JIRA_URI \
@@ -20,11 +24,13 @@ ENV JIRA_USER=$JIRA_USER \
     ISSUE_TYPE=$ISSUE_TYPE \
     RUNS_ON_GITHUB=$RUNS_ON_GITHUB
 
-COPY index.js package.json package-lock.json ./
+COPY index.js package.json pnpm-lock.yaml ./
 COPY config/ ./config
 COPY helpers/ ./helpers
 COPY utils/ ./utils
 
-RUN npm install
+RUN npm i -g pnpm@9.6.0
+
+RUN pnpm install
 
 ENTRYPOINT ["node", "/index.js"]

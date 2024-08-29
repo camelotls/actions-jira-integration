@@ -5,7 +5,7 @@
 node_modules/
 
 #Report Output
-.nyc_output/
+coverage/
 
 #Report Output
 payloads

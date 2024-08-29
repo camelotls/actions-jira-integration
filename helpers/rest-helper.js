@@ -1,9 +1,11 @@
-const got = require('got');
-const bunyan = require('bunyan');
-const log = bunyan.createLogger({ name: 'actions-jira-integration' });
-const utils = require('../utils/helper');
+import got from 'got';
+import bunyan from 'bunyan';
+import { fixJiraURI } from '../utils/helper.js';
+import { JIRA_CONFIG } from '../config/config.js';
 
-const POSTRequestWrapper = async (
+const log = bunyan.createLogger({ name: 'actions-jira-integration' });
+
+export const POSTRequestWrapper = async (
   requestName,
   hostName,
   apiPath,
@@ -14,7 +16,7 @@ const POSTRequestWrapper = async (
   try {
     const options = {
       json: postData,
-      retry: 0,
+      retry: { limit: 0 },
       responseType: 'json',
       headers: {
         'Content-Type': acceptHeaderValue
@@ -22,10 +24,14 @@ const POSTRequestWrapper = async (
     };
 
     if (authToken !== '') {
-      options.headers.Cookie = authToken;
+      if (JIRA_CONFIG.JIRA_ON_CLOUD === 'true') {
+        options.headers.Authorization = authToken;
+      } else {
+        options.headers.Cookie = authToken;
+      }
     }
 
-    const response = await got.post(`${utils.fixJiraURI(hostName)}${apiPath}`, options);
+    const response = await got.post(`${fixJiraURI(hostName)}${apiPath}`, options);
 
     return response;
   } catch (error) {
@@ -40,7 +46,7 @@ const POSTRequestWrapper = async (
   }
 };
 
-const DELETERequestWrapper = async (
+export const DELETERequestWrapper = async (
   requestName,
   hostName,
   apiPath,
@@ -48,8 +54,8 @@ const DELETERequestWrapper = async (
   authToken
 ) => {
   try {
-    const response = await got.delete(`${utils.fixJiraURI(hostName)}${apiPath}`, {
-      retry: 0,
+    const response = await got.delete(`${fixJiraURI(hostName)}${apiPath}`, {
+      retry: { limit: 0 },
       headers: {
         'Content-Type': acceptHeaderValue,
         Cookie: authToken
@@ -67,9 +73,4 @@ const DELETERequestWrapper = async (
 
     return error;
   }
-};
-
-module.exports = {
-  POSTRequestWrapper,
-  DELETERequestWrapper
 };
