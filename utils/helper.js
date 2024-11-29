@@ -105,7 +105,9 @@ export const reportMapper = (inputElement, parsedInput, reportPairsMapper) => {
   for (const [reportKey, reportValue] of Object.entries(reportPairsMapper)) {
     let firstPass = false;
     const reportInputVariablesFetcher = [...reportValue.match(/\{{(.*?)\}}/g) ?? []];
+    // If there are no fields to replace, map the value instantly
     if (reportInputVariablesFetcher.length === 0) {
+      mapper[reportKey] = reportValue;
       continue;
     }
 
