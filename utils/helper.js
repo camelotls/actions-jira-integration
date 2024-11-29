@@ -104,7 +104,7 @@ export const reportMapper = (inputElement, parsedInput, reportPairsMapper) => {
   // eslint-disable-next-line no-unused-vars
   for (const [reportKey, reportValue] of Object.entries(reportPairsMapper)) {
     let firstPass = false;
-    const reportInputVariablesFetcher = [...reportValue.match(/\{{(.*?)\}}/g)];
+    const reportInputVariablesFetcher = [...reportValue.match(/\{{(.*?)\}}/g) ?? []];
     if (reportInputVariablesFetcher.length === 0) {
       continue;
     }
