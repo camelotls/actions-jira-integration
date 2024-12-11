@@ -74,7 +74,8 @@ const logout = async (jiraAuthHeaderValue) => {
 
 const kickOffAction = async (inputJson) => {
   if (JIRA_CONFIG.JIRA_ON_CLOUD === 'true') {
-    jiraAuthHeaderValue = `Basic ${JIRA_CONFIG.JIRA_CLOUD_TOKEN}`;
+    const encodedAuthHeader = btoa(`${JIRA_CONFIG.JIRA_USER}:${JIRA_CONFIG.JIRA_CLOUD_TOKEN}`);
+    jiraAuthHeaderValue = `Basic ${encodedAuthHeader}`;
   } else {
     const jiraSession = await createSession(JIRA_CONFIG.JIRA_USER, JIRA_CONFIG.JIRA_PASSWORD);
     log.info('JIRA session created successfully!');
