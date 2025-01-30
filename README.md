@@ -36,7 +36,9 @@ A GitHub Action to integrate multiple tools with Jira Server and raise relevant 
 
 ### Outputs
 
-N/A
+| Name                | Description                                                            | Example |
+| --                  | --                                                                     | --      |
+| created-jira-issues | Contains a JSON array of all the issues created in Jira by the action | <pre>[<br>  {<br>    "key": "HT-0",<br>    "url": "https://jira.instance/browse/HT-0"  <br>  },<br>  {<br>    "key": "HT-1",<br>    "url": "https://jira.instance/browse/HT-1"<br>  }<br>]</pre> |
 
 ## Example Workflow
 ```yaml

@@ -32,6 +32,8 @@ const INPUT_JSON = fs.readFileSync(getInput('INPUT_JSON'), 'utf8');
 
 let jiraAuthHeaderValue;
 
+const createdJiraIssues = [];
+
 const createJiraIssue = async (payload) => {
   // this is done here in order to handle more easily the async nature of the call
   let filesToBeUploaded = [];
@@ -42,8 +44,14 @@ const createJiraIssue = async (payload) => {
   return createIssue(jiraAuthHeaderValue, payload).then((jiraIssue) => {
     const jiraIssueKey = jiraIssue.body.key;
     const jiraIssueSummary = JSON.parse(payload).fields.summary;
+    const jiraIssueURL = `${fixJiraURI(JIRA_CONFIG.JIRA_URI)}/browse/${jiraIssueKey}`;
 
-    log.info(`A jira issue with the following details has been raised: ${fixJiraURI(JIRA_CONFIG.JIRA_URI)}/browse/${jiraIssueKey}`);
+    log.info(`A jira issue with the following details has been raised: ${jiraIssueURL}`);
+
+    createdJiraIssues.push({
+      key: jiraIssueKey,
+      url: jiraIssueURL
+    });
 
     // upload the attachments to the relevant issue created
     if (UPLOAD_FILES) {
@@ -171,6 +179,7 @@ const kickOffAction = async (inputJson) => {
 
   if (jiraIssuesPayloadHolder.length !== 0) {
     await parallelIssueCreation(jiraIssuesPayloadHolder);
+    core.setOutput('created-jira-issues', JSON.stringify(createdJiraIssues));
   } else {
     log.info('All the vulnerabilities have already been captured as issues on Jira.');
   }
