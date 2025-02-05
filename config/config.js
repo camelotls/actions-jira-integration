@@ -8,9 +8,9 @@ export const JIRA_CONFIG = {
   JIRA_PROJECT: process.env.JIRA_PROJECT || core.getInput('JIRA_PROJECT'),
   JIRA_URI: process.env.JIRA_URI || core.getInput('JIRA_URI'),
   ISSUE_TYPE: process.env.ISSUE_TYPE || core.getInput('ISSUE_TYPE'),
-  JIRA_ISSUE_CREATION_ENDPOINT: '/rest/api/2/issue',
+  JIRA_ISSUE_CREATION_ENDPOINT: '/rest/api/3/issue',
   JIRA_ISSUE_AUTH_SESSION_ENDPOINT: '/rest/auth/1/session',
-  JIRA_ISSUE_SEARCH_ENDPOINT: '/rest/api/2/search',
+  JIRA_ISSUE_SEARCH_ENDPOINT: '/rest/api/3/search',
   JIRA_ISSUE_SEARCH_PAYLOAD_RESOLVED_ISSUES: {
     jql: process.env.JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES || core.getInput('JQL_SEARCH_PAYLOAD_RESOLVED_ISSUES'),
     startAt: 0,

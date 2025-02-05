@@ -31,7 +31,10 @@ const jiraIssueSchemaBase = {
       type: 'array'
     },
     description: {
-      type: 'string'
+      type: 'object',
+      content: {
+        type: 'array'
+      }
     }
   }
 };
@@ -201,5 +204,28 @@ export const updateObjectKeys = (newKey, examinedObject) => {
   for (const [key, value] of Object.entries(examinedObject)) {
     Object.defineProperty(examinedObject, `${newKey}.${key}`, Object.getOwnPropertyDescriptor(examinedObject, key));
     delete examinedObject[key];
+  }
+};
+
+export const parseDescription = (issueDescription) => {
+  try {
+    return JSON.parse(issueDescription);
+  } catch (e) {
+    core.warning("issueDescription doesn't seem to be in ADF format. Assuming it's a raw string, will convert it to ADF. This may not work as expected! Consider switching to ADF format.");
+    return {
+      type: 'doc',
+      version: 1,
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            {
+              type: 'text',
+              text: `${issueDescription}`
+            }
+          ]
+        }
+      ]
+    };
   }
 };
