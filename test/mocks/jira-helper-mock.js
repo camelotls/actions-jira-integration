@@ -93,10 +93,7 @@ export const MOCK_JIRA_ISSUE_CREATION_WRONG_RESPONSE_WITH_WRONG_EXTRA_FIELD = {
   errors: {}
 };
 export const MOCK_JIRA_ISSUE_SEARCH_RESPONSE = {
-  expand: 'names,schema',
-  startAt: 0,
-  maxResults: 50,
-  total: 1,
+  isLast: true,
   issues: [
     {
       expand: '',

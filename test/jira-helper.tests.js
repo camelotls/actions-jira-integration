@@ -151,7 +151,7 @@ describe('Jira REST are functioning properly', () => {
       const response = await searchIssues(authHeaders, JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
       expect(response.body)
         .to.be.instanceOf(Object)
-        .to.have.all.keys('expand', 'startAt', 'maxResults', 'total', 'issues');
+        .to.have.property('issues');
     });
 
     it('a list of JIRA resolved issues can be queried', async () => {
@@ -162,7 +162,7 @@ describe('Jira REST are functioning properly', () => {
       const response = await searchIssues(authHeaders, JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
       expect(response.body)
         .to.be.instanceOf(Object)
-        .to.have.all.keys('expand', 'startAt', 'maxResults', 'total', 'issues');
+        .to.have.property('issues');
     });
 
     it('a list of JIRA issues without a supplied jql query can be queried', async () => {
@@ -176,7 +176,7 @@ describe('Jira REST are functioning properly', () => {
       const response = await searchIssues(authHeaders, JIRA_CONFIG.JIRA_ISSUE_SEARCH_PAYLOAD_OPEN_ISSUES);
       expect(response.body)
         .to.be.instanceOf(Object)
-        .to.have.all.keys('expand', 'startAt', 'maxResults', 'total', 'issues');
+        .to.have.property('issues');
     });
 
     it('a JIRA session can be invalidated', async () => {
