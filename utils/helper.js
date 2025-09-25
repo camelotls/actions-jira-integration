@@ -104,20 +104,22 @@ export const folderCleanup = (folder) => {
 
 export const reportMapper = (inputElement, parsedInput, reportPairsMapper) => {
   const mapper = {};
-  // eslint-disable-next-line no-unused-vars
+  const escapeForReplace = (s) => String(s).replace(/\$/g, '$$$$'); // <-- added
+
   for (const [reportKey, reportValue] of Object.entries(reportPairsMapper)) {
     let firstPass = false;
-    const reportInputVariablesFetcher = [...reportValue.match(/\{{(.*?)\}}/g) ?? []];
-    // If there are no fields to replace, map the value instantly
+    const reportInputVariablesFetcher = [...reportValue.match(/\{{(.*?)\}}/g)];
     if (reportInputVariablesFetcher.length === 0) {
-      mapper[reportKey] = reportValue;
       continue;
     }
 
     for (let keyPosition = 0; keyPosition < reportInputVariablesFetcher.length; keyPosition++) {
       const keyName = reportInputVariablesFetcher[keyPosition].replace('{{', '').replace('}}', '');
       if (reportInputVariablesFetcher.length === 1 || firstPass === false) {
-        mapper[reportKey] = reportPairsMapper[reportKey].replace(`{{${keyName}}}`, `${parsedInput[inputElement][keyName]}`);
+        mapper[reportKey] = reportPairsMapper[reportKey].replace(
+          `{{${keyName}}}`,
+          escapeForReplace(parsedInput[inputElement][keyName]) // <-- wrapped
+        );
       } else {
         const parsedInputValue = parsedInput[inputElement][keyName];
         if (typeof parsedInputValue === 'object') {
@@ -125,9 +127,15 @@ export const reportMapper = (inputElement, parsedInput, reportPairsMapper) => {
           parsedInputValue.forEach((singleParsedInputValue) => {
             formattedInput += `\u2022 ${singleParsedInputValue}\n`;
           });
-          mapper[reportKey] = mapper[reportKey].replace(`{{${keyName}}}`, formattedInput);
+          mapper[reportKey] = mapper[reportKey].replace(
+            `{{${keyName}}}`,
+            formattedInput
+          );
         } else {
-          mapper[reportKey] = mapper[reportKey].replace(`{{${keyName}}}`, `${parsedInputValue}`);
+          mapper[reportKey] = mapper[reportKey].replace(
+            `{{${keyName}}}`,
+            escapeForReplace(parsedInputValue) // <-- wrapped
+          );
         }
       }
       firstPass = true;
