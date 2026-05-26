@@ -9,14 +9,14 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
 
       - name: Lint Code Base
-        uses: github/super-linter@v5
+        uses: super-linter/super-linter@v8.6.0
         env:
-          DEFAULT_BRANCH: main
+          DEFAULT_BRANCH: ${{ github.event.pull_request.base.ref }}
           VALIDATE_DOCKERFILE: true
           VALIDATE_JAVASCRIPT_ES: true
           VALIDATE_YAML: true
