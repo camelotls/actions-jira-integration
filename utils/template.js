@@ -22,32 +22,53 @@ export const createFromTemplate = (templateBluePrint) => {
   const extraFieldsAtomicView = {};
 
   fieldKeys.forEach((field) => {
-    // excluding the description field since it's considered one of the basic fields we use in the action
+    const raw = templateBluePrint[field];
+
+    // Keep description fields as-is and mark type as 'object'
     if (field.includes('description')) {
-      _.set(template, field, templateBluePrint[field]);
+      _.set(template, field, raw);
       _.set(extraFieldsAtomicView, field, { type: 'object' });
       return;
     }
-    // For the extra fields supplied, we need to determine the data type in order to properly construct the JSON
-    // schema to be used. Array types are special data types used in that module
-    const fieldType = templateBluePrint[field].match(/\[.+\]/g) !== null ? 'array' : typeof templateBluePrint[field];
-    if (fieldType === 'array') {
-      let formattedValue = templateBluePrint[field].replace(/\[|\]/g, '').replace(/,\s/g, ',').split(',');
 
-      // Deconstruct field into array and gets final value
+    // Safer array detection: real arrays OR whole-string bracketed list (e.g., "[a,b]")
+    const isArrayValue =
+      Array.isArray(raw) ||
+      (typeof raw === 'string' && /^\s*\[[^[\]]*]\s*$/.test(raw));
+
+    const fieldType = isArrayValue ? 'array' : typeof raw;
+
+    if (isArrayValue) {
+      // Normalize into an array
+      let formattedValue;
+      if (Array.isArray(raw)) {
+        formattedValue = raw;
+      } else {
+        // Remove ONLY the outer [ ] and split by commas
+        const inner = raw.trim().slice(1, -1);
+        formattedValue = inner
+          .split(',')
+          .map(v => v.trim())
+          .filter(v => v.length > 0);
+      }
+
+      // Deconstruct field into array and get final value
       const deconstructedField = field.split('.');
       const finalField = deconstructedField.pop();
-
-      if (finalField.includes('{')) {
-        formattedValue = formattedValue.map(value => _.set({}, finalField.replace(/\{|\}/g, ''), value));
-      }
       const remainingField = deconstructedField.join('.');
+
+      if (finalField && finalField.includes('{')) {
+        const key = finalField.replace(/\{|\}/g, '');
+        formattedValue = formattedValue.map(value => _.set({}, key, value));
+      }
 
       _.set(template, remainingField, formattedValue);
     } else {
-      _.set(template, field, templateBluePrint[field]);
+      _.set(template, field, raw);
     }
+
     _.set(extraFieldsAtomicView, field, { type: fieldType });
   });
+
   return { template, extraFieldsAtomicView };
 };
